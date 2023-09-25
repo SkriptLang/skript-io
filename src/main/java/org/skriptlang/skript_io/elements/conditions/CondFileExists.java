@@ -12,6 +12,7 @@ import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript_io.SkriptIO;
 
 import java.io.File;
 import java.net.URI;
@@ -52,8 +53,9 @@ public class CondFileExists extends Condition {
     @Override
     public boolean check(@NotNull Event event) {
         return uriExpression.check(event, uri -> {
-            final File file = new File(uri);
-            if (!file.exists()) return false;
+            if (uri == null) return false;
+            final File file = SkriptIO.file(uri);
+            if (file == null || !file.exists()) return false;
             return mode == 0 || mode == 1 && file.isFile() || mode == 2 && file.isDirectory();
         }, this.isNegated());
     }

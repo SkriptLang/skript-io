@@ -2,12 +2,15 @@ package org.skriptlang.skript_io;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
+import ch.njol.skript.log.ErrorQuality;
 import ch.njol.skript.util.Version;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 public class SkriptIO extends JavaPlugin {
     
@@ -45,6 +48,21 @@ public class SkriptIO extends JavaPlugin {
     @Override
     public void onDisable() {
         this.addon = null;
+    }
+    
+    public static File file(URI path) {
+        try {
+            if (path == null) return null;
+            if (!path.isAbsolute()) Skript.error("'" + path + "' is not an absolute file path");
+            else if (path.isOpaque()) Skript.error("'" + path + "' is not hierarchical");
+            else if (!"file".equalsIgnoreCase(path.getScheme())) Skript.error("'" + path + "' is not a file path");
+            else if (path.getPath().isEmpty()) return null;
+            else return new File(path);
+            return null;
+        } catch (IllegalArgumentException ex) {
+            Skript.error(ex.getMessage(), ErrorQuality.SEMANTIC_ERROR);
+            return null;
+        }
     }
     
 }
