@@ -1,0 +1,14 @@
+
+on script load:
+    if file ./server.jar exists:
+        broadcast "true"
+    else:
+        broadcast "false"
+    if directory ./plugins/ exists:
+        broadcast "true"
+    else:
+        broadcast "false"
+    if directory ./beans/ does not exist:
+        broadcast "true"
+    else:
+        broadcast "false"
