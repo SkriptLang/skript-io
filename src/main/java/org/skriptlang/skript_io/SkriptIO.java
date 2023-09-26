@@ -2,20 +2,51 @@ package org.skriptlang.skript_io;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
-import ch.njol.skript.log.ErrorQuality;
 import ch.njol.skript.util.Version;
+import mx.kenzie.clockwork.io.IOQueue;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.logging.Level;
 
 public class SkriptIO extends JavaPlugin {
     
+    private static IOQueue queue;
     private SkriptAddon addon;
     private Types types;
+    
+    public static @NotNull IOQueue queue() {
+        return queue;
+    }
+    
+    public static File file(URI path) {
+        try {
+            if (path == null) return null;
+            if (!path.isAbsolute()) SkriptIO.error("'" + path + "' is not an absolute file path");
+            else if (path.isOpaque()) SkriptIO.error("'" + path + "' is not hierarchical");
+            else if (!"file".equalsIgnoreCase(path.getScheme())) SkriptIO.error("'" + path + "' is not a file path");
+            else if (path.getPath().isEmpty()) return null;
+            else return new File(path);
+            return null;
+        } catch (IllegalArgumentException ex) {
+            SkriptIO.error(ex);
+            return null;
+        }
+    }
+    
+    public static void error(String message) {
+        Bukkit.getLogger().log(Level.SEVERE, message);
+    }
+    
+    public static void error(Throwable throwable) {
+        Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable);
+    }
     
     @Override
     public void onEnable() {
@@ -40,29 +71,17 @@ public class SkriptIO extends JavaPlugin {
             this.types.register();
         } catch (IOException e) {
             this.getLogger().severe("An error occurred while trying to enable this addon.");
-            e.printStackTrace();
+            SkriptIO.error(e);
             manager.disablePlugin(this);
         }
+        queue = new IOQueue();
     }
     
     @Override
     public void onDisable() {
+        queue.shutdown(1000);
         this.addon = null;
-    }
-    
-    public static File file(URI path) {
-        try {
-            if (path == null) return null;
-            if (!path.isAbsolute()) Skript.error("'" + path + "' is not an absolute file path");
-            else if (path.isOpaque()) Skript.error("'" + path + "' is not hierarchical");
-            else if (!"file".equalsIgnoreCase(path.getScheme())) Skript.error("'" + path + "' is not a file path");
-            else if (path.getPath().isEmpty()) return null;
-            else return new File(path);
-            return null;
-        } catch (IllegalArgumentException ex) {
-            Skript.error(ex.getMessage(), ErrorQuality.SEMANTIC_ERROR);
-            return null;
-        }
+        this.types = null;
     }
     
 }
