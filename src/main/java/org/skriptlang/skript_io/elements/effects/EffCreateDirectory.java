@@ -36,7 +36,7 @@ public class EffCreateDirectory extends Effect {
     
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int i, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
         this.pathExpression = (Expression<URI>) expressions[0];
         return true;
     }
