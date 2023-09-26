@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 public class SkriptIO extends JavaPlugin {
     
+    public static IOConfig config;
     private static IOQueue queue;
     private SkriptAddon addon;
     private Types types;
@@ -28,12 +29,8 @@ public class SkriptIO extends JavaPlugin {
     public static File file(URI path) {
         try {
             if (path == null) return null;
-            if (!path.isAbsolute()) SkriptIO.error("'" + path + "' is not an absolute file path");
-            else if (path.isOpaque()) SkriptIO.error("'" + path + "' is not hierarchical");
-            else if (!"file".equalsIgnoreCase(path.getScheme())) SkriptIO.error("'" + path + "' is not a file path");
             else if (path.getPath().isEmpty()) return null;
-            else return new File(path);
-            return null;
+            else return new File(path.getPath());
         } catch (IllegalArgumentException ex) {
             SkriptIO.error(ex);
             return null;
@@ -54,7 +51,7 @@ public class SkriptIO extends JavaPlugin {
         final Plugin skript = manager.getPlugin("Skript");
         if (skript == null || !skript.isEnabled()) {
             this.getLogger().severe(
-                "[skript-gui] Could not find Skript! Make sure you have it installed and that it properly loaded. Disabling...");
+                "[skript-io] Could not find Skript! Make sure you have it installed and that it properly loaded. Disabling...");
             manager.disablePlugin(this);
             return;
         } else if (!Skript.getVersion()
@@ -75,6 +72,17 @@ public class SkriptIO extends JavaPlugin {
             manager.disablePlugin(this);
         }
         queue = new IOQueue();
+        this.loadConfig();
+    }
+    
+    public void loadConfig() { // todo
+        try {
+            final File file = new File(this.getDataFolder(), "config.sk");
+            if (!file.exists()) this.saveResource("config.sk", false);
+            config = new IOConfig(file, false, false, ":");
+        } catch (IOException ex) {
+            this.getLogger().severe("[skript-io] Unable to load config.");
+        }
     }
     
     @Override

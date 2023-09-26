@@ -17,12 +17,11 @@ import org.skriptlang.skript_io.SkriptIO;
 import java.io.File;
 import java.net.URI;
 
-@Name("File Exists")
+@Name("File/Directory Exists")
 @Description("Checks whether the given path is a file that exists.")
 @Examples({
-    "command /guiviewers: # Returns a list of all players with a GUI open.",
-    "\tset {_viewers::*} to all players where [input has a gui]",
-    "\tsend \"GUI Viewers: %{_viewers::*}%\" to player"
+    "if file ./test.txt exists:",
+    "\tdelete file ./test.txt"
 })
 @Since("1.0.0")
 public class CondFileExists extends Condition {
