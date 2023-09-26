@@ -2,8 +2,8 @@ package org.skriptlang.skript_io.utility;
 
 import mx.kenzie.clockwork.io.DataTask;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class WriteTask extends DataTask {
     
@@ -17,7 +17,7 @@ public class WriteTask extends DataTask {
     
     @Override
     public void execute() throws IOException {
-        final FileOutputStream stream = controller.acquireWriter();
+        final OutputStream stream = controller.acquireWriter();
         stream.write(content);
     }
     

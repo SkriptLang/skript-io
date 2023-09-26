@@ -8,9 +8,12 @@ import org.skriptlang.skript_io.SkriptIO;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 public class FileController implements Closeable {
+    
+    public static final int READ = 0x0001, WRITE = 0x0010;
     
     private static final Map<File, FileController> handlers = new HashMap<>();
     private static final Map<Event, Stack<FileController>> current = new WeakHashMap<>();
@@ -20,7 +23,7 @@ public class FileController implements Closeable {
     private FileOutputStream output;
     private FileInputStream input;
     
-    private FileController(File file) {
+    FileController(File file) {
         this.file = file;
         this.open = true;
     }
@@ -47,7 +50,12 @@ public class FileController implements Closeable {
         if (stack.isEmpty()) current.remove(event);
     }
     
-    public static FileController getController(@NotNull File file) {
+    public static FileController getController(@NotNull File file, int mode) {
+        if ((mode & READ) == READ || !file.canWrite()) load:{
+            final long size = FileController.sizeOf(file);
+            if (size > Math.min(Runtime.getRuntime().freeMemory(), 500_000_000)) break load;
+            return new ReadOnlyFileController(file, (int) size);
+        }
         synchronized (handlers) {
             final FileController current = handlers.get(file), other;
             if (current != null && current.open) return current;
@@ -61,6 +69,14 @@ public class FileController implements Closeable {
         if (controller == null) return;
         synchronized (handlers) {
             handlers.remove(controller.file, controller);
+        }
+    }
+    
+    public static long sizeOf(File file) {
+        try {
+            return Files.size(file.toPath());
+        } catch (IOException ex) {
+            return -1;
         }
     }
     
@@ -105,12 +121,12 @@ public class FileController implements Closeable {
     public void append(String text) {
     
     }
-
+    
     public void clear() {
         SkriptIO.queue().queue(new WriteTask(this, new byte[0]));
     }
     
-    public synchronized @NotNull FileInputStream acquireReader() throws IOException {
+    public synchronized @NotNull InputStream acquireReader() throws IOException {
         if (output != null) try {
             this.output.flush();
             this.output.close();
@@ -121,7 +137,7 @@ public class FileController implements Closeable {
         return input = new FileInputStream(file);
     }
     
-    public synchronized @NotNull FileOutputStream acquireWriter() throws IOException {
+    public synchronized @NotNull OutputStream acquireWriter() throws IOException {
         if (input != null) try {
             this.input.close();
         } finally {
@@ -133,6 +149,14 @@ public class FileController implements Closeable {
     
     public URI getPath() {
         return file.toURI();
+    }
+    
+    public boolean canRead() {
+        return true;
+    }
+    
+    public boolean canWrite() {
+        return true;
     }
     
 }

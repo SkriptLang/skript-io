@@ -2,6 +2,10 @@ package org.skriptlang.skript_io.elements.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.TriggerItem;
@@ -17,6 +21,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+import static org.skriptlang.skript_io.utility.FileController.WRITE;
+
+@Name("Create File")
+@Description("Creates a new file at a path. If the file already exists or was successfully created, opens an editing section.")
+@Examples({
+    "command /guiviewers: # Returns a list of all players with a GUI open.",
+    "\tset {_viewers::*} to all players where [input has a gui]",
+    "\tsend \"GUI Viewers: %{_viewers::*}%\" to player"
+})
+@Since("1.0.0")
 public class SecCreateFile extends SecAccessFile {
     
     static {
@@ -53,7 +67,7 @@ public class SecCreateFile extends SecAccessFile {
         }
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
         TriggerItem walk = null;
-        try (final FileController controller = FileController.getController(file)) {
+        try (final FileController controller = FileController.getController(file, WRITE)) {
             FileController.push(event, controller);
             walk = this.walk(event, true);
         } catch (IOException ex) {
