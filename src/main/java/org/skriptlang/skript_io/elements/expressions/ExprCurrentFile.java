@@ -53,10 +53,11 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
     }
     
     @Override
-    public Class<?> @NotNull [] acceptChange(Changer.@NotNull ChangeMode mode) {
+    public Class<?> [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
             case SET, ADD -> CollectionUtils.array(String.class);
-            default -> CollectionUtils.array();
+            case RESET, DELETE -> CollectionUtils.array();
+            default -> null;
         };
     }
     
@@ -78,7 +79,7 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
                 if (thing == null) controller.clear();
                 else controller.write(String.valueOf(thing));
                 break;
-            case RESET:
+            case RESET, DELETE:
                 controller.clear();
         }
     }
