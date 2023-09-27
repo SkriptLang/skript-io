@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.expressions;
+package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -14,23 +14,24 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.FileController;
 
 import java.io.File;
 import java.net.URI;
 
-@Name("Size of File Path")
-@Description("The size (in bytes) of a file by path. Non-files have a size of zero.")
+@Name("Files in Directory")
+@Description("Returns a list of (file/folder) paths in the given directory.")
 @Examples({
-    "set {_size} to the file size of ./test.txt"
+    "loop the files in ./test/:",
+    "\tdelete the file at loop-value"
 })
 @Since("1.0.0")
-public class ExprSizeOfPath extends SimpleExpression<Number> {
+public class ExprFilesInDirectory extends SimpleExpression<URI> {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprSizeOfFile.class, Number.class, ExpressionType.SIMPLE,
-                "[the] [file[ ]]size[s] of %paths%"
+            Skript.registerExpression(ExprFilesInDirectory.class, URI.class, ExpressionType.SIMPLE,
+                "[the] files in [(directory|folder)] %path%",
+                "[the] contents of [(directory|folder)] %path%"
             );
     }
     
@@ -44,8 +45,8 @@ public class ExprSizeOfPath extends SimpleExpression<Number> {
     }
     
     @Override
-    public @NotNull Class<? extends Number> getReturnType() {
-        return Long.class;
+    public @NotNull Class<? extends URI> getReturnType() {
+        return URI.class;
     }
     
     @Override
@@ -54,21 +55,20 @@ public class ExprSizeOfPath extends SimpleExpression<Number> {
     }
     
     @Override
-    protected Number @NotNull [] get(@NotNull Event event) {
-        final @Nullable URI[] array = pathExpression.getArray(event);
-        if (array == null || array.length == 0) return new Number[0];
-        final Number[] numbers = new Number[array.length];
-        for (int i = 0; i < array.length; i++) {
-            final File file = SkriptIO.fileNoError(array[i]);
-            if (file == null || !file.isFile()) numbers[i] = 0;
-            else numbers[i] = FileController.sizeOf(file);
-        }
-        return numbers;
+    protected URI @NotNull [] get(@NotNull Event event) {
+        final URI uri = pathExpression.getSingle(event);
+        final File file = SkriptIO.fileNoError(uri);
+        if (file == null || !file.isDirectory()) return new URI[0];
+        final File[] files = file.listFiles();
+        if (files == null || files.length == 0) return new URI[0];
+        final URI[] uris = new URI[files.length];
+        for (int i = 0; i < files.length; i++) uris[i] = files[i].toURI();
+        return uris;
     }
     
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "file size of " + pathExpression.toString(event, debug);
+        return "files in directory " + pathExpression.toString(event, debug);
     }
     
 }

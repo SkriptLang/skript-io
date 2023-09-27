@@ -2,7 +2,8 @@ package org.skriptlang.skript_io.utility;
 
 import org.junit.Test;
 
-import static org.skriptlang.skript_io.utility.FileController.*;
+import static org.skriptlang.skript_io.utility.FileController.READ;
+import static org.skriptlang.skript_io.utility.FileController.WRITE;
 
 public class FileControllerTest {
     

@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.expressions;
+package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
@@ -14,7 +14,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.elements.effects.SecAccessFile;
+import org.skriptlang.skript_io.elements.file.effects.SecAccessFile;
 import org.skriptlang.skript_io.utility.FileController;
 
 import java.net.URI;

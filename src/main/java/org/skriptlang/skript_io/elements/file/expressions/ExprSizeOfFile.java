@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.expressions;
+package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;

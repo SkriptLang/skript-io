@@ -35,6 +35,27 @@ public class ExtractDocsInfoTest {
         }
     }
     
+    private static List<Element> extractElements() {
+        SkriptIO.testMode = true;
+        final String basePackage = "org.skriptlang.skript_io.elements", source = "src/main/java/org/skriptlang/skript_io/elements/";
+        final File root = new File(source);
+        assert root.exists() && root.isDirectory();
+        final List<Element> elements = new ArrayList<>();
+        for (final File file : Objects.requireNonNull(root.listFiles())) {
+            if (!file.isDirectory()) continue;
+            final String folder = file.getName();
+            for (final File sub : Objects.requireNonNull(file.listFiles())) {
+                if (!sub.isDirectory()) continue;
+                final String type = sub.getName();
+                for (final File listFile : Objects.requireNonNull(sub.listFiles())) {
+                    final String name = listFile.getName();
+                    elements.add(new Element(basePackage, folder, type, name.substring(0, name.indexOf('.'))));
+                }
+            }
+        }
+        return elements;
+    }
+    
     @Test
     public void extract() {
         final List<Element> elements = extractElements();
@@ -47,28 +68,11 @@ public class ExtractDocsInfoTest {
         }
     }
     
-    private static List<Element> extractElements() {
-        SkriptIO.testMode = true;
-        final String basePackage = "org.skriptlang.skript_io.elements", source = "src/main/java/org/skriptlang/skript_io/elements/";
-        final File root = new File(source);
-        assert root.exists() && root.isDirectory();
-        final List<Element> elements = new ArrayList<>();
-        for (final File file : Objects.requireNonNull(root.listFiles())) {
-            if (!file.isDirectory()) continue;
-            final String folder = file.getName();
-            for (final File listFile : Objects.requireNonNull(file.listFiles())) {
-                final String name = listFile.getName();
-                elements.add(new Element(basePackage, folder, name.substring(0, name.indexOf('.'))));
-            }
-        }
-        return elements;
-    }
-    
-    record Element(String base, String path, String name) {
+    record Element(String base, String sort, String type, String name) {
         
         Class<?> toClass() {
             try {
-                return Class.forName(base + "." + path + "." + name);
+                return Class.forName(base + "." + sort + "." + type + "." + name);
             } catch (ClassNotFoundException e) {
                 return null;
             }

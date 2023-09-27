@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.conditions;
+package org.skriptlang.skript_io.elements.file.conditions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;

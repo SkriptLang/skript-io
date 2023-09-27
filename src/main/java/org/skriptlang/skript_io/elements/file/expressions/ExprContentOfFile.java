@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.expressions;
+package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
