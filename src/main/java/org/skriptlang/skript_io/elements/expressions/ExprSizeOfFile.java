@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io.elements.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -19,7 +20,8 @@ import org.skriptlang.skript_io.utility.FileController;
 public class ExprSizeOfFile extends SimplePropertyExpression<FileController, Number> {
     
     static {
-        register(ExprSizeOfFile.class, Number.class, "size", "file");
+        if (Skript.isAcceptRegistrations())
+            register(ExprSizeOfFile.class, Number.class, "size", "file");
     }
     
     @Override

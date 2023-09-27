@@ -29,12 +29,13 @@ public class CondFileExists extends Condition {
     private static final int ALL = 0, FILE = 1, FOLDER = 2;
     
     static {
-        Skript.registerCondition(CondFileExists.class,
-            "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-            "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-            "folder[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-            "director(y|ies) %paths% (exist[s]|negated:do[es](n't| not) exist)"
-        );
+        if (Skript.isAcceptRegistrations())
+            Skript.registerCondition(CondFileExists.class,
+                "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
+                "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
+                "folder[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
+                "director(y|ies) %paths% (exist[s]|negated:do[es](n't| not) exist)"
+            );
     }
     
     private Expression<URI> uriExpression;

@@ -24,8 +24,9 @@ import java.net.URI;
 public class EffDeleteFile extends Effect {
     
     static {
-        Skript.registerEffect(EffDeleteFile.class, "[recursive:recursive[ly]] delete [the] folder [at] %path%",
-            "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file [at] %path%");
+        if (Skript.isAcceptRegistrations())
+            Skript.registerEffect(EffDeleteFile.class, "[recursive:recursive[ly]] delete [the] folder [at] %path%",
+                "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file [at] %path%");
     }
     
     private boolean recursive, folder;

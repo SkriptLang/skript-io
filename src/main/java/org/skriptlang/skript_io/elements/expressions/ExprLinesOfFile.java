@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io.elements.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -26,7 +27,8 @@ import java.util.List;
 public class ExprLinesOfFile extends SimplePropertyExpression<FileController, String> {
     
     static {
-        register(ExprLinesOfFile.class, String.class, "lines", "file");
+        if (Skript.isAcceptRegistrations())
+            register(ExprLinesOfFile.class, String.class, "lines", "file");
     }
     
     @Override

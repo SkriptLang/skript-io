@@ -25,9 +25,10 @@ import java.net.URI;
 public class SecCreateFile extends SecEditFile {
     
     static {
-        Skript.registerSection(SecCreateFile.class,
-            "(create|make) [a] [new] file [at] %path%"
-        );
+        if (Skript.isAcceptRegistrations())
+            Skript.registerSection(SecCreateFile.class,
+                "(create|make) [a] [new] file [at] %path%"
+            );
     }
     
     @Override

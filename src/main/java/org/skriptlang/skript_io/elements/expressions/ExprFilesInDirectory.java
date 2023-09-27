@@ -28,10 +28,11 @@ import java.net.URI;
 public class ExprFilesInDirectory extends SimpleExpression<URI> {
     
     static {
-        Skript.registerExpression(ExprFilesInDirectory.class, URI.class, ExpressionType.SIMPLE,
-            "[the] files in [(directory|folder)] %path%",
-            "[the] contents of [(directory|folder)] %path%"
-        );
+        if (Skript.isAcceptRegistrations())
+            Skript.registerExpression(ExprFilesInDirectory.class, URI.class, ExpressionType.SIMPLE,
+                "[the] files in [(directory|folder)] %path%",
+                "[the] contents of [(directory|folder)] %path%"
+            );
     }
     
     private Expression<URI> pathExpression;

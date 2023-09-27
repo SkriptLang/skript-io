@@ -26,10 +26,11 @@ import java.net.URI;
 public class EffCreateDirectory extends Effect {
     
     static {
-        Skript.registerEffect(EffCreateDirectory.class,
-            "(create|make) [a] [new] folder [at] %path%",
-            "(create|make) [a] [new] directory [at] %path%"
-        );
+        if (Skript.isAcceptRegistrations())
+            Skript.registerEffect(EffCreateDirectory.class,
+                "(create|make) [a] [new] folder [at] %path%",
+                "(create|make) [a] [new] directory [at] %path%"
+            );
     }
     
     private Expression<URI> pathExpression;

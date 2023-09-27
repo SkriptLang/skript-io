@@ -28,9 +28,10 @@ import java.net.URI;
 public class ExprCurrentFile extends SimpleExpression<Object> {
     
     static {
-        Skript.registerExpression(ExprCurrentFile.class, Object.class, ExpressionType.SIMPLE,
-            "[the] [(current|open)] file"
-        );
+        if (Skript.isAcceptRegistrations())
+            Skript.registerExpression(ExprCurrentFile.class, Object.class, ExpressionType.SIMPLE,
+                "[the] [(current|open)] file"
+            );
     }
     
     @Override

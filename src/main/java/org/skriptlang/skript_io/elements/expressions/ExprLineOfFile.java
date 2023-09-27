@@ -24,9 +24,10 @@ import org.skriptlang.skript_io.utility.FileController;
 public class ExprLineOfFile extends SimpleExpression<String> {
     
     static {
-        Skript.registerExpression(ExprLineOfFile.class, String.class, ExpressionType.SIMPLE,
-            "line %number% of %file%"
-        );
+        if (Skript.isAcceptRegistrations())
+            Skript.registerExpression(ExprLineOfFile.class, String.class, ExpressionType.SIMPLE,
+                "line %number% of %file%"
+            );
     }
     
     private Expression<Number> lineExpression;

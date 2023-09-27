@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io.elements.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -22,7 +23,8 @@ import org.skriptlang.skript_io.utility.FileController;
 public class ExprContentOfFile extends SimplePropertyExpression<FileController, String> {
     
     static {
-        register(ExprContentOfFile.class, String.class, "content[s]", "file");
+        if (Skript.isAcceptRegistrations())
+            register(ExprContentOfFile.class, String.class, "content[s]", "file");
     }
     
     @Override
