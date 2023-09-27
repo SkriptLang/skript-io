@@ -81,6 +81,10 @@ public class FileController implements Closeable {
         }
     }
     
+    public File getFile() {
+        return file;
+    }
+    
     @Override
     public void close() throws IOException {
         this.closed = true;
