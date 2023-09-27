@@ -22,7 +22,7 @@ public class FileController implements Closeable {
     protected volatile boolean open;
     private FileOutputStream output;
     private FileInputStream input;
-    private boolean appending;
+    private boolean appending, closed;
     
     FileController(File file) {
         this.file = file;
@@ -83,6 +83,7 @@ public class FileController implements Closeable {
     
     @Override
     public void close() throws IOException {
+        this.closed = true;
         try {
             this.appending = false;
             if (output != null) try {
@@ -129,6 +130,10 @@ public class FileController implements Closeable {
     }
     
     public synchronized @NotNull InputStream acquireReader() throws IOException {
+        if (this.closed) {
+            SkriptIO.error("Tried to read a closed file (outside its file section).");
+            throw new IOException("File closed.");
+        }
         this.appending = false;
         if (output != null) try {
             this.output.flush();
@@ -145,6 +150,10 @@ public class FileController implements Closeable {
     }
     
     public synchronized @NotNull OutputStream acquireWriter(boolean append) throws IOException {
+        if (this.closed) {
+            SkriptIO.error("Tried to write to a closed file (outside its file section).");
+            throw new IOException("File closed.");
+        }
         if (input != null) try {
             this.input.close();
         } finally {
