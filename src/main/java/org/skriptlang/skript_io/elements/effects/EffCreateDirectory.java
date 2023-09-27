@@ -26,7 +26,7 @@ import java.net.URI;
 public class EffCreateDirectory extends Effect {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerEffect(EffCreateDirectory.class,
                 "(create|make) [a] [new] folder [at] %path%",
                 "(create|make) [a] [new] directory [at] %path%"

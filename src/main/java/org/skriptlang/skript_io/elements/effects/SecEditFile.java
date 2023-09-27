@@ -30,7 +30,7 @@ import static org.skriptlang.skript_io.utility.FileController.WRITE;
 public class SecEditFile extends SecAccessFile {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerSection(SecEditFile.class,
                 "(edit|open) [(a|the)] file [at] %path%"
             );

@@ -32,7 +32,7 @@ import static org.skriptlang.skript_io.utility.FileController.READ;
 public class SecReadFile extends SecAccessFile {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerSection(SecReadFile.class,
                 "read [(a|the)] file [at] %path%"
             );

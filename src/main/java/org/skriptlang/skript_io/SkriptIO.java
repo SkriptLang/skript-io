@@ -18,6 +18,7 @@ import java.util.logging.Level;
 public class SkriptIO extends JavaPlugin {
     
     public static IOConfig config;
+    public static boolean testMode;
     private static IOQueue queue;
     private SkriptAddon addon;
     private Types types;
@@ -53,6 +54,10 @@ public class SkriptIO extends JavaPlugin {
     
     public static void error(Throwable throwable) {
         Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable);
+    }
+    
+    public static boolean isTest() {
+        return testMode;
     }
     
     @Override

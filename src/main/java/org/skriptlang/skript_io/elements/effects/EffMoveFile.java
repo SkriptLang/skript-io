@@ -35,7 +35,7 @@ import java.nio.file.StandardCopyOption;
 public class EffMoveFile extends Effect {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerEffect(EffMoveFile.class, "move [the] file [at] %path% [into:in]to %path%",
                 "move [the] (folder|directory) [at] %path% [into:in]to %path%");
     }

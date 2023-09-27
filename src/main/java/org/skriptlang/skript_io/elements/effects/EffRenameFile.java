@@ -29,7 +29,7 @@ import java.nio.file.Path;
 public class EffRenameFile extends Effect {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerEffect(EffRenameFile.class,
                 "rename [the] file [at] %path% to %string%",
                 "rename %*path% to %string%");

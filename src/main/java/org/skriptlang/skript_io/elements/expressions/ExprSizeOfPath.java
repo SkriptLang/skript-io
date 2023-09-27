@@ -28,7 +28,7 @@ import java.net.URI;
 public class ExprSizeOfPath extends SimpleExpression<Number> {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerExpression(ExprSizeOfFile.class, Number.class, ExpressionType.SIMPLE,
                 "[the] [file[ ]]size[s] of %paths%"
             );

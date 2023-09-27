@@ -13,6 +13,7 @@ import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.effects.SecAccessFile;
 import org.skriptlang.skript_io.utility.FileController;
 
@@ -28,7 +29,7 @@ import java.net.URI;
 public class ExprCurrentFile extends SimpleExpression<Object> {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerExpression(ExprCurrentFile.class, Object.class, ExpressionType.SIMPLE,
                 "[the] [(current|open)] file"
             );

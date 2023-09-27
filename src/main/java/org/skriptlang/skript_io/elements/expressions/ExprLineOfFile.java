@@ -13,6 +13,7 @@ import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.FileController;
 
 @Name("Line of File")
@@ -24,7 +25,7 @@ import org.skriptlang.skript_io.utility.FileController;
 public class ExprLineOfFile extends SimpleExpression<String> {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerExpression(ExprLineOfFile.class, String.class, ExpressionType.SIMPLE,
                 "line %number% of %file%"
             );

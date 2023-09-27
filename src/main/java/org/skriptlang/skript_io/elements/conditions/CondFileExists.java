@@ -29,7 +29,7 @@ public class CondFileExists extends Condition {
     private static final int ALL = 0, FILE = 1, FOLDER = 2;
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             Skript.registerCondition(CondFileExists.class,
                 "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
                 "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",

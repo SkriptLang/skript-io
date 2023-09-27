@@ -1,6 +1,5 @@
 package org.skriptlang.skript_io.elements.expressions;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -11,6 +10,7 @@ import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.FileController;
 
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.List;
 public class ExprLinesOfFile extends SimplePropertyExpression<FileController, String> {
     
     static {
-        if (Skript.isAcceptRegistrations())
+        if (!SkriptIO.isTest())
             register(ExprLinesOfFile.class, String.class, "lines", "file");
     }
     
