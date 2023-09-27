@@ -37,6 +37,16 @@ public class SkriptIO extends JavaPlugin {
         }
     }
     
+    public static File fileNoError(URI path) {
+        try {
+            if (path == null) return null;
+            else if (path.getPath().isEmpty()) return null;
+            else return new File(path.getPath());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+    
     public static void error(String message) {
         Bukkit.getLogger().log(Level.SEVERE, message);
     }
