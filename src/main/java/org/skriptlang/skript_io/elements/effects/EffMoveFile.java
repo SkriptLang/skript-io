@@ -29,7 +29,10 @@ import java.nio.file.StandardCopyOption;
     """)
 @Examples({
     "move file ./example/test.txt to ./config/test.txt",
-    "move folder ./example/ to ./config/ #"
+    "move file ./test.txt to ./blob.txt",
+    "move file ./test.txt into ./config/",
+    "move folder ./example/ to ./config/",
+    "move folder ./example/ into ./config/"
 })
 @Since("1.0.0")
 public class EffMoveFile extends Effect {

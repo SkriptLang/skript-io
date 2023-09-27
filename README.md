@@ -214,7 +214,9 @@ If the 'into' version is used, the source will be moved inside the target direct
 
 ```sk
 move file ./example/test.txt to ./config/test.txt
-move folder ./example/ to ./config/ #
+move file ./test.txt to ./blob.txt
+move file ./test.txt into ./config/
+move folder ./example/ to ./config/
+move folder ./example/ into ./config/
 ```
-
 
