@@ -16,29 +16,37 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
-import org.skriptlang.skript_io.utility.web.WebServer;
+import org.skriptlang.skript_io.utility.web.IncomingRequest;
+import org.skriptlang.skript_io.utility.web.Request;
 
-@Name("Current Website")
-@Description("The current website, in a website section.")
+@Name("Incoming Request")
+@Description("""
+    The current request being made of your website.
+    This is typically a browser asking for a page.
+    """)
 @Examples({
     "open a website:",
-    "\tclose the current website"
+    "\tset {_file} to path of request",
+    "\tif file {_file} exists:",
+    "\t\tset the status code to 200",
+    "\t\ttransfer {_file} to the response",
+    "\telse:",
+    "\t\tset the status code to 404",
+    "\t\tadd \"Page not found.\" to the response",
 })
 @Since("1.0.0")
-public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
+public class ExprRequest extends SimpleExpression<Request> {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprCurrentWebsite.class, WebServer.class, ExpressionType.SIMPLE,
-                "[the] [current] web[ ]site",
-                "[the] [current] web[ ]server",
-                "[the] [current] http server"
+            Skript.registerExpression(ExprRequest.class, Request.class, ExpressionType.SIMPLE,
+                "[the] [current] request"
             );
     }
     
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
-        if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
+        if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) { // todo sending
             Skript.error("You can't use '" + result.expr + "' outside a website section.");
             return false;
         }
@@ -46,9 +54,10 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
     }
     
     @Override
-    protected WebServer @NotNull [] get(@NotNull Event event) {
-        if (event instanceof VisitWebsiteEvent visit) return new WebServer[]{visit.getServer()};
-        else return new WebServer[0];
+    protected Request @NotNull [] get(@NotNull Event event) {
+        if (event instanceof VisitWebsiteEvent visit)
+            return new Request[]{new IncomingRequest(visit.getExchange())};
+        else return new Request[0];
     }
     
     @Override
@@ -62,13 +71,13 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
     }
     
     @Override
-    public @NotNull Class<WebServer> getReturnType() {
-        return WebServer.class;
+    public @NotNull Class<Request> getReturnType() {
+        return Request.class;
     }
     
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "the website";
+        return "the request";
     }
     
 }

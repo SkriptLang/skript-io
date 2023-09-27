@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.utility;
+package org.skriptlang.skript_io.utility.web;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

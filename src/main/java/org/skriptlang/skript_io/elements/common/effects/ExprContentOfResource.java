@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.file.expressions;
+package org.skriptlang.skript_io.elements.common.effects;
 
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
@@ -11,20 +11,26 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.FileController;
+import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Resource;
+import org.skriptlang.skript_io.utility.Writable;
 
-@Name("Contents of File")
-@Description("The contents of (the text inside) a currently-open file. This will be blank if the file is empty or unreadable.")
+@Name("Contents of Resource")
+@Description("""
+    The contents of (the text inside) a resource, such as an open file.
+    This will return nothing if the resource is unreadable.""")
 @Examples({
+    "open a website:",
+    "\tbroadcast the content of the request's body",
     "open file ./test.txt:",
     "\tbroadcast the contents of file"
 })
 @Since("1.0.0")
-public class ExprContentOfFile extends SimplePropertyExpression<FileController, String> {
+public class ExprContentOfResource extends SimplePropertyExpression<Resource, String> {
     
     static {
         if (!SkriptIO.isTest())
-            register(ExprContentOfFile.class, String.class, "content[s]", "file");
+            register(ExprContentOfResource.class, String.class, "content[s]", "resource");
     }
     
     @Override
@@ -33,8 +39,8 @@ public class ExprContentOfFile extends SimplePropertyExpression<FileController, 
     }
     
     @Override
-    public @Nullable String convert(FileController controller) {
-        return controller.readAll();
+    public @Nullable String convert(Resource resource) {
+        return resource instanceof Readable readable ? readable.readAll() : null;
     }
     
     @Override
@@ -56,11 +62,13 @@ public class ExprContentOfFile extends SimplePropertyExpression<FileController, 
         if (delta == null || delta.length == 0 || delta[0] == null) return;
         if (mode == Changer.ChangeMode.SET) {
             if (!(delta[0] instanceof String content)) return;
-            final FileController[] files = this.getExpr().getArray(event);
-            for (final FileController file : files) file.write(content);
+            final Resource[] files = this.getExpr().getArray(event);
+            for (final Resource file : files)
+                if (file instanceof Writable writable) writable.write(content);
         } else {
-            final FileController[] files = this.getExpr().getArray(event);
-            for (final FileController file : files) file.clear();
+            final Resource[] files = this.getExpr().getArray(event);
+            for (final Resource file : files)
+                if (file instanceof Writable writable) writable.clear();
         }
     }
     

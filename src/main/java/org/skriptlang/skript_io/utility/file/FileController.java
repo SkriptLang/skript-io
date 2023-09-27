@@ -1,9 +1,13 @@
-package org.skriptlang.skript_io.utility;
+package org.skriptlang.skript_io.utility.file;
 
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Writable;
+import org.skriptlang.skript_io.utility.task.AppendTask;
+import org.skriptlang.skript_io.utility.task.ReadLineTask;
 
 import java.io.*;
 import java.net.URI;
@@ -122,16 +126,8 @@ public class FileController implements Closeable, Readable, Writable {
         return open == that.open && Objects.equals(file, that.file);
     }
     
-    public void write(String text) {
-        SkriptIO.queue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
-    }
-    
     public void append(String text) {
         SkriptIO.queue().queue(new AppendTask(this, text.getBytes(StandardCharsets.UTF_8)));
-    }
-    
-    public void clear() {
-        SkriptIO.queue().queue(new WriteTask(this, new byte[0]));
     }
     
     @Override
@@ -191,16 +187,6 @@ public class FileController implements Closeable, Readable, Writable {
     
     public boolean canWrite() {
         return true;
-    }
-    
-    public String readAll() {
-        if (!this.canRead()) return null;
-        try {
-            final byte[] bytes = this.acquireReader().readAllBytes();
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            return null;
-        }
     }
     
     public String getLine(int line) {

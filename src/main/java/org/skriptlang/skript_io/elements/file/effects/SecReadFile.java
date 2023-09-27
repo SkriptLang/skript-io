@@ -10,12 +10,12 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.FileController;
+import org.skriptlang.skript_io.utility.file.FileController;
 
 import java.io.File;
 import java.net.URI;
 
-import static org.skriptlang.skript_io.utility.FileController.READ;
+import static org.skriptlang.skript_io.utility.file.FileController.READ;
 
 @Name("Read File")
 @Description("""

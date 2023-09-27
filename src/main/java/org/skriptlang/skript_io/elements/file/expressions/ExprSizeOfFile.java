@@ -8,7 +8,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.FileController;
+import org.skriptlang.skript_io.utility.file.FileController;
 
 @Name("Size of File")
 @Description("The size (in bytes) of the currently-open file.")

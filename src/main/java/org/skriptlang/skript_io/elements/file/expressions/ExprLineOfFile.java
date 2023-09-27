@@ -14,7 +14,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.FileController;
+import org.skriptlang.skript_io.utility.file.FileController;
 
 @Name("Line of File")
 @Description("Reads an individual line of a file. Line indexing begins at 1. The value will be empty if the file ended or could not be read.")

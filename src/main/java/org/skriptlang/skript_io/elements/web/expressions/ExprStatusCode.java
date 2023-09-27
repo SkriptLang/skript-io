@@ -11,28 +11,34 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
-import org.skriptlang.skript_io.utility.web.WebServer;
 
-@Name("Current Website")
-@Description("The current website, in a website section.")
+@Name("Status Code")
+@Description("""
+    The status code of a web request.
+    A `200` status is OK.
+    
+    When receiving a response, this is the status of your previous request.
+    
+    When responding to a request, this must be set before data can be transferred.
+    """)
 @Examples({
     "open a website:",
-    "\tclose the current website"
+    "\tset the status code to 200 # OK",
+    "\ttransfer ./site/index.html to the response"
 })
 @Since("1.0.0")
-public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
+public class ExprStatusCode extends SimpleExpression<Number> {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprCurrentWebsite.class, WebServer.class, ExpressionType.SIMPLE,
-                "[the] [current] web[ ]site",
-                "[the] [current] web[ ]server",
-                "[the] [current] http server"
+            Skript.registerExpression(ExprStatusCode.class, Number.class, ExpressionType.SIMPLE,
+                "[the] status code"
             );
     }
     
@@ -46,14 +52,27 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
     }
     
     @Override
-    protected WebServer @NotNull [] get(@NotNull Event event) {
-        if (event instanceof VisitWebsiteEvent visit) return new WebServer[]{visit.getServer()};
-        else return new WebServer[0];
+    protected Number @NotNull [] get(@NotNull Event event) {
+        if (event instanceof VisitWebsiteEvent visit)
+            return new Number[]{visit.getStatusCode()};
+        else return new Number[0];
     }
     
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
+        if (mode == Changer.ChangeMode.SET) return CollectionUtils.array(Number.class, Integer.class, Long.class);
         return null;
+    }
+    
+    @Override
+    public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
+        if (event instanceof VisitWebsiteEvent visit) {
+            if (mode == Changer.ChangeMode.SET) {
+                if (delta == null) return;
+                if (delta.length < 1) return;
+                if (delta[0] instanceof Number number) visit.setStatusCode(number.intValue());
+            }
+        }
     }
     
     @Override
@@ -62,13 +81,13 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
     }
     
     @Override
-    public @NotNull Class<WebServer> getReturnType() {
-        return WebServer.class;
+    public @NotNull Class<Number> getReturnType() {
+        return Number.class;
     }
     
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "the website";
+        return "the status code";
     }
     
 }
