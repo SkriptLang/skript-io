@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.effects;
+package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -13,7 +13,6 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.FileController;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 
 import static org.skriptlang.skript_io.utility.FileController.READ;
@@ -50,14 +49,8 @@ public class SecReadFile extends SecAccessFile {
     protected @Nullable TriggerItem read(File file, Event event) {
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
         assert first != null;
-        try (final FileController controller = FileController.getController(file, READ)) {
-            FileController.push(event, controller);
-            TriggerItem.walk(first, event); // execute the section now
-        } catch (IOException ex) {
-            SkriptIO.error(ex);
-        } finally {
-            FileController.pop(event);
-        }
+        final FileController controller = FileController.getController(file, READ);
+        this.walk(controller, event);
         return this.walk(event, false);
     }
     
