@@ -1,0 +1,66 @@
+package org.skriptlang.skript_io.elements.effects;
+
+import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.TriggerItem;
+import org.bukkit.event.Event;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.FileController;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+
+import static org.skriptlang.skript_io.utility.FileController.READ;
+import static org.skriptlang.skript_io.utility.FileController.WRITE;
+
+@Name("Edit File")
+@Description("Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the section will not be run.")
+@Examples({
+    "edit file ./test.txt:",
+    "\tset the contents of the file to \"line 1\"",
+    "\tadd \"line 2\" to the lines of the file"
+})
+@Since("1.0.0")
+public class SecEditFile extends SecAccessFile {
+    
+    static {
+        Skript.registerSection(SecEditFile.class,
+            "(edit|open) [(a|the)] file [at] %path%"
+        );
+    }
+    
+    @Override
+    protected @Nullable TriggerItem walk(@NotNull Event event) {
+        final URI uri = pathExpression.getSingle(event);
+        if (uri == null) return this.walk(event, false);
+        final File file = SkriptIO.file(uri);
+        if (file == null) return this.walk(event, false);
+        return this.edit(file, event);
+    }
+    
+    protected @Nullable TriggerItem edit(File file, Event event) {
+        if (!file.exists() || !file.isFile()) return this.walk(event, false);
+        assert first != null;
+        try (final FileController controller = FileController.getController(file, READ | WRITE)) {
+            FileController.push(event, controller);
+            TriggerItem.walk(first, event); // execute the section now
+        } catch (IOException ex) {
+            SkriptIO.error(ex);
+        } finally {
+            FileController.pop(event);
+        }
+        return this.walk(event, false);
+    }
+    
+    @Override
+    public @NotNull String toString(@Nullable Event event, boolean debug) {
+        return "edit file " + pathExpression.toString(event, debug);
+    }
+    
+}
