@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.comparator.Comparator;
 import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.comparator.Relation;
+import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript_io.utility.FileController;
 
 import java.io.File;
@@ -22,7 +23,7 @@ public class Types {
             .user("(path|uri|url)")
             .name("Resource Path")
             .description("Represents a path to something, such as a relative file path or an internet URL.")
-            .examples("TODO") // todo
+            .examples("set {_file} to ./test.txt")
             .since("1.0.0")
             .parser(new Parser<>() {
                 
@@ -33,8 +34,9 @@ public class Types {
                 
                 @Override
                 public @Nullable URI parse(@NotNull String input, @NotNull ParseContext context) {
+                    if (input.length() < 2) return null;
+                    if (!(input.contains("/") || input.contains(File.separator))) return null;
                     if (input.contains(" ")) return null;
-                    if (!input.contains("/") && !input.contains(File.separator)) return null;
                     try {
                         return new URI(input);
                     } catch (URISyntaxException e) {
@@ -57,7 +59,7 @@ public class Types {
             .user("file")
             .name("File")
             .description("Represents a file that has been opened for access.")
-            .examples("TODO") // todo
+            .examples("broadcast the contents of the file")
             .since("1.0.0")
         );
         Comparators.registerComparator(FileController.class, FileController.class, new Comparator<>() {
@@ -84,6 +86,7 @@ public class Types {
                 return Relation.NOT_EQUAL;
             }
         });
+        Converters.registerConverter(FileController.class, URI.class, FileController::getPath);
     }
     
 }
