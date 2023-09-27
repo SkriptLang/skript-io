@@ -66,17 +66,16 @@ public class SecCreateFile extends SecAccessFile {
             throw new RuntimeException(ex);
         }
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
-        TriggerItem walk = null;
+        assert first != null;
         try (final FileController controller = FileController.getController(file, WRITE)) {
             FileController.push(event, controller);
-            walk = this.walk(event, true);
+            TriggerItem.walk(first, event); // execute the section now
         } catch (IOException ex) {
             SkriptIO.error(ex);
         } finally {
             FileController.pop(event);
-            if (walk == null) walk = this.walk(event, false);
         }
-        return walk;
+        return this.walk(event, false);
     }
     
     @Override
