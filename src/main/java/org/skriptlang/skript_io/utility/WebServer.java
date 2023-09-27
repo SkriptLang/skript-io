@@ -1,0 +1,71 @@
+package org.skriptlang.skript_io.utility;
+
+import com.sun.net.httpserver.HttpServer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript_io.SkriptIO;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+public class WebServer {
+    
+    public static final int DEFAULT_PORT = 80,
+        DEFAULT_BACKLOG = 0, MAX_DATA_LENGTH = 64_000_000; // todo config option for these?
+    protected static final Map<Integer, WebServer> servers = new HashMap<>();
+    protected final int port;
+    private final Map<URI, PostHandler> handlers;
+    private HttpServer server;
+    
+    public WebServer(int port) {
+        this.port = port;
+        this.handlers = new HashMap<>();
+    }
+    
+    public static @Nullable WebServer get(int port) {
+        return servers.get(port);
+    }
+    
+    public static @NotNull WebServer getOrCreate(int port) {
+        final WebServer current = servers.get(port);
+        if (current != null) return current;
+        final WebServer server = new WebServer(port);
+        servers.put(port, server);
+        return server;
+    }
+    
+    public void prepareIfNecessary() {
+        if (server == null) this.prepare();
+    }
+    
+    public void registerHandler(URI uri, PostHandler handler) {
+        this.handlers.put(uri, handler);
+        if (server == null) return;
+        this.server.removeContext(uri.toString());
+        this.server.createContext(uri.toString(), handler);
+    }
+    
+    public void closeHandler(URI uri) {
+        if (server == null) return;
+        this.server.removeContext(uri.toString());
+    }
+    
+    public void prepare() {
+        if (server != null) server.stop(0);
+        try {
+            this.server = HttpServer.create(new InetSocketAddress(port), 0);
+            for (final Map.Entry<URI, PostHandler> entry : handlers.entrySet()) {
+                final URI uri = entry.getKey();
+                final PostHandler handler = entry.getValue();
+                this.server.createContext(uri.toString(), handler);
+            }
+            this.server.start();
+        } catch (IOException ex) {
+            SkriptIO.error(ex);
+        }
+    }
+    
+}
