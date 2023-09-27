@@ -53,7 +53,7 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
     }
     
     @Override
-    public Class<?> [] acceptChange(Changer.@NotNull ChangeMode mode) {
+    public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
             case SET, ADD -> CollectionUtils.array(String.class);
             case RESET, DELETE -> CollectionUtils.array();
