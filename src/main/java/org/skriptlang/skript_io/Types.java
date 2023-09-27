@@ -6,6 +6,10 @@ import ch.njol.skript.lang.ParseContext;
 import ch.njol.skript.registrations.Classes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.lang.comparator.Comparator;
+import org.skriptlang.skript.lang.comparator.Comparators;
+import org.skriptlang.skript.lang.comparator.Relation;
+import org.skriptlang.skript_io.utility.FileController;
 
 import java.io.File;
 import java.net.URI;
@@ -49,7 +53,37 @@ public class Types {
                 }
             })
         );
-        
+        Classes.registerClass(new ClassInfo<>(FileController.class, "file")
+            .user("file")
+            .name("File")
+            .description("Represents a file that has been opened for access.")
+            .examples("TODO") // todo
+            .since("1.0.0")
+        );
+        Comparators.registerComparator(FileController.class, FileController.class, new Comparator<>() {
+            @Override
+            public @NotNull Relation compare(FileController o1, FileController o2) {
+                if (o1.equals(o2))
+                    return Relation.EQUAL;
+                return Relation.NOT_EQUAL;
+            }
+        });
+        Comparators.registerComparator(URI.class, URI.class, new Comparator<>() {
+            @Override
+            public @NotNull Relation compare(URI o1, URI o2) {
+                if (o1.equals(o2))
+                    return Relation.EQUAL;
+                return Relation.NOT_EQUAL;
+            }
+        });
+        Comparators.registerComparator(URI.class, FileController.class, new Comparator<>() {
+            @Override
+            public @NotNull Relation compare(URI o1, FileController o2) {
+                if (o1.equals(o2.getPath()))
+                    return Relation.EQUAL;
+                return Relation.NOT_EQUAL;
+            }
+        });
     }
     
 }
