@@ -10,6 +10,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FileController implements Closeable {
     
@@ -134,6 +135,10 @@ public class FileController implements Closeable {
     }
     
     public synchronized @NotNull InputStream acquireReader() throws IOException {
+        return this.acquireReader(true);
+    }
+    
+    public synchronized @NotNull InputStream acquireReader(boolean restart) throws IOException {
         if (this.closed) {
             SkriptIO.error("Tried to read a closed file (outside its file section).");
             throw new IOException("File closed.");
@@ -194,6 +199,13 @@ public class FileController implements Closeable {
         } catch (IOException ex) {
             return null;
         }
+    }
+    
+    public String getLine(int line) {
+        if (!this.canRead()) return null;
+        final AtomicReference<String> reference = new AtomicReference<>();
+        SkriptIO.queue().queue(new ReadLineTask(this, line, reference)).await();
+        return reference.get();
     }
     
 }
