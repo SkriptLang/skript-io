@@ -6,7 +6,9 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.*;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.ExpressionType;
+import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
@@ -37,10 +39,7 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
     
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-        final SkriptEvent event = this.getParser().getCurrentSkriptEvent();
-        if (!this.getParser().isCurrentSection(
-            SecAccessFile.class) && !(event instanceof SectionSkriptEvent && ((SectionSkriptEvent) event).isSection(
-            SecAccessFile.class))) {
+        if (!this.getParser().isCurrentSection(SecAccessFile.class)) {
             Skript.error("You can't use '" + parseResult.expr + "' outside a file access section.");
             return false;
         }
