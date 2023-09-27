@@ -12,6 +12,7 @@ import org.skriptlang.skript.lang.comparator.Relation;
 import org.skriptlang.skript.lang.converter.Converter;
 import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript_io.utility.FileController;
+import org.skriptlang.skript_io.utility.WebServer;
 
 import java.io.File;
 import java.net.URI;
@@ -75,6 +76,13 @@ public class Types {
             .name("File")
             .description("Represents a file that has been opened for access.")
             .examples("broadcast the contents of the file")
+            .since("1.0.0")
+        );
+        Classes.registerClass(new ClassInfo<>(WebServer.class, "website")
+            .user("website")
+            .name("Website")
+            .description("Represents a hosted website when receiving a request.")
+            .examples("close the current website")
             .since("1.0.0")
         );
         Comparators.registerComparator(FileController.class, FileController.class, new Comparator<>() {

@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 public class SkriptIO extends JavaPlugin {
     
+    public static final URI ROOT = URI.create("/");
     public static IOConfig config;
     public static boolean testMode;
     private static IOQueue queue;
