@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.comparator.Comparator;
 import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.comparator.Relation;
+import org.skriptlang.skript.lang.converter.Converter;
 import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript_io.utility.FileController;
 
@@ -87,6 +88,13 @@ public class Types {
             }
         });
         Converters.registerConverter(FileController.class, URI.class, FileController::getPath);
+        Converters.registerConverter(String.class, URI.class, text -> {
+            try {
+                return new URI(text);
+            } catch (URISyntaxException e) {
+                return null;
+            }
+        }, Converter.NO_RIGHT_CHAINING);
     }
     
 }
