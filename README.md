@@ -25,15 +25,11 @@ As these 'i/o' operations are delicate and at risk of memory leaks, etc. they ar
 
 The resource is accessed by opening a section. Inside that section the resource is available for editing/changing/reading/communicating, and when the section ends the resource will close and all data will be cleaned up safely.
 
-## Features
+## File
 
-### Files
-
-Skript-io has basic support for most simple file actions, including creating, deleting, editing and moving files and directories.
-
+### Conditions
 
 #### File/Directory Exists
-
 Since `1.0.0`
 
 Checks whether the given path is a file that exists.
@@ -44,8 +40,9 @@ if file ./test.txt exists:
 ```
 
 
-#### Line of File
+### Expressions
 
+#### Line of File
 Since `1.0.0`
 
 Reads an individual line of a file. Line indexing begins at 1. The value will be empty if the file ended or could not be read.
@@ -56,7 +53,6 @@ broadcast line 1 of the current file
 
 
 #### Lines of File
-
 Since `1.0.0`
 
 The lines of a currently-open file as a list of text.
@@ -70,7 +66,6 @@ open file ./test.txt:
 
 
 #### Current File
-
 Since `1.0.0`
 
 The currently-open file inside a file reading/editing section.
@@ -82,7 +77,6 @@ create a new file ./test.txt:
 
 
 #### Contents of File
-
 Since `1.0.0`
 
 The contents of (the text inside) a currently-open file. This will be blank if the file is empty or unreadable.
@@ -94,7 +88,6 @@ open file ./test.txt:
 
 
 #### Size of File
-
 Since `1.0.0`
 
 The size (in bytes) of the currently-open file.
@@ -106,7 +99,6 @@ open file ./test.txt:
 
 
 #### Files in Directory
-
 Since `1.0.0`
 
 Returns a list of (file/folder) paths in the given directory.
@@ -118,7 +110,6 @@ loop the files in ./test/:
 
 
 #### Size of File Path
-
 Since `1.0.0`
 
 The size (in bytes) of a file by path. Non-files have a size of zero.
@@ -128,8 +119,9 @@ set {_size} to the file size of ./test.txt
 ```
 
 
-#### Create File
+### Effects
 
+#### Create File
 Since `1.0.0`
 
 Creates a new file at a path. If the file already exists or was successfully created, opens an editing section.
@@ -141,7 +133,6 @@ create file ./test.txt:
 
 
 #### Delete File/Directory
-
 Since `1.0.0`
 
 Deletes the folder or file at the given path.
@@ -154,7 +145,6 @@ delete the file at ./config.txt
 
 
 #### Edit File
-
 Since `1.0.0`
 
 Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the section will not be run.
@@ -167,7 +157,6 @@ edit file ./test.txt:
 
 
 #### Create Directory
-
 Since `1.0.0`
 
 Creates a new folder at the given path, if one does not exist.
@@ -178,7 +167,6 @@ create a new folder ./test/
 
 
 #### Read File
-
 Since `1.0.0`
 
 Opens a file at a path only for reading.
@@ -193,7 +181,6 @@ read file ./test.txt:
 
 
 #### Rename File
-
 Since `1.0.0`
 
 Renames a file or directory. To rename a directory please use the 'move' effect.
@@ -204,7 +191,6 @@ rename file ./example/test.txt to "blob.txt"
 
 
 #### Move File/Directory
-
 Since `1.0.0`
 
 Moves a file or folder to a target position, overwriting the previous file.
@@ -218,5 +204,24 @@ move file ./test.txt to ./blob.txt
 move file ./test.txt into ./config/
 move folder ./example/ to ./config/
 move folder ./example/ into ./config/
+```
+
+
+## Web
+
+## Common
+
+### Effects
+
+#### Transfer
+Since `1.0.0`
+
+Safely copies data from one (readable) resource to another (writable) resource.
+Useful for responding to a web request with a file (or copying one file into another).
+
+
+```sk
+transfer {input} to {output}
+transfer ./test.html to the response
 ```
 
