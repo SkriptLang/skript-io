@@ -35,9 +35,9 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
     
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-        SkriptEvent skriptEvent = this.getParser().getCurrentSkriptEvent();
+        final SkriptEvent event = this.getParser().getCurrentSkriptEvent();
         if (!this.getParser().isCurrentSection(
-            SecAccessFile.class) && !(skriptEvent instanceof SectionSkriptEvent && ((SectionSkriptEvent) skriptEvent).isSection(
+            SecAccessFile.class) && !(event instanceof SectionSkriptEvent && ((SectionSkriptEvent) event).isSection(
             SecAccessFile.class))) {
             Skript.error("You can't use '" + parseResult.expr + "' outside a file access section.");
             return false;
