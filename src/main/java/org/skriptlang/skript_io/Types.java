@@ -56,6 +56,20 @@ public class Types {
                 }
             })
         );
+        Classes.registerClass(new ClassInfo<>(FileController.class, "readable")
+            .user("readable")
+            .name("Readable Resource")
+            .description("Represents a resource than can be read as text (e.g. a file, a webpage).")
+            .examples("TODO") // todo
+            .since("1.0.0")
+        );
+        Classes.registerClass(new ClassInfo<>(FileController.class, "writable")
+            .user("writable")
+            .name("Writable Resource")
+            .description("Represents a resource than can have text written to it (e.g. a file, a response).")
+            .examples("TODO") // todo
+            .since("1.0.0")
+        );
         Classes.registerClass(new ClassInfo<>(FileController.class, "file")
             .user("file")
             .name("File")

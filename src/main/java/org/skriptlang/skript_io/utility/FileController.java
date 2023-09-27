@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FileController implements Closeable {
+public class FileController implements Closeable, Readable, Writable {
     
     public static final int READ = 0x0001, WRITE = 0x0010;
     
@@ -134,6 +134,7 @@ public class FileController implements Closeable {
         SkriptIO.queue().queue(new WriteTask(this, new byte[0]));
     }
     
+    @Override
     public synchronized @NotNull InputStream acquireReader() throws IOException {
         return this.acquireReader(true);
     }
@@ -154,6 +155,7 @@ public class FileController implements Closeable {
         return input = new FileInputStream(file);
     }
     
+    @Override
     public @NotNull OutputStream acquireWriter() throws IOException {
         return this.acquireWriter(false);
     }
