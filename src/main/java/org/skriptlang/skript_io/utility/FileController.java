@@ -22,6 +22,7 @@ public class FileController implements Closeable {
     protected volatile boolean open;
     private FileOutputStream output;
     private FileInputStream input;
+    private boolean appending;
     
     FileController(File file) {
         this.file = file;
@@ -83,6 +84,7 @@ public class FileController implements Closeable {
     @Override
     public void close() throws IOException {
         try {
+            this.appending = false;
             if (output != null) try {
                 this.output.flush();
                 this.output.close();
@@ -119,7 +121,7 @@ public class FileController implements Closeable {
     }
     
     public void append(String text) {
-    
+        SkriptIO.queue().queue(new AppendTask(this, text.getBytes(StandardCharsets.UTF_8)));
     }
     
     public void clear() {
@@ -127,6 +129,7 @@ public class FileController implements Closeable {
     }
     
     public synchronized @NotNull InputStream acquireReader() throws IOException {
+        this.appending = false;
         if (output != null) try {
             this.output.flush();
             this.output.close();
@@ -137,14 +140,25 @@ public class FileController implements Closeable {
         return input = new FileInputStream(file);
     }
     
-    public synchronized @NotNull OutputStream acquireWriter() throws IOException {
+    public @NotNull OutputStream acquireWriter() throws IOException {
+        return this.acquireWriter(false);
+    }
+    
+    public synchronized @NotNull OutputStream acquireWriter(boolean append) throws IOException {
         if (input != null) try {
             this.input.close();
         } finally {
             this.input = null;
         }
-        if (output != null) return output;
-        return output = new FileOutputStream(file);
+        if ((appending != append) && output != null) try {
+            this.output.flush();
+            this.output.close();
+        } finally {
+            this.output = null;
+        }
+        else if (output != null) return output;
+        this.appending = append;
+        return output = new FileOutputStream(file, append);
     }
     
     public URI getPath() {
@@ -157,6 +171,16 @@ public class FileController implements Closeable {
     
     public boolean canWrite() {
         return true;
+    }
+    
+    public String readAll() {
+        if (!this.canRead()) return null;
+        try {
+            final byte[] bytes = this.acquireReader().readAllBytes();
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            return null;
+        }
     }
     
 }
