@@ -47,4 +47,9 @@ public class ExprContentOfFile extends SimplePropertyExpression<FileController, 
         for (final FileController file : files) file.write(content);
     }
     
+    @Override
+    public boolean isSingle() {
+        return true;
+    }
+    
 }
