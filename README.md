@@ -232,7 +232,7 @@ When receiving a request, this should indicate the format of the incoming data.
 Not all web requests will have data attached.
 
 ```sk
-open a web request to http://localhost:3000
+open a web request to http://localhost:3000:
 	set the request's content-type
 ```
 
