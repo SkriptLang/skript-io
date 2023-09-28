@@ -16,7 +16,9 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
+import org.skriptlang.skript_io.utility.web.IncomingResponse;
 
 @Name("Status Code")
 @Description("""
@@ -44,18 +46,22 @@ public class ExprStatusCode extends SimpleExpression<Number> {
     
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
-        if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
-            Skript.error("You can't use '" + result.expr + "' outside a website section.");
-            return false;
+        if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)
+            || this.getParser().isCurrentSection(SecAcceptResponse.class)
+        ) {
+            return true;
         }
-        return true;
+        Skript.error("You can't use '" + result.expr + "' outside a website section.");
+        return false;
     }
     
     @Override
     protected Number @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
             return new Number[]{visit.getStatusCode()};
-        else return new Number[0];
+        else if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse response) {
+            return new Number[]{response.statusCode()};
+        } else return new Number[0];
     }
     
     @Override
