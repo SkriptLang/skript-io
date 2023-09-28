@@ -32,6 +32,8 @@ The resource is accessed by opening a section. Inside that section the resource 
 editing/changing/reading/communicating, and when the section ends the resource will close and all data will be cleaned
 up safely.
 
+[//]: # (Auto-generated documentation starts here.)
+
 ## File
 
 ### Conditions
@@ -217,6 +219,21 @@ The address a request was made from, in IP format.
 ```sk
 open a website:
 	broadcast the request's source
+```
+
+#### Content Type of Request
+
+Since `1.0.0`
+
+The data format a web request will use, such as "application/json" or "text/html".
+
+When making a request you may have to use a specific content type (and format your data accordingly!)
+When receiving a request, this should indicate the format of the incoming data.
+Not all web requests will have data attached.
+
+```sk
+open a web request to http://localhost:3000
+	set the request's content-type
 ```
 
 #### Incoming Request
