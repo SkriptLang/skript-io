@@ -32,15 +32,15 @@ public abstract class SecAccessFile extends EffectSection {
     }
     
     protected void walk(FileController controller, Event event) {
-        assert first != null;
+        if (first == null) return;
         FileController.push(event, controller);
         try {
             TriggerItem.walk(first, event); // execute the section now
         } catch (Exception ex) {
             SkriptIO.error(ex);
         } finally {
-            SkriptIO.queue().queue(new CloseTask(controller));
             FileController.pop(event);
+            SkriptIO.queue().queue(new CloseTask(controller));
         }
     }
     

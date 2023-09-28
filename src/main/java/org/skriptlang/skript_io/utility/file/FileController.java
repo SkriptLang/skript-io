@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.AppendTask;
 import org.skriptlang.skript_io.utility.task.ReadLineTask;
@@ -16,7 +17,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FileController implements Closeable, Readable, Writable {
+public class FileController implements Closeable, Resource, Readable, Writable {
     
     public static final int READ = 0x0001, WRITE = 0x0010;
     
@@ -57,11 +58,6 @@ public class FileController implements Closeable, Readable, Writable {
     }
     
     public static FileController getController(@NotNull File file, int mode) {
-        if ((mode & READ) == READ || !file.canWrite()) load:{
-            final long size = FileController.sizeOf(file);
-            if (size > Math.min(Runtime.getRuntime().freeMemory(), 500_000_000)) break load;
-            return new ReadOnlyFileController(file, (int) size);
-        }
         synchronized (handlers) {
             final FileController current = handlers.get(file), other;
             if (current != null && current.open) return current;
@@ -131,11 +127,11 @@ public class FileController implements Closeable, Readable, Writable {
     }
     
     @Override
-    public synchronized @NotNull InputStream acquireReader() throws IOException {
+    public @NotNull InputStream acquireReader() throws IOException {
         return this.acquireReader(true);
     }
     
-    public synchronized @NotNull InputStream acquireReader(boolean restart) throws IOException {
+    public @NotNull InputStream acquireReader(boolean restart) throws IOException {
         if (this.closed) {
             SkriptIO.error("Tried to read a closed file (outside its file section).");
             throw new IOException("File closed.");
@@ -147,7 +143,7 @@ public class FileController implements Closeable, Readable, Writable {
         } finally {
             this.output = null;
         }
-        if (input != null) return input;
+        if (input != null && !restart) return input;
         return input = new FileInputStream(file);
     }
     
@@ -156,7 +152,7 @@ public class FileController implements Closeable, Readable, Writable {
         return this.acquireWriter(false);
     }
     
-    public synchronized @NotNull OutputStream acquireWriter(boolean append) throws IOException {
+    public @NotNull OutputStream acquireWriter(boolean append) throws IOException {
         if (this.closed) {
             SkriptIO.error("Tried to write to a closed file (outside its file section).");
             throw new IOException("File closed.");

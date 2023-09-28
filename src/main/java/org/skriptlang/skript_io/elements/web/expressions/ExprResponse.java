@@ -19,6 +19,7 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
 import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
+import org.skriptlang.skript_io.utility.DummyOutputStream;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
@@ -26,8 +27,6 @@ import org.skriptlang.skript_io.utility.task.TransferTask;
 import org.skriptlang.skript_io.utility.task.WriteTask;
 import org.skriptlang.skript_io.utility.web.IncomingResponse;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -74,10 +73,10 @@ public class ExprResponse extends SimpleExpression<Resource> {
             return new Resource[]{
                 new Writable() {
                     @Override
-                    public @NotNull OutputStream acquireWriter() throws IOException {
+                    public @NotNull OutputStream acquireWriter() {
                         if (!visit.isStatusCodeSet()) {
                             SkriptIO.error("Tried to send data before setting the status code.");
-                            return new ByteArrayOutputStream();
+                            return DummyOutputStream.INSTANCE;
                         }
                         return visit.getExchange().getResponseBody();
                     }

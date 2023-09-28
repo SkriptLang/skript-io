@@ -11,8 +11,11 @@ import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.comparator.Relation;
 import org.skriptlang.skript.lang.converter.Converter;
 import org.skriptlang.skript.lang.converter.Converters;
+import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Resource;
+import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.file.FileController;
-import org.skriptlang.skript_io.utility.web.IncomingRequest;
+import org.skriptlang.skript_io.utility.web.Request;
 import org.skriptlang.skript_io.utility.web.WebServer;
 
 import java.io.File;
@@ -58,21 +61,21 @@ public class Types {
                 }
             })
         );
-        Classes.registerClass(new ClassInfo<>(FileController.class, "readable")
+        Classes.registerClass(new ClassInfo<>(Readable.class, "readable")
             .user("readable[s]")
             .name("Readable Resource")
             .description("Represents a resource than can be read as text (e.g. a file, a webpage).")
             .examples("transfer the request to the current file")
             .since("1.0.0")
         );
-        Classes.registerClass(new ClassInfo<>(FileController.class, "writable")
+        Classes.registerClass(new ClassInfo<>(Writable.class, "writable")
             .user("writable[s]")
             .name("Writable Resource")
             .description("Represents a resource than can have text written to it (e.g. a file, a response).")
             .examples("transfer {text} to the response")
             .since("1.0.0")
         );
-        Classes.registerClass(new ClassInfo<>(IncomingRequest.class, "resource")
+        Classes.registerClass(new ClassInfo<>(Resource.class, "resource")
             .user("resource[s]")
             .name("Resource")
             .description("Represents a non-specific kind of i/o resource, such as a file, a request, etc.")
@@ -93,7 +96,7 @@ public class Types {
             .examples("close the current website")
             .since("1.0.0")
         );
-        Classes.registerClass(new ClassInfo<>(IncomingRequest.class, "request")
+        Classes.registerClass(new ClassInfo<>(Request.class, "request")
             .user("[web] request[s]")
             .name("Web Request")
             .description("Represents an incoming website request (a browser asking for a page or data)," +

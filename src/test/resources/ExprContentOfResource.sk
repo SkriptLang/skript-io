@@ -1,0 +1,13 @@
+
+on script load:
+    broadcast "ExprContentOfResource"
+    set {_text} to ""
+    create file ./test/ExprContentOfResource.txt:
+        add "test" to the file
+    read file ./test/ExprContentOfResource.txt:
+        set {_text} to the text content of the file
+    if {_text} is "test":
+        broadcast "true"
+    else:
+        broadcast "false: content '%{_text}%' was not read out correctly"
+    delete file ./test/ExprContentOfResource.txt

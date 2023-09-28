@@ -14,9 +14,9 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.elements.file.effects.EffMoveFile;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Writable;
+import org.skriptlang.skript_io.utility.task.TransferTask;
 
 import java.io.*;
 import java.net.URI;
@@ -36,7 +36,7 @@ public class EffTransfer extends Effect {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerEffect(EffMoveFile.class, "transfer %readable% [in]to %writable%",
+            Skript.registerEffect(EffTransfer.class, "transfer %readable% [in]to %writable%",
                 "transfer %path% [in]to %writable%");
     }
     
@@ -62,6 +62,7 @@ public class EffTransfer extends Effect {
         if (path) {
             final File file = SkriptIO.file(pathExpression.getSingle(event));
             if (file == null || !file.isFile()) return;
+            SkriptIO.queue().queue(TransferTask.forFile(file, target));
             SkriptIO.queue().queue(new DataTask() {
                 @Override
                 public void execute() throws IOException {
@@ -75,12 +76,7 @@ public class EffTransfer extends Effect {
         }
         final Readable source = sourceExpression.getSingle(event);
         if (source == null) return;
-        SkriptIO.queue().queue(new DataTask() {
-            @Override
-            public void execute() throws IOException {
-                source.acquireReader().transferTo(target.acquireWriter());
-            }
-        });
+        SkriptIO.queue().queue(new TransferTask(target, source));
     }
     
     @Override

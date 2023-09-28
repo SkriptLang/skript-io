@@ -1,14 +1,21 @@
 
 on script load:
+    broadcast "CondFileExists"
+    create file ./test/CondFileExists.txt
+    if file ./test/CondFileExists.txt exists:
+        broadcast "true"
+    else:
+        broadcast "false: created file does not exist"
     if file ./server.jar exists:
         broadcast "true"
     else:
-        broadcast "false"
+        broadcast "false: server file does not exist"
     if directory ./plugins/ exists:
         broadcast "true"
     else:
-        broadcast "false"
+        broadcast "false: plugin directory does not exist"
     if directory ./beans/ does not exist:
         broadcast "true"
     else:
-        broadcast "false"
+        broadcast "false: beans directory exists???"
+    delete file ./test/CondFileExists.txt

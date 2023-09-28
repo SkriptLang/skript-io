@@ -9,6 +9,7 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
+import mx.kenzie.clockwork.io.DataTask;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,17 +48,22 @@ public class EffDeleteFile extends Effect {
         if (uri == null) return;
         final File file = SkriptIO.file(uri);
         if (file == null) return;
-        if (!file.exists()) return;
-        if (folder && !file.isDirectory()) return;
-        else if (!folder && !file.isFile()) return;
-        if (folder) {
-            if (!file.isDirectory()) return;
-            if (recursive) this.emptyDirectory(file);
-        } else {
-            if (!file.isFile()) return;
-        }
-        final boolean result = file.delete();
-        assert result : "File '" + file + "' was not deleted.";
+        SkriptIO.queue().queue(new DataTask() {
+            @Override
+            public void execute() {
+                if (!file.exists()) return;
+                if (folder && !file.isDirectory()) return;
+                else if (!folder && !file.isFile()) return;
+                if (folder) {
+                    if (!file.isDirectory()) return;
+                    if (recursive) emptyDirectory(file);
+                } else {
+                    if (!file.isFile()) return;
+                }
+                final boolean result = file.delete();
+                assert result : "File '" + file + "' was not deleted.";
+            }
+        });
     }
     
     protected void emptyDirectory(File file) {

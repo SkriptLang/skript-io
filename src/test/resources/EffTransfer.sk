@@ -1,0 +1,20 @@
+
+on script load:
+    broadcast "EffTransfer"
+    set {_text} to ""
+    create file ./test/EffTransfer.txt:
+        add "test" to the file
+    if file ./test/EffTransfer.txt does not exist:
+        broadcast "false: file 1 was not created"
+    create file ./test/EffTransfer2.txt:
+        transfer ./test/EffTransfer.txt to the file
+    if file ./test/EffTransfer2.txt does not exist:
+        broadcast "false: file 2 was not created"
+    edit file ./test/EffTransfer2.txt:
+        set {_text} to the text content of the file
+    if {_text} is "test":
+        broadcast "true"
+    else:
+        broadcast "false: text '%{_text}%' was not correctly read out of file"
+    delete file ./test/EffTransfer.txt
+    delete file ./test/EffTransfer2.txt

@@ -30,7 +30,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, St
     
     static {
         if (!SkriptIO.isTest())
-            register(ExprContentOfResource.class, String.class, "content[s]", "resource");
+            register(ExprContentOfResource.class, String.class, "[text] content[s]", "resource");
     }
     
     @Override

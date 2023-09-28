@@ -17,9 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.file.effects.SecAccessFile;
+import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.file.FileController;
-
-import java.net.URI;
 
 @Name("Current File")
 @Description("The currently-open file inside a file reading/editing section.")
@@ -28,17 +27,17 @@ import java.net.URI;
     "\tadd \"hello\" to the file"
 })
 @Since("1.0.0")
-public class ExprCurrentFile extends SimpleExpression<Object> {
+public class ExprCurrentFile extends SimpleExpression<Resource> {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprCurrentFile.class, Object.class, ExpressionType.SIMPLE,
+            Skript.registerExpression(ExprCurrentFile.class, Resource.class, ExpressionType.SIMPLE,
                 "[the] [(current|open)] file"
             );
     }
     
     @Override
-    public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
         if (!this.getParser().isCurrentSection(SecAccessFile.class)) {
             Skript.error("You can't use '" + parseResult.expr + "' outside a file access section.");
             return false;
@@ -47,10 +46,10 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
     }
     
     @Override
-    protected URI @NotNull [] get(@NotNull Event event) {
+    protected FileController @NotNull [] get(@NotNull Event event) {
         final FileController controller = FileController.currentSection(event);
-        if (controller == null) return new URI[0];
-        return new URI[]{controller.getPath()};
+        if (controller == null) return new FileController[0];
+        return new FileController[]{controller};
     }
     
     @Override
@@ -91,8 +90,8 @@ public class ExprCurrentFile extends SimpleExpression<Object> {
     }
     
     @Override
-    public @NotNull Class<URI> getReturnType() {
-        return URI.class;
+    public @NotNull Class<FileController> getReturnType() {
+        return FileController.class;
     }
     
     @Override

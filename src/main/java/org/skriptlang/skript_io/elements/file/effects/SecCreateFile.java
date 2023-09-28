@@ -32,12 +32,12 @@ public class SecCreateFile extends SecEditFile {
     }
     
     @Override
-    protected @Nullable TriggerItem walk(Event event) {
+    protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
         if (uri == null) return this.walk(event, false);
         final File file = SkriptIO.file(uri);
         if (file == null) return this.walk(event, false);
-        if (!file.isFile()) return this.walk(event, false);
+        if (file.isDirectory()) return this.walk(event, false);
         else if (!file.exists()) try {
             if (file.getParentFile() != null) file.getParentFile().mkdirs();
             file.createNewFile();
