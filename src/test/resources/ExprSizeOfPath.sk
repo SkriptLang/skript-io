@@ -1,0 +1,16 @@
+
+on script load:
+    broadcast "ExprSizeOfPath"
+    if file ./test/ExprSizeOfPath.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/ExprSizeOfPath.txt:
+        set the text content of the file to "test blob thing"
+    set {_size} to 0
+    set {_size} to the size of ./test/ExprSizeOfPath.txt
+    if {_size} is greater than 0:
+        broadcast "true"
+    else:
+        broadcast "false: file size was %{_size}%"
+    delete file ./test/ExprSizeOfPath.txt
+    if file ./test/ExprSizeOfPath.txt exists:
+        broadcast "false: file not deleted"

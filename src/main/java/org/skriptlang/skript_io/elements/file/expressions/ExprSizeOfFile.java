@@ -5,6 +5,9 @@ import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.util.Kleenean;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
@@ -22,6 +25,12 @@ public class ExprSizeOfFile extends SimplePropertyExpression<FileController, Num
     static {
         if (!SkriptIO.isTest())
             register(ExprSizeOfFile.class, Number.class, "size", "file");
+    }
+    
+    @Override
+    public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+        if (!(exprs[0] instanceof ExprCurrentFile)) return false;
+        return super.init(exprs, matchedPattern, isDelayed, parseResult);
     }
     
     @Override

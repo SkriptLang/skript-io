@@ -76,6 +76,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
     
     public static long sizeOf(File file) {
         try {
+            if (file == null) return 0;
             return Files.size(file.toPath());
         } catch (IOException ex) {
             return -1;
