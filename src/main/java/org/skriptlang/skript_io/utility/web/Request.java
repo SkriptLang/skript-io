@@ -12,9 +12,15 @@ public interface Request {
     
     String getSource();
     
-    String setMethod();
+    String getMethod();
     
     default void setMethod(String mode) {
+    
+    }
+    
+    String getContentType();
+    
+    default void setContentType(String type) {
     
     }
     

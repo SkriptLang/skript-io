@@ -22,13 +22,33 @@ public record IncomingRequest(HttpExchange exchange) implements Readable, Closea
     }
     
     @Override
+    public void setPath(URI path) {
+        Request.super.setPath(path);
+    }
+    
+    @Override
     public String getSource() {
         return exchange.getRemoteAddress().getHostString();
     }
     
     @Override
-    public String setMethod() {
+    public String getMethod() {
         return exchange.getRequestMethod();
+    }
+    
+    @Override
+    public void setMethod(String mode) {
+        Request.super.setMethod(mode);
+    }
+    
+    @Override
+    public String getContentType() {
+        return exchange.getRequestHeaders().getFirst("Content-Type");
+    }
+    
+    @Override
+    public void setContentType(String type) {
+        Request.super.setContentType(type);
     }
     
     @Override

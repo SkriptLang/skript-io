@@ -39,7 +39,7 @@ public class ExprMethodOfRequest extends SimplePropertyExpression<Request, Strin
     
     @Override
     public @Nullable String convert(Request request) {
-        return request.setMethod();
+        return request.getMethod();
     }
     
     @Override
