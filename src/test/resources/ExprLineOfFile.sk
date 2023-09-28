@@ -24,7 +24,7 @@ on script load:
     if {_text::2} is "test":
         broadcast "true"
     else:
-        broadcast "false: file line 2 was %{_text::1}%"
+        broadcast "false: file line 2 was %{_text::2}%"
     delete file ./test/ExprLineOfFile.txt
     if file ./test/ExprLineOfFile.txt exists:
         broadcast "false: file not deleted"
