@@ -7,6 +7,7 @@ import ch.njol.skript.doc.Since;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -36,7 +37,16 @@ public class ExtractDocsInfoTest {
                 elements.add(new Header(type));
                 for (final File listFile : Objects.requireNonNull(sub.listFiles())) {
                     final String name = listFile.getName();
+                    final String stub = name.substring(0, name.indexOf('.'));
                     elements.add(new Element(basePackage, folder, type, name.substring(0, name.indexOf('.'))));
+                    final File test = new File("src/test/resources/" + stub + ".sk");
+                    if (!test.exists()) {
+                        try {
+                            test.createNewFile();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
                 }
             }
         }

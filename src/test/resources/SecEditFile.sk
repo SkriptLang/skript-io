@@ -1,0 +1,27 @@
+
+on script load:
+    broadcast "SecEditFile"
+    if file ./test/SecEditFile.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/SecEditFile.txt
+    if file ./test/SecEditFile.txt does not exist:
+        broadcast "false: file not created"
+    edit file ./test/SecEditFile.txt:
+        add "blob" to the file
+    set {_text} to ""
+    edit file ./test/SecEditFile.txt:
+        set {_text} to the text content of the file
+    if {_text} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file not edited"
+    set {_text} to ""
+    read file ./test/SecEditFile.txt:
+        set {_text} to the text content of the file
+    if {_text} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file not edited"
+    delete file ./test/SecEditFile.txt
+    if file ./test/SecEditFile.txt exists:
+        broadcast "false: file not deleted"

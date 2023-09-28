@@ -1,0 +1,39 @@
+
+on script load:
+    broadcast "SecCreateFile"
+    if folder ./test/SecCreateFile/ exists:
+        broadcast "false: directory already exists (not cleaned up)"
+    create folder ./test/SecCreateFile/
+    if folder ./test/SecCreateFile/ does not exist:
+        broadcast "false: directory not created"
+    else:
+        broadcast "true"
+    delete directory ./test/SecCreateFile/
+    if directory ./test/SecCreateFile/ exists:
+        broadcast "false: folder not deleted"
+    if file ./test/SecCreateFile.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/SecCreateFile.txt
+    if file ./test/SecCreateFile.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    delete file ./test/SecCreateFile.txt
+    if file ./test/SecCreateFile.txt exists:
+        broadcast "false: file not deleted"
+    create file ./test/SecCreateFile.txt:
+        add "blob" to the file
+    if file ./test/SecCreateFile.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    set {_text} to ""
+    read file ./test/SecCreateFile.txt:
+        set {_text} to the text content of the file
+    if {_text} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file not edited"
+    delete file ./test/SecCreateFile.txt
+    if file ./test/SecCreateFile.txt exists:
+        broadcast "false: file not deleted"

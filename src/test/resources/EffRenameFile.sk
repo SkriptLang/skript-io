@@ -1,0 +1,20 @@
+
+on script load:
+    broadcast "EffRenameFile"
+    if file ./test/EffRenameFile2.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/EffRenameFile.txt
+    if file ./test/EffRenameFile.txt does not exist:
+        broadcast "false: file not created"
+    rename file ./test/EffRenameFile.txt to "EffRenameFile2.txt"
+    if file ./test/EffRenameFile.txt exists:
+        broadcast "false: old file was not removed"
+    else:
+        broadcast "true"
+    if file ./test/EffRenameFile2.txt does not exist:
+        broadcast "false: new file was not created"
+    else:
+        broadcast "true"
+    delete file ./test/EffRenameFile2.txt
+    if file ./test/EffRenameFile2.txt exists:
+        broadcast "false: file not cleaned up"

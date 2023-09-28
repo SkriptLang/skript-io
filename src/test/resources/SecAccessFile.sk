@@ -1,0 +1,29 @@
+
+on script load:
+    broadcast "SecAccessFile"
+    if file ./test/SecAccessFile.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/SecAccessFile.txt
+    if file ./test/SecAccessFile.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    delete file ./test/SecAccessFile.txt
+    if file ./test/SecAccessFile.txt exists:
+        broadcast "false: file not deleted"
+    create file ./test/SecAccessFile.txt:
+        add "blob" to the file
+    if file ./test/SecAccessFile.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    set {_text} to ""
+    read file ./test/SecAccessFile.txt:
+        set {_text} to the text content of the file
+    if {_text} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file not edited"
+    delete file ./test/SecAccessFile.txt
+    if file ./test/SecAccessFile.txt exists:
+        broadcast "false: file not deleted"
