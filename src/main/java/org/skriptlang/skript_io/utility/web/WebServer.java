@@ -62,6 +62,7 @@ public class WebServer {
                 final PostHandler handler = entry.getValue();
                 this.server.createContext(uri.toString(), handler);
             }
+            this.server.setExecutor(null);
             this.server.start();
         } catch (IOException ex) {
             SkriptIO.error(ex);
