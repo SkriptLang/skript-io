@@ -15,8 +15,10 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.web.IncomingRequest;
+import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 import org.skriptlang.skript_io.utility.web.Request;
 
 @Name("Incoming Request")
@@ -44,12 +46,17 @@ public class ExprRequest extends SimpleExpression<Request> {
             );
     }
     
+    private boolean outgoing;
+    
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
-        if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) { // todo sending
-            Skript.error("You can't use '" + result.expr + "' outside a website section.");
-            return false;
+        if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
+            return true;
+        } else if (this.getParser().isCurrentSection(SecOpenRequest.class)) {
+            this.outgoing = true;
+            return true;
         }
+        Skript.error("You can't use '" + result.expr + "' outside a website section.");
         return true;
     }
     
@@ -57,7 +64,11 @@ public class ExprRequest extends SimpleExpression<Request> {
     protected Request @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
             return new Request[]{new IncomingRequest(visit.getExchange())};
-        else return new Request[0];
+        if (outgoing) {
+            final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
+            if (request != null) return new Request[]{request};
+        }
+        return new Request[0];
     }
     
     @Override
