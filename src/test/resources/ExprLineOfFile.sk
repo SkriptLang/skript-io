@@ -1,0 +1,30 @@
+
+on script load:
+    broadcast "ExprLineOfFile"
+    if file ./test/ExprLineOfFile.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/ExprLineOfFile.txt
+    if file ./test/ExprLineOfFile.txt does not exist:
+        broadcast "false: file not created"
+    edit file ./test/ExprLineOfFile.txt:
+        add "blob" to the file
+        add newline to the file
+        add "test" to the file
+    read file ./test/ExprLineOfFile.txt:
+        set {_text::1} to line 1 of the file
+        set {_text::2} to line 2 of the file
+    if size of {_text::*} is 2:
+        broadcast "true"
+    else:
+        broadcast "false: lines size was wrong"
+    if {_text::1} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file line 1 was %{_text::1}%"
+    if {_text::2} is "test":
+        broadcast "true"
+    else:
+        broadcast "false: file line 2 was %{_text::1}%"
+    delete file ./test/ExprLineOfFile.txt
+    if file ./test/ExprLineOfFile.txt exists:
+        broadcast "false: file not deleted"

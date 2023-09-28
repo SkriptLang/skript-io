@@ -1,0 +1,20 @@
+
+on script load:
+    broadcast "SecReadFile"
+    if file ./test/SecReadFile.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/SecReadFile.txt
+    if file ./test/SecReadFile.txt does not exist:
+        broadcast "false: file not created"
+    edit file ./test/SecReadFile.txt:
+        add "blob" to the file
+    set {_text} to ""
+    read file ./test/SecReadFile.txt:
+        set {_text} to the text content of the file
+    if {_text} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file not edited"
+    delete file ./test/SecReadFile.txt
+    if file ./test/SecReadFile.txt exists:
+        broadcast "false: file not deleted"

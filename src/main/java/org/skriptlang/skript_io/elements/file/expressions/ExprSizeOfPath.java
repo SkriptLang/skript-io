@@ -17,15 +17,12 @@ import java.net.URI;
 
 @Name("Size of Path")
 @Description("The size (in bytes) of a file by path. Non-files have a size of zero.")
-@Examples({
-    "set {_size} to the size of ./test.txt"
-})
+@Examples({"set {_size} to the size of ./test.txt"})
 @Since("1.0.0")
 public class ExprSizeOfPath extends SimplePropertyExpression<URI, Number> {
     
     static {
-        if (!SkriptIO.isTest())
-            register(ExprSizeOfPath.class, Number.class, "[file] size", "path");
+        if (!SkriptIO.isTest()) register(ExprSizeOfPath.class, Number.class, "[file] size", "path");
     }
     
     @Override
