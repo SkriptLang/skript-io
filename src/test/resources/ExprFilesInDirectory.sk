@@ -1,0 +1,28 @@
+
+on script load:
+    broadcast "ExprFilesInDirectory"
+    if folder ./test/ExprFilesInDirectory/ exists:
+        broadcast "false: directory already exists (not cleaned up)"
+    create folder ./test/ExprFilesInDirectory/
+    create file ./test/ExprFilesInDirectory/ExprFilesInDirectory.txt
+    create file ./test/ExprFilesInDirectory/ExprFilesInDirectory2.txt
+    if folder ./test/ExprFilesInDirectory/ does not exist:
+        broadcast "false: directory not created"
+    if file ./test/ExprFilesInDirectory/ExprFilesInDirectory.txt does not exist:
+        broadcast "false: file not created"
+    if file ./test/ExprFilesInDirectory/ExprFilesInDirectory2.txt does not exist:
+        broadcast "false: file not created"
+    set {_files::*} to files in ./test/ExprFilesInDirectory/
+    if size of {_files::*} is 2:
+        broadcast "true"
+    else:
+        broadcast "false: number of files was wrong"
+    loop the files in ./test/ExprFilesInDirectory/:
+        delete the file at loop-value
+    if file ./test/ExprFilesInDirectory/ExprFilesInDirectory.txt exists:
+        broadcast "false: file 1 not deleted"
+    if file ./test/ExprFilesInDirectory/ExprFilesInDirectory2.txt exists:
+        broadcast "false: file 2 not deleted"
+    recursively delete directory ./test/ExprFilesInDirectory/
+    if folder ./test/ExprFilesInDirectory/ exists:
+        broadcast "false: directory not cleaned up"
