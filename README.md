@@ -310,6 +310,33 @@ open a website:
 
 ### Effects
 
+#### Expect Response
+
+Since `1.0.0`
+
+Notifies a connection that you expect a response (and waits for it).
+
+```sk
+open a request to https://skriptlang.org:
+	accept the response:
+		broadcast the response's content
+```
+
+#### Send Web Request
+
+Since `1.0.0`
+
+Prepares an HTTP request to be sent to a website URL. This may have content written to it.
+
+Once the request has been dispatched, the response can be read.
+
+```sk
+open a request to https://skriptlang.org:
+	set the request's method to "GET"
+	await the response:
+		broadcast the response's content
+```
+
 #### Open Website
 
 Since `1.0.0`
