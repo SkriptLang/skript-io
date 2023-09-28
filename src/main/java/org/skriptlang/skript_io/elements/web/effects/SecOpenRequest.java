@@ -35,8 +35,8 @@ import java.util.WeakHashMap;
 @Examples({
     "open a request to https://skriptlang.org:",
     "\tset the request's method to \"GET\"",
-    "\tawait the response",
-    "\tbroadcast the response's content"
+    "\tawait the response:",
+    "\t\tbroadcast the response's content"
 })
 @Since("1.0.0")
 public class SecOpenRequest extends EffectSection {
