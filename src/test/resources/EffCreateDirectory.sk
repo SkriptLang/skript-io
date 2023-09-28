@@ -1,0 +1,13 @@
+
+on script load:
+    broadcast "EffCreateDirectory"
+    if folder ./test/EffCreateDirectory/ exists:
+        broadcast "false: directory already exists (not cleaned up)"
+    create folder ./test/EffCreateDirectory/
+    if folder ./test/EffCreateDirectory/ exists:
+        broadcast "true"
+    else:
+        broadcast "false: directory not created"
+    delete directory ./test/EffCreateDirectory/
+    if folder ./test/EffCreateDirectory/ exists:
+        broadcast "false: directory not cleaned up"

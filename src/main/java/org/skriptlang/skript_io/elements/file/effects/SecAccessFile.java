@@ -21,6 +21,7 @@ public abstract class SecAccessFile extends EffectSection {
     protected Expression<URI> pathExpression;
     
     @Override
+    @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> list) {
         this.pathExpression = (Expression<URI>) expressions[0];
         if (this.hasSection()) {
@@ -33,6 +34,7 @@ public abstract class SecAccessFile extends EffectSection {
     
     protected void walk(FileController controller, Event event) {
         if (first == null) return;
+        if (last != null) last.setNext(null);
         FileController.push(event, controller);
         try {
             TriggerItem.walk(first, event); // execute the section now
@@ -40,7 +42,7 @@ public abstract class SecAccessFile extends EffectSection {
             SkriptIO.error(ex);
         } finally {
             FileController.pop(event);
-            SkriptIO.queue().queue(new CloseTask(controller));
+            SkriptIO.queue().queue(new CloseTask(controller)).await();
         }
     }
     

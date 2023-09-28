@@ -131,20 +131,35 @@ public class FileController implements Closeable, Resource, Readable, Writable {
         return this.acquireReader(true);
     }
     
-    public @NotNull InputStream acquireReader(boolean restart) throws IOException {
-        if (this.closed) {
-            SkriptIO.error("Tried to read a closed file (outside its file section).");
-            throw new IOException("File closed.");
-        }
+    public void closeOutput() {
         this.appending = false;
         if (output != null) try {
             this.output.flush();
             this.output.close();
+        } catch (IOException ignore) {
         } finally {
             this.output = null;
         }
-        if (input != null && !restart) return input;
-        return input = new FileInputStream(file);
+    }
+    
+    public void closeInput() {
+        if (input != null) try {
+            this.input.close();
+        } catch (IOException ignore) {
+        } finally {
+            this.input = null;
+        }
+    }
+    
+    public synchronized @NotNull InputStream acquireReader(boolean restart) throws IOException {
+        if (this.closed) {
+            SkriptIO.error("Tried to read a closed file (outside its file section).");
+            throw new IOException("File closed.");
+        }
+        this.closeOutput();
+        if (restart) this.closeInput();
+        if (input == null) return input = new FileInputStream(file);
+        else return input;
     }
     
     @Override
@@ -152,24 +167,14 @@ public class FileController implements Closeable, Resource, Readable, Writable {
         return this.acquireWriter(false);
     }
     
-    public @NotNull OutputStream acquireWriter(boolean append) throws IOException {
+    public synchronized @NotNull OutputStream acquireWriter(boolean append) throws IOException {
         if (this.closed) {
             SkriptIO.error("Tried to write to a closed file (outside its file section).");
             throw new IOException("File closed.");
         }
-        if (input != null) try {
-            this.input.close();
-        } finally {
-            this.input = null;
-        }
-        if ((appending != append) && output != null) try {
-            this.output.flush();
-            this.output.close();
-        } finally {
-            this.output = null;
-        }
-        else if (output != null) return output;
-        this.appending = append;
+        this.closeInput();
+        if (append && output != null) return output;
+        this.closeOutput();
         return output = new FileOutputStream(file, append);
     }
     

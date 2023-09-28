@@ -20,7 +20,6 @@ public class CloseTask extends DataTask {
         } catch (Exception ex) {
             SkriptIO.error(ex);
         }
-        
     }
     
 }

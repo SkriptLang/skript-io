@@ -1,0 +1,44 @@
+
+on script load:
+    broadcast "EffMoveFile"
+    if folder ./test/EffMoveFile/ exists:
+        broadcast "false: directory already exists (not cleaned up)"
+    if file ./test/EffMoveFile2.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create folder ./test/EffMoveFile/
+    create file ./test/EffMoveFile.txt
+    if folder ./test/EffMoveFile/ does not exist:
+        broadcast "false: directory not created"
+    if file ./test/EffMoveFile.txt does not exist:
+        broadcast "false: file not created"
+    move file ./test/EffMoveFile.txt to ./test/EffMoveFile2.txt
+    if file ./test/EffMoveFile.txt exists:
+        broadcast "false: old file was not removed"
+    else:
+        broadcast "true"
+    if file ./test/EffMoveFile2.txt does not exist:
+        broadcast "false: new file was not created"
+    else:
+        broadcast "true"
+    move file ./test/EffMoveFile2.txt to ./test/EffMoveFile/EffMoveFile2.txt
+    if file ./test/EffMoveFile2.txt exists:
+        broadcast "false: old file was not removed"
+    else:
+        broadcast "true"
+    if file ./test/EffMoveFile/EffMoveFile2.txt does not exist:
+        broadcast "false: new file was not created"
+    else:
+        broadcast "true"
+    create file ./test/EffMoveFile.txt
+    move file ./test/EffMoveFile.txt into ./test/EffMoveFile/
+    if file ./test/EffMoveFile.txt exists:
+        broadcast "false: old file was not removed"
+    else:
+        broadcast "true"
+    if file ./test/EffMoveFile/EffMoveFile.txt does not exist:
+        broadcast "false: new file was not created"
+    else:
+        broadcast "true"
+    recursively delete directory ./test/EffMoveFile/
+    if folder ./test/EffMoveFile/ exists:
+        broadcast "false: directory not cleaned up"

@@ -20,7 +20,7 @@ public class SkriptIO extends JavaPlugin {
     public static final URI ROOT = URI.create("/");
     public static IOConfig config;
     public static boolean testMode;
-    private static IOQueue queue;
+    private static IOQueue queue, remoteQueue;
     private SkriptAddon addon;
     private Types types;
     

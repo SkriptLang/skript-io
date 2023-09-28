@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io;
 
+import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.lang.ParseContext;
@@ -11,6 +12,7 @@ import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.comparator.Relation;
 import org.skriptlang.skript.lang.converter.Converter;
 import org.skriptlang.skript.lang.converter.Converters;
+import org.skriptlang.skript_io.elements.file.effects.EffDeleteFile;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
@@ -31,6 +33,24 @@ public class Types {
             .description("Represents a path to something, such as a relative file path or an internet URL.")
             .examples("set {_file} to ./test.txt")
             .since("1.0.0")
+            .changer(new Changer<>() {
+                @Override
+                public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
+                    if (mode == ChangeMode.DELETE) return new Class[0];
+                    return null;
+                }
+                
+                @Override
+                public void change(URI[] what, @Nullable Object[] delta, ChangeMode mode) {
+                    if (mode == ChangeMode.DELETE) {
+                        for (final URI uri : what) {
+                            final File file = SkriptIO.fileNoError(uri);
+                            if (file == null) continue;
+                            EffDeleteFile.delete(file, file.isDirectory(), true);
+                        }
+                    }
+                }
+            })
             .parser(new Parser<>() {
                 
                 @Override

@@ -1,0 +1,23 @@
+
+on script load:
+    broadcast "EffDeleteFile"
+    if folder ./test/EffDeleteFile/ exists:
+        broadcast "false: directory already exists (not cleaned up)"
+    create folder ./test/EffDeleteFile/
+    if folder ./test/EffDeleteFile/ does not exist:
+        broadcast "false: directory not created"
+    delete directory ./test/EffDeleteFile/
+    if directory ./test/EffDeleteFile/ exists:
+        broadcast "false: folder not deleted"
+    else:
+        broadcast "true"
+    if file ./test/EffDeleteFile.txt exists:
+        broadcast "false: file already exists (not cleaned up)"
+    create file ./test/EffDeleteFile.txt
+    if file ./test/EffDeleteFile.txt does not exist:
+        broadcast "false: file not created"
+    delete file ./test/EffDeleteFile.txt
+    if file ./test/EffDeleteFile.txt exists:
+        broadcast "false: file not deleted"
+    else:
+        broadcast "true"

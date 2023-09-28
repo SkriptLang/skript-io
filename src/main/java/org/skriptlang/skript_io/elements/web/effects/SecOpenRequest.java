@@ -109,6 +109,7 @@ public class SecOpenRequest extends EffectSection {
             return this.walk(event, false);
         }
         assert first != null;
+        if (last != null) last.setNext(null);
         push(event, request);
         try (request) {
             TriggerItem.walk(first, event); // execute the section now

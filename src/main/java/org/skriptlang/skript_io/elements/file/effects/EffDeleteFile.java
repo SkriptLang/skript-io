@@ -33,20 +33,7 @@ public class EffDeleteFile extends Effect {
     private boolean recursive, folder;
     private Expression<URI> pathExpression;
     
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
-        this.pathExpression = (Expression<URI>) expressions[0];
-        this.recursive = result.hasTag("recursive");
-        this.folder = matchedPattern < 2;
-        return true;
-    }
-    
-    @Override
-    protected void execute(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
-        if (uri == null) return;
-        final File file = SkriptIO.file(uri);
+    public static void delete(File file, boolean folder, boolean recursive) {
         if (file == null) return;
         SkriptIO.queue().queue(new DataTask() {
             @Override
@@ -63,17 +50,35 @@ public class EffDeleteFile extends Effect {
                 final boolean result = file.delete();
                 assert result : "File '" + file + "' was not deleted.";
             }
-        });
+        }).await();
+        
     }
     
-    protected void emptyDirectory(File file) {
+    protected static void emptyDirectory(File file) {
         final File[] files = file.listFiles();
         if (files == null) return;
         for (final File child : files) {
-            if (child.isDirectory()) this.emptyDirectory(child);
+            if (child.isDirectory()) emptyDirectory(child);
             final boolean result = child.delete();
             assert result : "Inner file '" + file + "' was not deleted.";
         }
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+        this.pathExpression = (Expression<URI>) expressions[0];
+        this.recursive = result.hasTag("recursive");
+        this.folder = matchedPattern < 2;
+        return true;
+    }
+    
+    @Override
+    protected void execute(@NotNull Event event) {
+        final URI uri = pathExpression.getSingle(event);
+        if (uri == null) return;
+        final File file = SkriptIO.file(uri);
+        delete(file, folder, recursive);
     }
     
     @Override

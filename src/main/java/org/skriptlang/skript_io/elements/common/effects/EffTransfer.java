@@ -9,7 +9,6 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
-import mx.kenzie.clockwork.io.DataTask;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +17,7 @@ import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.TransferTask;
 
-import java.io.*;
+import java.io.File;
 import java.net.URI;
 
 @Name("Transfer")
@@ -63,15 +62,6 @@ public class EffTransfer extends Effect {
             final File file = SkriptIO.file(pathExpression.getSingle(event));
             if (file == null || !file.isFile()) return;
             SkriptIO.queue().queue(TransferTask.forFile(file, target));
-            SkriptIO.queue().queue(new DataTask() {
-                @Override
-                public void execute() throws IOException {
-                    final OutputStream output = target.acquireWriter();
-                    try (final InputStream stream = new FileInputStream(file)) {
-                        stream.transferTo(output);
-                    }
-                }
-            });
             return;
         }
         final Readable source = sourceExpression.getSingle(event);

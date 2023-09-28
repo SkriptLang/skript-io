@@ -27,11 +27,7 @@ import java.util.WeakHashMap;
 
 @Name("Expect Response")
 @Description("Notifies a connection that you expect a response (and waits for it).")
-@Examples({
-    "open a request to https://skriptlang.org:",
-    "\taccept the response:",
-    "\t\tbroadcast the response's content"
-})
+@Examples({"open a request to https://skriptlang.org:", "\taccept the response:", "\t\tbroadcast the response's content"})
 @Since("1.0.0")
 public class SecAcceptResponse extends EffectSection {
     
@@ -39,11 +35,8 @@ public class SecAcceptResponse extends EffectSection {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerSection(SecAcceptResponse.class,
-                "accept [the] response",
-                "expect [the] response",
-                "await [the] response"
-            );
+            Skript.registerSection(SecAcceptResponse.class, "accept [the] response", "expect [the] response",
+                "await [the] response");
     }
     
     public static Readable getCurrentRequest(Event event) {
@@ -98,7 +91,10 @@ public class SecAcceptResponse extends EffectSection {
         response = new IncomingResponse(request.exchange());
         push(event, response);
         try (response) {
-            if (first != null) TriggerItem.walk(first, event); // execute the section now
+            if (first != null) {
+                if (last != null) last.setNext(null);
+                TriggerItem.walk(first, event); // execute the section now
+            }
         } catch (IOException ex) {
             SkriptIO.error(ex);
         } finally {
