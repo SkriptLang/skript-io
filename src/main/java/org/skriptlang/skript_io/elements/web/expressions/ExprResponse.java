@@ -16,11 +16,15 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
+import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.TransferTask;
 import org.skriptlang.skript_io.utility.task.WriteTask;
+import org.skriptlang.skript_io.utility.web.IncomingResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,28 +45,33 @@ import java.nio.charset.StandardCharsets;
     "\ttransfer ./site/index.html to the response"
 })
 @Since("1.0.0")
-public class ExprResponse extends SimpleExpression<Writable> {
+public class ExprResponse extends SimpleExpression<Resource> {
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprResponse.class, Writable.class, ExpressionType.SIMPLE,
-                "[the] response [body]"
+            Skript.registerExpression(ExprResponse.class, Resource.class, ExpressionType.SIMPLE,
+                "[the] response"
             );
     }
     
+    private boolean outgoing;
+    
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
-        if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
-            Skript.error("You can't use '" + result.expr + "' outside a website section.");
-            return false;
+        if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
+            this.outgoing = true;
+            return true;
+        } else if (this.getParser().isCurrentSection(SecOpenRequest.class)) {
+            return true;
         }
-        return true;
+        Skript.error("You can't use '" + result.expr + "' outside a website section.");
+        return false;
     }
     
     @Override
-    protected Writable @NotNull [] get(@NotNull Event event) {
+    protected Resource @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
-            return new Writable[]{
+            return new Resource[]{
                 new Writable() {
                     @Override
                     public @NotNull OutputStream acquireWriter() throws IOException {
@@ -74,33 +83,36 @@ public class ExprResponse extends SimpleExpression<Writable> {
                     }
                 }
             };
-        else return new Writable[0];
+        else if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse readable) {
+            return new Resource[]{readable};
+        } else return new Resource[0];
     }
     
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
-        if (mode == Changer.ChangeMode.ADD) return CollectionUtils.array(String.class, Readable.class);
+        if (outgoing && mode == Changer.ChangeMode.ADD) return CollectionUtils.array(String.class, Readable.class);
         return null;
     }
     
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (!(event instanceof VisitWebsiteEvent visit)) return;
-        final Writable writable = Writable.simple(visit.getExchange().getResponseBody());
-        if (mode == Changer.ChangeMode.ADD) {
-            if (!visit.isStatusCodeSet()) {
-                SkriptIO.error("Tried to send data before setting the status code.");
-                return;
-            }
-            if (delta == null) return;
-            for (final Object thing : delta) {
-                if (thing == null) continue;
-                if (thing instanceof String string)
-                    SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));
-                else if (thing instanceof InputStream stream)
-                    SkriptIO.queue().queue(new TransferTask(writable, Readable.simple(stream)));
-                else if (thing instanceof Readable readable)
-                    SkriptIO.queue().queue(new TransferTask(writable, readable));
+        if (event instanceof VisitWebsiteEvent visit) {
+            final Writable writable = Writable.simple(visit.getExchange().getResponseBody());
+            if (mode == Changer.ChangeMode.ADD) {
+                if (!visit.isStatusCodeSet()) {
+                    SkriptIO.error("Tried to send data before setting the status code.");
+                    return;
+                }
+                if (delta == null) return;
+                for (final Object thing : delta) {
+                    if (thing == null) continue;
+                    if (thing instanceof String string)
+                        SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));
+                    else if (thing instanceof InputStream stream)
+                        SkriptIO.queue().queue(new TransferTask(writable, Readable.simple(stream)));
+                    else if (thing instanceof Readable readable)
+                        SkriptIO.queue().queue(new TransferTask(writable, readable));
+                }
             }
         }
     }
@@ -111,8 +123,8 @@ public class ExprResponse extends SimpleExpression<Writable> {
     }
     
     @Override
-    public @NotNull Class<Writable> getReturnType() {
-        return Writable.class;
+    public @NotNull Class<Resource> getReturnType() {
+        return Resource.class;
     }
     
     @Override
