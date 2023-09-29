@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
@@ -26,7 +27,15 @@ public abstract class SecAccessFile extends EffectSection {
         this.pathExpression = (Expression<URI>) expressions[0];
         if (this.hasSection()) {
             assert sectionNode != null;
+            final Kleenean wasDelayed = this.getParser().getHasDelayBefore(), isDelayed;
+            this.getParser().setHasDelayBefore(Kleenean.FALSE);
             this.loadOptionalCode(sectionNode);
+            isDelayed = this.getParser().getHasDelayBefore();
+            if (!isDelayed.isFalse()) {
+                Skript.error("Section '" + result.expr + "' cannot contain a delay.");
+                return false;
+            }
+            this.getParser().setHasDelayBefore(wasDelayed.or(isDelayed));
             if (last != null) last.setNext(null);
         }
         return true;

@@ -9,10 +9,13 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
+import mx.kenzie.clockwork.io.DataTask;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.file.FileController;
+import org.skriptlang.skript_io.utility.task.TidyTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,19 +68,27 @@ public class EffMoveFile extends Effect {
         final File target = SkriptIO.file(result);
         if (file == null || target == null) return;
         if (!file.exists()) return;
-        final Path from = file.toPath(), to;
-        if (into && !target.isDirectory()) {
-            SkriptIO.error("Tried to move file '" + file + "' into non-directory '" + target + "'");
-            return;
-        } else if (into) to = target.toPath().resolve(from.getFileName());
-        else if (file.isFile() && target.isFile()) to = target.toPath();
-        else if (file.isFile() && target.isDirectory()) to = target.toPath().resolve(from.getFileName());
-        else to = target.toPath();
-        try {
-            Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            SkriptIO.error(ex);
-        }
+        if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
+        final Path from = file.toPath();
+        FileController.flagDirty(file);
+        SkriptIO.queue().queue(new DataTask() {
+            @Override
+            public void execute() throws IOException {
+                try {
+                    final Path to;
+                    if (into && !target.isDirectory()) {
+                        SkriptIO.error("Tried to move file '" + file + "' into non-directory '" + target + "'");
+                        return;
+                    } else if (into) to = target.toPath().resolve(from.getFileName());
+                    else if (file.isFile() && target.isFile()) to = target.toPath();
+                    else if (file.isFile() && target.isDirectory()) to = target.toPath().resolve(from.getFileName());
+                    else to = target.toPath();
+                    Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
+                } finally {
+                    FileController.flagClean(file);
+                }
+            }
+        });
     }
     
     @Override

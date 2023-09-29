@@ -14,6 +14,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.file.FileController;
 
 import java.io.File;
 import java.net.URI;
@@ -35,22 +36,27 @@ public class EffDeleteFile extends Effect {
     
     public static void delete(File file, boolean folder, boolean recursive) {
         if (file == null) return;
+        FileController.flagDirty(file);
         SkriptIO.queue().queue(new DataTask() {
             @Override
             public void execute() {
-                if (!file.exists()) return;
-                if (folder && !file.isDirectory()) return;
-                else if (!folder && !file.isFile()) return;
-                if (folder) {
-                    if (!file.isDirectory()) return;
-                    if (recursive) emptyDirectory(file);
-                } else {
-                    if (!file.isFile()) return;
+                try {
+                    if (!file.exists()) return;
+                    if (folder && !file.isDirectory()) return;
+                    else if (!folder && !file.isFile()) return;
+                    if (folder) {
+                        if (!file.isDirectory()) return;
+                        if (recursive) emptyDirectory(file);
+                    } else {
+                        if (!file.isFile()) return;
+                    }
+                    final boolean result = file.delete();
+                    assert result : "File '" + file + "' was not deleted.";
+                } finally {
+                    FileController.flagClean(file);
                 }
-                final boolean result = file.delete();
-                assert result : "File '" + file + "' was not deleted.";
             }
-        }).await();
+        });
         
     }
     

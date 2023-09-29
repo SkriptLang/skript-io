@@ -13,6 +13,8 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.file.FileController;
+import org.skriptlang.skript_io.utility.task.TidyTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +57,7 @@ public class EffRenameFile extends Effect {
         final File file = SkriptIO.file(uri);
         if (file == null || file.isDirectory()) return;
         final Path from = file.toPath();
+        if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
         try {
             Files.move(from, from.resolveSibling(name));
         } catch (IOException ex) {

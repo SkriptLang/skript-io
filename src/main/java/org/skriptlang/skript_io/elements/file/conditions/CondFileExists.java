@@ -13,6 +13,8 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.file.FileController;
+import org.skriptlang.skript_io.utility.task.TidyTask;
 
 import java.io.File;
 import java.net.URI;
@@ -55,6 +57,7 @@ public class CondFileExists extends Condition {
         return uriExpression.check(event, uri -> {
             if (uri == null) return false;
             final File file = SkriptIO.file(uri);
+            if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
             if (file == null || !file.exists()) return false;
             return mode == 0 || mode == 1 && file.isFile() || mode == 2 && file.isDirectory();
         }, this.isNegated());

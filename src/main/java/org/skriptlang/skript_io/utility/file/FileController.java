@@ -83,6 +83,24 @@ public class FileController implements Closeable, Resource, Readable, Writable {
         }
     }
     
+    public static boolean isDirty(File file) {
+        synchronized (handlers) {
+            return handlers.containsKey(file);
+        }
+    }
+    
+    public static void flagDirty(File file) {
+        synchronized (handlers) {
+            handlers.putIfAbsent(file, null);
+        }
+    }
+    
+    public static void flagClean(File file) {
+        synchronized (handlers) {
+            handlers.remove(file, null);
+        }
+    }
+    
     public File getFile() {
         return file;
     }

@@ -1,6 +1,7 @@
 package org.skriptlang.skript_io.utility;
 
 import ch.njol.skript.lang.TriggerItem;
+import mx.kenzie.clockwork.io.IOQueue;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
@@ -12,10 +13,16 @@ public class DummyCloseTrigger extends TriggerItem {
     
     private final Closeable closeable;
     private final @Nullable TriggerItem next;
+    private final IOQueue queue;
     
-    public DummyCloseTrigger(Closeable closeable, @Nullable TriggerItem walk) {
+    public DummyCloseTrigger(Closeable closeable, @Nullable TriggerItem walk, IOQueue queue) {
         this.closeable = closeable;
         this.next = walk;
+        this.queue = queue;
+    }
+    
+    public DummyCloseTrigger(Closeable closeable, @Nullable TriggerItem walk) {
+        this(closeable, walk, SkriptIO.remoteQueue());
     }
     
     @Override
@@ -26,7 +33,7 @@ public class DummyCloseTrigger extends TriggerItem {
     
     @Override
     protected boolean run(Event e) {
-        SkriptIO.remoteQueue().queue(new CloseTask(closeable));
+        this.queue.queue(new CloseTask(closeable));
         return true;
     }
     
