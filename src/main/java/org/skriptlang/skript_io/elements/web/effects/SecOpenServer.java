@@ -13,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
-import org.skriptlang.skript_io.utility.file.FileController;
-import org.skriptlang.skript_io.utility.task.CloseTask;
 import org.skriptlang.skript_io.utility.web.PostHandler;
 import org.skriptlang.skript_io.utility.web.SimpleHandler;
 import org.skriptlang.skript_io.utility.web.WebServer;
@@ -106,22 +104,11 @@ public class SecOpenServer extends EffectSection {
         return new SimpleHandler(server, path, trigger);
     }
     
-    protected void walk(FileController controller, Event event) {
-        assert first != null;
-        FileController.push(event, controller);
-        try {
-            TriggerItem.walk(first, event); // execute the section now
-        } catch (Exception ex) {
-            SkriptIO.error(ex);
-        } finally {
-            SkriptIO.queue().queue(new CloseTask(controller));
-            FileController.pop(event);
-        }
-    }
-    
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "edit file " + pathExpression.toString(event, debug);
+        return "open a website"
+            + (pathExpression != null ? " for " + pathExpression.toString(event, debug) : "")
+            + (portExpression != null ? " with port " + portExpression.toString(event, debug) : "");
     }
     
     private boolean validatePath(URI path) {

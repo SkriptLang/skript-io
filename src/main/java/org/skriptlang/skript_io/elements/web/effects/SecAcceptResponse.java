@@ -6,11 +6,13 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.EffectSection;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.SkriptParser;
-import ch.njol.skript.lang.TriggerItem;
+import ch.njol.skript.effects.Delay;
+import ch.njol.skript.lang.*;
+import ch.njol.skript.timings.SkriptTimings;
+import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
+import mx.kenzie.clockwork.io.DataTask;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +22,7 @@ import org.skriptlang.skript_io.utility.web.IncomingResponse;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -69,6 +72,7 @@ public class SecAcceptResponse extends EffectSection {
             Skript.error("You can't use '" + result.expr + "' outside a request section.");
             return false;
         }
+        this.getParser().setHasDelayBefore(Kleenean.TRUE);
         if (this.hasSection()) {
             assert sectionNode != null;
             this.loadOptionalCode(sectionNode);
@@ -77,30 +81,63 @@ public class SecAcceptResponse extends EffectSection {
         return true;
     }
     
+    
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
+        if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
+        Delay.addDelayedEvent(event);
+        Object localVars = Variables.removeLocals(event);
+        final TriggerItem next = walk(event, false);
+        SkriptIO.queue().queue(new DataTask() {
+            @Override
+            public void execute() throws IOException, InterruptedException {
+                if (localVars != null)
+                    Variables.setLocalVariables(event, localVars);
+                SecAcceptResponse.this.execute(event);
+                if (next == null) return;
+                Object timing = null;
+                if (SkriptTimings.enabled()) {
+                    final Trigger trigger = getTrigger();
+                    if (trigger != null) timing = SkriptTimings.start(trigger.getDebugLabel());
+                }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+                    TriggerItem.walk(next, event);
+                });
+                Variables.removeLocals(event); // Clean up local vars, we may be exiting now
+                SkriptTimings.stop(timing); // Stop timing if it was even started
+            }
+        });
+        return null;
+    }
+    
+    protected void execute(Event event) {
         final IncomingResponse response;
         final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-        if (request == null) return this.walk(event, false);
+        if (request == null) return;
         try {
+            if (request.exchange().getDoInput()) {
+                final OutputStream stream = request.exchange().getOutputStream();
+                stream.flush();
+                stream.close();
+            }
             request.exchange().connect();
         } catch (IOException ex) {
             SkriptIO.error(ex);
-            return this.walk(event, false);
+            return;
         }
         response = new IncomingResponse(request.exchange());
         push(event, response);
         try (response) {
-            if (first != null) {
+            if (first == null) return;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
                 if (last != null) last.setNext(null);
-                TriggerItem.walk(first, event); // execute the section now
-            }
+                TriggerItem.walk(first, event);
+            });
         } catch (IOException ex) {
             SkriptIO.error(ex);
         } finally {
             pop(event);
         }
-        return this.walk(event, false);
     }
     
     @Override

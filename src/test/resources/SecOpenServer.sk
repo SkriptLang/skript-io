@@ -1,0 +1,10 @@
+
+on script load:
+    broadcast "SecOpenServer"
+    set {SecOpenServer} to 0
+    open a website for /SecOpenServer/ with port 6063:
+        set {SecOpenServer} to 1
+        set the status code to 200
+        add "ok" to the response
+    close the website at /SecOpenServer/ with port 6063
+    delete {SecOpenServer}

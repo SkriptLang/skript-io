@@ -33,10 +33,10 @@ import java.util.WeakHashMap;
     
     Once the request has been dispatched, the response can be read.""")
 @Examples({
-    "open a request to https://skriptlang.org:",
+    "open a web request to https://skriptlang.org:",
     "\tset the request's method to \"GET\"",
     "\tawait the response:",
-    "\t\tbroadcast the response's content"
+    "\t\tbroadcast the response's text content"
 })
 @Since("1.0.0")
 public class SecOpenRequest extends EffectSection {
@@ -102,6 +102,9 @@ public class SecOpenRequest extends EffectSection {
             final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "text/html; charset=utf-8");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.setInstanceFollowRedirects(true);
             connection.setDoOutput(true);
             request = new OutgoingRequest(connection);
         } catch (IOException e) {

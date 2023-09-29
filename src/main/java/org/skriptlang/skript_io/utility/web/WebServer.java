@@ -1,6 +1,7 @@
 package org.skriptlang.skript_io.utility.web;
 
 import com.sun.net.httpserver.HttpServer;
+import mx.kenzie.clockwork.io.DataTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
@@ -42,13 +43,15 @@ public class WebServer {
     }
     
     public void registerHandler(URI uri, PostHandler handler) {
+        if (handlers.containsKey(uri) && server != null) server.removeContext(uri.toString());
         this.handlers.put(uri, handler);
         if (server == null) return;
-        this.server.removeContext(uri.toString());
         this.server.createContext(uri.toString(), handler);
     }
     
     public void closeHandler(URI uri) {
+        if (!handlers.containsKey(uri)) return;
+        this.handlers.remove(uri);
         if (server == null) return;
         this.server.removeContext(uri.toString());
     }
@@ -56,7 +59,7 @@ public class WebServer {
     public void prepare() {
         if (server != null) server.stop(0);
         try {
-            this.server = HttpServer.create(new InetSocketAddress(port), 0);
+            this.server = HttpServer.create(new InetSocketAddress(port), DEFAULT_BACKLOG);
             for (final Map.Entry<URI, PostHandler> entry : handlers.entrySet()) {
                 final URI uri = entry.getKey();
                 final PostHandler handler = entry.getValue();
@@ -67,6 +70,16 @@ public class WebServer {
         } catch (IOException ex) {
             SkriptIO.error(ex);
         }
+    }
+    
+    public void closeAll() {
+        SkriptIO.queue().queue(new DataTask() {
+            @Override
+            public void execute() throws IOException, InterruptedException {
+                server.stop(10);
+                handlers.clear();
+            }
+        });
     }
     
 }

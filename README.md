@@ -108,14 +108,14 @@ loop the files in ./test/:
 	delete the file at loop-value
 ```
 
-#### Size of File Path
+#### Size of Path
 
 Since `1.0.0`
 
 The size (in bytes) of a file by path. Non-files have a size of zero.
 
 ```sk
-set {_size} to the file size of ./test.txt
+set {_size} to the size of ./test.txt
 ```
 
 ### Effects
@@ -265,6 +265,20 @@ open a website:
 	close the current website
 ```
 
+#### Header of Request
+
+Since `1.0.0`
+
+A key/value-based header in a request, such as "Content-Type" -> "text/html".
+
+Request headers information about the client requesting the resource.
+Response headers hold information about the response.
+
+```sk
+open a web request to http://localhost:3000:
+	set the request's "Content-Encoding" header to "gzip"
+```
+
 #### Status Code
 
 Since `1.0.0`
@@ -327,6 +341,21 @@ open a website:
 
 ### Effects
 
+#### Close Website
+
+Since `1.0.0`
+
+Closes the website at a given path and/or port, or the current website.
+The website will stop accepting connections.
+
+Any currently-open tasks may continue to run in the background.
+
+```sk
+open a website for /landing/:
+	transfer ./site/welcome.html to the response
+	close the current website
+```
+
 #### Expect Response
 
 Since `1.0.0`
@@ -374,21 +403,25 @@ open a website for /landing/:
 
 ## Common
 
-### Effects
+### Expressions
 
 #### Contents of Resource
 
 Since `1.0.0`
 
-The contents of (the text inside) a resource, such as an open file.
+The contents of (the stuff inside) a resource, such as an open file.
+This uses a type parser (e.g. the number context of X will parse X as a number).
+
 This will return nothing if the resource is unreadable.
 
 ```sk
 open a website:
-	broadcast the content of the request's body
+	broadcast the text content of the request's body
 open file ./test.txt:
-	broadcast the contents of file
+	broadcast the text contents of file
 ```
+
+### Effects
 
 #### Transfer
 

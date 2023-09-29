@@ -65,14 +65,12 @@ public record OutgoingRequest(HttpURLConnection exchange) implements Writable, C
     
     @Override
     public void close() throws IOException {
-        this.exchange.getErrorStream().close();
-        this.exchange.getInputStream().close();
-        this.exchange.getOutputStream().close();
         this.exchange.disconnect();
     }
     
     @Override
     public @NotNull OutputStream acquireWriter() throws IOException {
+        exchange.setDoInput(true);
         return exchange.getOutputStream();
     }
     
