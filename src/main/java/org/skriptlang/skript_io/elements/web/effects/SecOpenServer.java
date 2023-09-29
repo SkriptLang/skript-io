@@ -25,6 +25,8 @@ import java.util.List;
     Opens a website at the provided path and port, defaulting to the root path `/` on port 80.
     Whenever a request is received, the code inside the section will be run.
     
+    Responses to a request should start by sending a status code (e.g. 200 = OK) and then any data.
+    
     Website paths should end in a separator `/`, and will handle any requests to their directory.
     A website on the root path `/` will accept any unhandled requests.
     
@@ -32,8 +34,12 @@ import java.util.List;
     Multiple websites can be opened on *different* paths with the same port, such as `/foo/` and `/bar/`
     """)
 @Examples({
-    "open a website for /landing/:",
-    "\ttransfer ./site/welcome.html to the response"
+    "open a website on port 12345:",
+    "\tset the status code to 200" +
+        "\tadd \"<body>\" to the response" +
+        "\tadd \"<h1>hello!!!</h1>\" to the response" +
+        "\tadd \"<p>there are %size of all players% players online</p>\" to the response" +
+        "\tadd \"</body>\" to the response"
 })
 @Since("1.0.0")
 public class SecOpenServer extends EffectSection {

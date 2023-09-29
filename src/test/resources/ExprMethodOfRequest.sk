@@ -1,0 +1,23 @@
+
+on script load:
+    broadcast "ExprMethodOfRequest"
+    set {ExprMethodOfRequest} to ""
+    open a website for /ExprMethodOfRequest/ with port 6063:
+        set {ExprMethodOfRequest} to method of request
+        set the status code to 200
+        set the text content of the response to "ok"
+    set {_text} to ""
+    open a web request to http://localhost:6063/ExprMethodOfRequest/:
+        set the method of request to "GET"
+        await the response:
+            set {_text} to the text content of response
+    if {_text} is "ok":
+        broadcast "true"
+    else:
+        broadcast "false: response was '%{_text}%'"
+    if {ExprMethodOfRequest} is "GET":
+        broadcast "true"
+    else:
+        broadcast "false: receiving variable was %{ExprMethodOfRequest}%"
+    close the website at /ExprMethodOfRequest/ with port 6063
+    delete {ExprMethodOfRequest}

@@ -1,0 +1,17 @@
+
+on script load:
+    broadcast "ExprContentTypeOfRequest"
+    open a website for /ExprContentTypeOfRequest/ with port 6063:
+        set the status code to 200
+        set the text content of the response to "5"
+    set {_text} to 0
+    open a web request to http://localhost:6063/ExprContentTypeOfRequest/:
+        set the method of request to "GET"
+        set the content type of request to "text/html"
+        await the response:
+            set {_text} to the number content of response
+    if {_text} is 5:
+        broadcast "true"
+    else:
+        broadcast "false: response was '%{_text}%'"
+    close the website at /ExprContentTypeOfRequest/ with port 6063

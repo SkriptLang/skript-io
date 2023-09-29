@@ -22,7 +22,7 @@ import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
 @Description("Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the section will not be run.")
 @Examples({
     "edit file ./test.txt:",
-    "\tset the contents of the file to \"line 1\"",
+    "\tset the text contents of the file to \"line 1\"",
     "\tadd \"line 2\" to the lines of the file"
 })
 @Since("1.0.0")

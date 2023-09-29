@@ -1,0 +1,11 @@
+
+on script load:
+    broadcast "ExprCurrentWebsite"
+    open a website for /ExprCurrentWebsite/ with port 6063:
+        set the status code to 200
+        set the text content of the response to "5"
+        close the current website
+    open a web request to http://localhost:6063/ExprCurrentWebsite/:
+        set the method of request to "GET"
+        set the content type of request to "text/html"
+        await the response

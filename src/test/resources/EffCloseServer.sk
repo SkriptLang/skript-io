@@ -1,0 +1,8 @@
+
+on script load:
+    broadcast "EffCloseServer"
+    open a website for /EffCloseServer/ with port 6063:
+        set the status code to 200
+        set the text content of the response to "ok"
+    close the website at /EffCloseServer/ with port 6063
+    # todo This works but how can we test it works?
