@@ -56,6 +56,7 @@ public class SecOpenRequest extends EffectSection {
         if (event == null) return null;
         final Stack<OutgoingRequest> stack = requestMap.get(event);
         if (stack == null) return null;
+        if (stack.isEmpty()) return null;
         return stack.peek();
     }
     

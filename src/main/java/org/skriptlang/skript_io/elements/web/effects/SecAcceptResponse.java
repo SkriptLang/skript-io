@@ -22,7 +22,6 @@ import org.skriptlang.skript_io.utility.web.IncomingResponse;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -88,12 +87,13 @@ public class SecAcceptResponse extends EffectSection {
         Delay.addDelayedEvent(event);
         Object localVars = Variables.removeLocals(event);
         final TriggerItem next = walk(event, false);
+        final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
         SkriptIO.queue().queue(new DataTask() {
             @Override
             public void execute() throws IOException, InterruptedException {
                 if (localVars != null)
                     Variables.setLocalVariables(event, localVars);
-                SecAcceptResponse.this.execute(event);
+                SecAcceptResponse.this.execute(event, request);
                 if (next == null) return;
                 Object timing = null;
                 if (SkriptTimings.enabled()) {
@@ -110,16 +110,10 @@ public class SecAcceptResponse extends EffectSection {
         return null;
     }
     
-    protected void execute(Event event) {
+    protected void execute(Event event, OutgoingRequest request) {
         final IncomingResponse response;
-        final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
         if (request == null) return;
         try {
-            if (request.exchange().getDoInput()) {
-                final OutputStream stream = request.exchange().getOutputStream();
-                stream.flush();
-                stream.close();
-            }
             request.exchange().connect();
         } catch (IOException ex) {
             SkriptIO.error(ex);
