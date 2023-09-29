@@ -19,7 +19,7 @@ public record SimpleHandler(WebServer server, URI path, Trigger trigger) impleme
             if (event.isCancelled()) return; // this doesn't go to our handler
             this.trigger.execute(event);
         } finally {
-            SkriptIO.queue().queue(new CloseTask(exchange));
+            SkriptIO.queue().queue(new CloseTask(exchange)).await();
         }
     }
     

@@ -4,9 +4,7 @@ import mx.kenzie.clockwork.io.DataTask;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Writable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class TransferTask extends DataTask {
     
@@ -24,7 +22,10 @@ public class TransferTask extends DataTask {
     
     @Override
     public void execute() throws IOException {
-        this.readable.acquireReader().transferTo(writable.acquireWriter());
+        try (final InputStream stream = readable.acquireReader();
+             final OutputStream output = writable.acquireWriter()) {
+            stream.transferTo(output);
+        }
     }
     
 }
@@ -43,8 +44,9 @@ class TransferFileTask extends DataTask {
     public void execute() throws IOException, InterruptedException {
         if (source == null || target == null) return;
         if (!source.isFile()) return;
-        try (final FileInputStream stream = new FileInputStream(source)) {
-            stream.transferTo(target.acquireWriter());
+        try (final FileInputStream stream = new FileInputStream(source);
+             final OutputStream output = target.acquireWriter()) {
+            stream.transferTo(output);
         }
     }
     

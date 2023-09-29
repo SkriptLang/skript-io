@@ -7,8 +7,9 @@ import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.effects.Delay;
-import ch.njol.skript.lang.*;
-import ch.njol.skript.timings.SkriptTimings;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import mx.kenzie.clockwork.io.DataTask;
@@ -17,6 +18,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.DummyCloseTrigger;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.web.IncomingResponse;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
@@ -26,12 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutionException;
 
 @Name("Expect Response")
 @Description("Notifies a connection that you expect a response (and waits for it).")
 @Examples({"open a request to https://skriptlang.org:", "\taccept the response:", "\t\tbroadcast the response's content"})
 @Since("1.0.0")
-public class SecAcceptResponse extends EffectSection {
+public class SecAcceptResponse extends SecBackgroundRequest {
     
     private static final Map<Event, Stack<IncomingResponse>> requestMap = new WeakHashMap<>();
     
@@ -45,6 +48,7 @@ public class SecAcceptResponse extends EffectSection {
         if (event == null) return null;
         final Stack<IncomingResponse> stack = requestMap.get(event);
         if (stack == null) return null;
+        if (stack.isEmpty()) return null;
         return stack.peek();
     }
     
@@ -71,13 +75,7 @@ public class SecAcceptResponse extends EffectSection {
             Skript.error("You can't use '" + result.expr + "' outside a request section.");
             return false;
         }
-        this.getParser().setHasDelayBefore(Kleenean.TRUE);
-        if (this.hasSection()) {
-            assert sectionNode != null;
-            this.loadOptionalCode(sectionNode);
-            if (last != null) last.setNext(null);
-        }
-        return true;
+        return this.loadDelayed(sectionNode, result);
     }
     
     
@@ -85,32 +83,24 @@ public class SecAcceptResponse extends EffectSection {
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
         Delay.addDelayedEvent(event);
-        Object localVars = Variables.removeLocals(event);
-        final TriggerItem next = walk(event, false);
         final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-        SkriptIO.queue().queue(new DataTask() {
+        final Object variables = Variables.removeLocals(event);
+        final TriggerItem next = this.walk(event, false);
+        SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws IOException, InterruptedException {
-                if (localVars != null)
-                    Variables.setLocalVariables(event, localVars);
-                SecAcceptResponse.this.execute(event, request);
-                if (next == null) return;
-                Object timing = null;
-                if (SkriptTimings.enabled()) {
-                    final Trigger trigger = getTrigger();
-                    if (trigger != null) timing = SkriptTimings.start(trigger.getDebugLabel());
+                try {
+                    SecAcceptResponse.this.execute(event, request, variables, next);
+                } catch (ExecutionException ex) {
+                    SkriptIO.error(ex);
                 }
-                Bukkit.getScheduler().scheduleSyncDelayedTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
-                    TriggerItem.walk(next, event);
-                });
-                Variables.removeLocals(event); // Clean up local vars, we may be exiting now
-                SkriptTimings.stop(timing); // Stop timing if it was even started
             }
         });
         return null;
     }
     
-    protected void execute(Event event, OutgoingRequest request) {
+    protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next)
+        throws ExecutionException, InterruptedException {
         final IncomingResponse response;
         if (request == null) return;
         try {
@@ -121,17 +111,19 @@ public class SecAcceptResponse extends EffectSection {
         }
         response = new IncomingResponse(request.exchange());
         push(event, response);
-        try (response) {
-            if (first == null) return;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
-                if (last != null) last.setNext(null);
-                TriggerItem.walk(first, event);
+        if (first == null) return;
+        Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+            if (variables != null)
+                Variables.setLocalVariables(event, variables);
+            if (last != null) last.setNext(new DummyCloseTrigger(request, next) {
+                @Override
+                protected boolean run(Event e) {
+                    pop(e);
+                    return super.run(e);
+                }
             });
-        } catch (IOException ex) {
-            SkriptIO.error(ex);
-        } finally {
-            pop(event);
-        }
+            TriggerItem.walk(first, event);
+        });
     }
     
     @Override

@@ -15,6 +15,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.DummyCloseTrigger;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Name("Send Web Request")
 @Description("""
@@ -85,6 +87,7 @@ public class SecOpenRequest extends EffectSection {
         assert sectionNode != null;
         this.loadOptionalCode(sectionNode);
         if (last != null) last.setNext(null);
+        this.getParser().setHasDelayBefore(Kleenean.UNKNOWN);
         return true;
     }
     
@@ -92,11 +95,40 @@ public class SecOpenRequest extends EffectSection {
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
         if (uri == null) return this.walk(event, false);
+        if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
+        final OutgoingRequest request = this.createRequest(uri);
+        if (request == null || first == null) return this.walk(event, false);
+        if (last != null) {
+            last.setNext(new DummyCloseTrigger(request, this.walk(event, false)) {
+                @Override
+                protected boolean run(Event e) {
+                    pop(event);
+                    return super.run(e);
+                }
+            });
+            push(event, request);
+            TriggerItem.walk(first, event); // execute the section now
+            return null; // the pop is done in our close dummy
+        } else {
+            try (request) {
+                push(event, request);
+                TriggerItem.walk(first, event); // execute the section now
+            } catch (IOException ex) {
+                SkriptIO.error(ex);
+            } finally {
+                pop(event);
+            }
+            return this.walk(event, false);
+        }
+    }
+    
+    protected OutgoingRequest createRequest(URI uri) {
         final URL url;
         try {
             url = uri.toURL();
         } catch (MalformedURLException e) {
-            return this.walk(event, false);
+            SkriptIO.error(e);
+            return null;
         }
         final OutgoingRequest request;
         try {
@@ -107,22 +139,12 @@ public class SecOpenRequest extends EffectSection {
             connection.setReadTimeout(5000);
             connection.setInstanceFollowRedirects(true);
             connection.setDoOutput(true);
-            request = new OutgoingRequest(connection);
+            request = new OutgoingRequest(connection, new AtomicBoolean(false));
         } catch (IOException e) {
             SkriptIO.error(e);
-            return this.walk(event, false);
+            return null;
         }
-        assert first != null;
-        if (last != null) last.setNext(null);
-        push(event, request);
-        try (request) {
-            TriggerItem.walk(first, event); // execute the section now
-        } catch (IOException ex) {
-            SkriptIO.error(ex);
-        } finally {
-            pop(event);
-        }
-        return this.walk(event, false);
+        return request;
     }
     
     @Override

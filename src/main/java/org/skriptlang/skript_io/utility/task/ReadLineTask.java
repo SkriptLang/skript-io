@@ -23,12 +23,13 @@ public class ReadLineTask extends DataTask {
     
     @Override
     public void execute() throws IOException {
-        final InputStream stream = controller.acquireReader();
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        int counter = 0;
-        String line;
-        do line = reader.readLine(); while (counter++ < this.line);
-        this.reference.set(line);
+        try (final InputStream stream = controller.acquireReader()) {
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+            int counter = 0;
+            String line;
+            do line = reader.readLine(); while (counter++ < this.line);
+            this.reference.set(line);
+        }
     }
     
 }

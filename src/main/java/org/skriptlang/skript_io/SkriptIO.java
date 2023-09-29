@@ -28,6 +28,10 @@ public class SkriptIO extends JavaPlugin {
         return queue;
     }
     
+    public static @NotNull IOQueue remoteQueue() {
+        return remoteQueue;
+    }
+    
     public static File file(URI path) {
         try {
             if (path == null) return null;
@@ -88,6 +92,7 @@ public class SkriptIO extends JavaPlugin {
             manager.disablePlugin(this);
         }
         queue = new IOQueue();
+        remoteQueue = new IOQueue();
         this.loadConfig();
     }
     
@@ -104,6 +109,7 @@ public class SkriptIO extends JavaPlugin {
     @Override
     public void onDisable() {
         queue.shutdown(1000);
+        remoteQueue.shutdown(1000);
         this.addon = null;
         this.types = null;
     }

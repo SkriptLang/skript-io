@@ -377,10 +377,10 @@ Prepares an HTTP request to be sent to a website URL. This may have content writ
 Once the request has been dispatched, the response can be read.
 
 ```sk
-open a request to https://skriptlang.org:
+open a web request to https://skriptlang.org:
 	set the request's method to "GET"
 	await the response:
-		broadcast the response's content
+		broadcast the response's text content
 ```
 
 #### Open Website

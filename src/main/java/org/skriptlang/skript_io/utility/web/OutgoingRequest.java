@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.Writable;
+import org.skriptlang.skript_io.utility.task.WriteTask;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -12,8 +13,11 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public record OutgoingRequest(HttpURLConnection exchange) implements Writable, Closeable, Request {
+public record OutgoingRequest(HttpURLConnection exchange,
+                              AtomicBoolean complete) implements Writable, Closeable, Request {
     
     @Override
     public URI getPath() {
@@ -66,12 +70,23 @@ public record OutgoingRequest(HttpURLConnection exchange) implements Writable, C
     @Override
     public void close() throws IOException {
         this.exchange.disconnect();
+        this.complete.set(true);
     }
     
     @Override
     public @NotNull OutputStream acquireWriter() throws IOException {
         exchange.setDoInput(true);
         return exchange.getOutputStream();
+    }
+    
+    @Override
+    public void write(String text) {
+        SkriptIO.remoteQueue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
+    }
+    
+    @Override
+    public void clear() {
+        SkriptIO.remoteQueue().queue(new WriteTask(this, new byte[0]));
     }
     
 }
