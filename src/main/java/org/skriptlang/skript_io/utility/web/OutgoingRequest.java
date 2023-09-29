@@ -54,6 +54,16 @@ public record OutgoingRequest(HttpURLConnection exchange) implements Writable, C
     }
     
     @Override
+    public String getHeader(String header) {
+        return exchange.getRequestProperty(header);
+    }
+    
+    @Override
+    public void setHeader(String header, String type) {
+        this.exchange.setRequestProperty(header, type);
+    }
+    
+    @Override
     public void close() throws IOException {
         this.exchange.getErrorStream().close();
         this.exchange.getInputStream().close();

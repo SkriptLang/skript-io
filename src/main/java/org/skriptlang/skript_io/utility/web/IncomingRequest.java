@@ -52,6 +52,16 @@ public record IncomingRequest(HttpExchange exchange) implements Readable, Closea
     }
     
     @Override
+    public String getHeader(String header) {
+        return exchange.getRequestHeaders().getFirst(header);
+    }
+    
+    @Override
+    public void setHeader(String header, String type) {
+        this.exchange.getRequestHeaders().set(header, type);
+    }
+    
+    @Override
     public void close() throws IOException {
         this.exchange.close();
     }

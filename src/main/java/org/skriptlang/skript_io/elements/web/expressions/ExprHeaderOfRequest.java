@@ -6,6 +6,10 @@ import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.Literal;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -13,34 +17,43 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.web.Request;
 
-@Name("Content Type of Request")
+@Name("Header of Request")
 @Description("""
-    The data format a web request will use, such as "application/json" or "text/html".
+    A key/value-based header in a request, such as "Content-Type" -> "text/html".
     
-    When making a request you may have to use a specific content type (and format your data accordingly!)
-    When receiving a request, this should indicate the format of the incoming data.
-    Not all web requests will have data attached.
+    Request headers information about the client requesting the resource.
+    Response headers hold information about the response.
     """)
 @Examples({
     "open a web request to http://localhost:3000:",
-    "\tset the request's content-type"
+    "\tset the request's \"Content-Encoding\" header to \"gzip\""
 })
 @Since("1.0.0")
-public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, String> {
+public class ExprHeaderOfRequest extends SimplePropertyExpression<Request, String> {
     
     static {
         if (!SkriptIO.isTest())
-            register(ExprContentTypeOfRequest.class, String.class, "content(-| )type", "request");
+            register(ExprHeaderOfRequest.class, String.class, "%*string% header", "request");
+    }
+    
+    private String header;
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.ParseResult result) {
+        this.setExpr((Expression<Request>) expressions[1 - matchedPattern]);
+        this.header = ((Literal<String>) expressions[matchedPattern]).getSingle();
+        return true;
     }
     
     @Override
     protected @NotNull String getPropertyName() {
-        return "content type";
+        return header + " header";
     }
     
     @Override
     public @Nullable String convert(Request request) {
-        return request.getContentType();
+        return request.getHeader(header);
     }
     
     @Override
@@ -56,7 +69,7 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, 
         if (type == null) return;
         final Request request = this.getExpr().getSingle(event);
         if (request == null) return;
-        request.setContentType(type);
+        request.setHeader(header, type);
     }
     
     @Override
@@ -67,6 +80,11 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, 
     @Override
     public boolean isSingle() {
         return true;
+    }
+    
+    @Override
+    public @NotNull String toString(@Nullable Event event, boolean debug) {
+        return "the \"" + header + "\" of " + this.getExpr().toString(event, debug);
     }
     
 }

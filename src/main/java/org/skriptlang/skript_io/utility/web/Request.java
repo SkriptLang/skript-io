@@ -24,4 +24,8 @@ public interface Request {
     
     }
     
+    String getHeader(String header);
+    
+    void setHeader(String header, String type);
+    
 }
