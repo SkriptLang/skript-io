@@ -7,6 +7,7 @@ import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.effects.Delay;
+import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.TriggerItem;
@@ -34,7 +35,7 @@ import java.util.concurrent.ExecutionException;
 @Description("Notifies a connection that you expect a response (and waits for it).")
 @Examples({"open a request to https://skriptlang.org:", "\taccept the response:", "\t\tbroadcast the response's content"})
 @Since("1.0.0")
-public class SecAcceptResponse extends SecBackgroundRequest {
+public class SecAcceptResponse extends EffectSection {
     
     private static final Map<Event, Stack<IncomingResponse>> requestMap = new WeakHashMap<>();
     
@@ -75,7 +76,13 @@ public class SecAcceptResponse extends SecBackgroundRequest {
             Skript.error("You can't use '" + result.expr + "' outside a request section.");
             return false;
         }
-        return this.loadDelayed(sectionNode, result);
+        if (this.hasSection()) {
+            assert sectionNode != null;
+            this.loadOptionalCode(sectionNode);
+            if (last != null) last.setNext(null);
+            this.getParser().setHasDelayBefore(Kleenean.TRUE);
+        }
+        return true;
     }
     
     

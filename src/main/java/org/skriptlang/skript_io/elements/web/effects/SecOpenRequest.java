@@ -87,7 +87,7 @@ public class SecOpenRequest extends EffectSection {
         assert sectionNode != null;
         this.loadOptionalCode(sectionNode);
         if (last != null) last.setNext(null);
-        this.getParser().setHasDelayBefore(Kleenean.UNKNOWN);
+        this.getParser().setHasDelayBefore(Kleenean.TRUE);
         return true;
     }
     
