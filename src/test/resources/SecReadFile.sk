@@ -15,6 +15,14 @@ on script load:
         broadcast "true"
     else:
         broadcast "false: file not edited"
+    set {_text} to ""
+    read file ./test/SecReadFile.txt:
+        wait 1 tick
+        set {_text} to the text content of the file
+    if {_text} is "blob":
+        broadcast "true"
+    else:
+        broadcast "false: file with delay not edited"
     delete file ./test/SecReadFile.txt
     if file ./test/SecReadFile.txt exists:
         broadcast "false: file not deleted"

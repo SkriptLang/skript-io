@@ -48,8 +48,7 @@ public class SecEditFile extends SecAccessFile {
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
         assert first != null;
         final FileController controller = FileController.getController(file, READ | WRITE);
-        this.walk(controller, event);
-        return this.walk(event, false);
+        return this.walk(controller, event);
     }
     
     @Override
