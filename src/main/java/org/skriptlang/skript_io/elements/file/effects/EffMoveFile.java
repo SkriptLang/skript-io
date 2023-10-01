@@ -69,13 +69,12 @@ public class EffMoveFile extends Effect {
         if (file == null || target == null) return;
         if (!file.exists()) return;
         if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
-        final Path from = file.toPath();
         FileController.flagDirty(file);
         SkriptIO.queue().queue(new DataTask() {
             @Override
             public void execute() throws IOException {
                 try {
-                    final Path to;
+                    final Path from = file.toPath(), to;
                     if (into && !target.isDirectory()) {
                         SkriptIO.error("Tried to move file '" + file + "' into non-directory '" + target + "'");
                         return;

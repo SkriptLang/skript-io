@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.file.FileController;
+import org.skriptlang.skript_io.utility.task.MoveTask;
 import org.skriptlang.skript_io.utility.task.TidyTask;
 
 import java.io.File;
@@ -55,14 +56,9 @@ public class EffRenameFile extends Effect {
         if (name == null || name.isBlank()) return;
         if (uri == null) return;
         final File file = SkriptIO.file(uri);
-        if (file == null || file.isDirectory()) return;
-        final Path from = file.toPath();
-        if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
-        try {
-            Files.move(from, from.resolveSibling(name));
-        } catch (IOException ex) {
-            SkriptIO.error(ex);
-        }
+        if (file == null) return;
+        FileController.flagDirty(file);
+        SkriptIO.queue().queue(new MoveTask(file, name));
     }
     
     @Override
