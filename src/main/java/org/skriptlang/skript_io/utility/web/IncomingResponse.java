@@ -11,17 +11,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public record IncomingResponse(HttpURLConnection exchange) implements Readable, Resource, Closeable {
+public record IncomingResponse(HttpURLConnection exchange,
+                               AtomicBoolean wasRead) implements Readable, Resource, Closeable {
+    
+    public IncomingResponse(HttpURLConnection exchange) {
+        this(exchange, new AtomicBoolean());
+    }
     
     @Override
     public void close() throws IOException {
+        if (!wasRead.get() && exchange.getDoOutput()) SkriptIO.remoteQueue().queue(new DataTask() {
+            @Override
+            public void execute() throws IOException {
+                try (final InputStream stream = acquireReader()) {
+                }
+            }
+        }).await();
         this.exchange.disconnect();
     }
     
     @Override
     public @NotNull InputStream acquireReader() throws IOException {
+        this.wasRead.set(true);
         return exchange.getInputStream();
     }
     

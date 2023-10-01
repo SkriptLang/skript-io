@@ -122,6 +122,11 @@ public class SecAcceptResponse extends EffectSection {
             Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
                 if (variables != null)
                     Variables.setLocalVariables(event, variables);
+                try {
+                    response.close();
+                } catch (IOException ex) {
+                    SkriptIO.error(ex);
+                }
                 TriggerItem.walk(next, event);
             });
         } else {
@@ -131,6 +136,11 @@ public class SecAcceptResponse extends EffectSection {
                 if (last != null) last.setNext(new DummyCloseTrigger(request, next) {
                     @Override
                     protected boolean run(Event e) {
+                        try {
+                            response.close();
+                        } catch (IOException ex) {
+                            SkriptIO.error(ex);
+                        }
                         pop(e);
                         return super.run(e);
                     }
