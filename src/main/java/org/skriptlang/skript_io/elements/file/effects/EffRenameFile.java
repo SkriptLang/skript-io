@@ -15,13 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.file.FileController;
 import org.skriptlang.skript_io.utility.task.MoveTask;
-import org.skriptlang.skript_io.utility.task.TidyTask;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Name("Rename File")
 @Description("Renames a file or directory. To rename a directory please use the 'move' effect.")

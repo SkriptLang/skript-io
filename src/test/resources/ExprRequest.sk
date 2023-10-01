@@ -1,0 +1,16 @@
+
+on script load:
+    broadcast "ExprRequest"
+    open a website for /ExprRequest/ with port 6063:
+        set the status code to 200
+        set the text content of the response to "ok"
+    set {_text} to ""
+    open a web request to http://localhost:6063/ExprRequest/:
+        set the method of request to "GET"
+        accept the response:
+            set {_text} to the text content of response
+    if {_text} is "ok":
+        broadcast "true"
+    else:
+        broadcast "false: response was '%{_text}%'"
+    close the website at /ExprRequest/ with port 6063

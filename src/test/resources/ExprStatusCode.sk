@@ -1,0 +1,17 @@
+
+on script load:
+    broadcast "ExprStatusCode"
+    open a website for /ExprStatusCode/ with port 6063:
+        set the status code to 200
+        set the text content of the response to "ok"
+    set {_code} to ""
+    open a web request to http://localhost:6063/ExprStatusCode/:
+        set the method of request to "GET"
+        await the response:
+            set {_text} to the text content of response
+            set {_code} to the status code
+    if {_code} is 200:
+        broadcast "true"
+    else:
+        broadcast "false: code was '%{_code}%'"
+    close the website at /ExprStatusCode/ with port 6063

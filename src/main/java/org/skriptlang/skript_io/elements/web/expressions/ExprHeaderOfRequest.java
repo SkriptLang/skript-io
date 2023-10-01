@@ -1,14 +1,15 @@
 package org.skriptlang.skript_io.elements.web.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.Literal;
+import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
@@ -29,31 +30,30 @@ import org.skriptlang.skript_io.utility.web.Request;
     "\tset the request's \"Content-Encoding\" header to \"gzip\""
 })
 @Since("1.0.0")
-public class ExprHeaderOfRequest extends SimplePropertyExpression<Request, String> {
+public class ExprHeaderOfRequest extends SimpleExpression<String> {
     
     static {
         if (!SkriptIO.isTest())
-            register(ExprHeaderOfRequest.class, String.class, "%*string% header", "request");
+            Skript.registerExpression(ExprHeaderOfRequest.class, String.class, ExpressionType.PROPERTY,
+                "[the] %string% header of %request%", "%request%'[s] %string% header");
     }
     
-    private String header;
+    private Expression<Request> requestExpression;
+    private Expression<String> headerExpression;
     
     @Override
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.ParseResult result) {
-        this.setExpr((Expression<Request>) expressions[1 - matchedPattern]);
-        this.header = ((Literal<String>) expressions[matchedPattern]).getSingle();
+        this.requestExpression = ((Expression<Request>) expressions[1 - matchedPattern]);
+        this.headerExpression = ((Expression<String>) expressions[matchedPattern]);
         return true;
     }
     
     @Override
-    protected @NotNull String getPropertyName() {
-        return header + " header";
-    }
-    
-    @Override
-    public @Nullable String convert(Request request) {
-        return request.getHeader(header);
+    protected @Nullable String[] get(Event event) {
+        final Request request = requestExpression.getSingle(event);
+        if (request == null) return new String[0];
+        return new String[]{request.getHeader(headerExpression.getSingle(event))};
     }
     
     @Override
@@ -67,9 +67,9 @@ public class ExprHeaderOfRequest extends SimplePropertyExpression<Request, Strin
         if (delta == null || delta.length < 1) return;
         final String type = String.valueOf(delta[0]);
         if (type == null) return;
-        final Request request = this.getExpr().getSingle(event);
+        final Request request = this.requestExpression.getSingle(event);
         if (request == null) return;
-        request.setHeader(header, type);
+        request.setHeader(headerExpression.getSingle(event), type);
     }
     
     @Override
@@ -84,7 +84,7 @@ public class ExprHeaderOfRequest extends SimplePropertyExpression<Request, Strin
     
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "the \"" + header + "\" of " + this.getExpr().toString(event, debug);
+        return "the " + headerExpression.toString(event, debug) + " of " + requestExpression.toString(event, debug);
     }
     
 }

@@ -1,0 +1,26 @@
+
+on script load:
+    broadcast "ExprHeaderOfRequest"
+    set {ExprHeaderOfRequest} to ""
+    open a website for /ExprHeaderOfRequest/ with port 6063:
+        set {_r} to the request
+        set {ExprHeaderOfRequest} to ({_r}'s "Content-Encoding" header)
+        set {ExprHeaderOfRequest} to (the "Content-Encoding" header of {_r})
+        set the status code to 200
+        set the text content of the response to "ok"
+    set {_text} to ""
+    open a web request to http://localhost:6063/ExprHeaderOfRequest/:
+        set the method of request to "GET"
+        set the "Content-Encoding" header of request to "gzip"
+        accept the response:
+            set {_text} to the text content of response
+    if {_text} is "ok":
+        broadcast "true"
+    else:
+        broadcast "false: response was '%{_text}%'"
+    if {ExprHeaderOfRequest} is "gzip":
+        broadcast "true"
+    else:
+        broadcast "false: header was '%{ExprHeaderOfRequest}%'"
+    close the website at /ExprHeaderOfRequest/ with port 6063
+    delete {ExprHeaderOfRequest}

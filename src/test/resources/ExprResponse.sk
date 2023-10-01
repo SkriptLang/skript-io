@@ -1,0 +1,10 @@
+
+on script load:
+    broadcast "ExprResponse"
+    set {ExprResponse} to 0
+    open a website for /ExprResponse/ with port 6063:
+        set {ExprResponse} to 1
+        set the status code to 200
+        set the text content of the response to "ok"
+    close the website at /ExprResponse/ with port 6063
+    delete {ExprResponse}

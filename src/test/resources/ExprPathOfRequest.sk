@@ -1,0 +1,18 @@
+
+on script load:
+    broadcast "ExprPathOfRequest"
+    set {ExprPathOfRequest} to ""
+    open a website for /ExprPathOfRequest/ with port 6063:
+        set {ExprPathOfRequest} to the path of request
+        set the status code to 200
+        set the text content of the response to "ok"
+    open a web request to http://localhost:6063/ExprPathOfRequest/beans:
+        set the method of request to "GET"
+        accept the response:
+            set {_text} to the text content of response
+    if {ExprPathOfRequest} is /ExprPathOfRequest/beans:
+        broadcast "true"
+    else:
+        broadcast "false: path was '%{ExprPathOfRequest}%'"
+    close the website at /ExprPathOfRequest/ with port 6063
+    delete {ExprPathOfRequest}

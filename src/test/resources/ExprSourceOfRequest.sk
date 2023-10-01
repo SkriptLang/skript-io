@@ -1,0 +1,17 @@
+
+on script load:
+    broadcast "ExprSourceOfRequest"
+    set {ExprSourceOfRequest} to ""
+    open a website for /ExprSourceOfRequest/ with port 6063:
+        set {ExprSourceOfRequest} to the source of request
+        set the status code to 200
+        set the text content of the response to "ok"
+    open a web request to http://localhost:6063/ExprSourceOfRequest/:
+        set the method of request to "GET"
+        accept the response
+    if {ExprSourceOfRequest} is "127.0.0.1":
+        broadcast "true"
+    else:
+        broadcast "false: source was '%{ExprSourceOfRequest}%'"
+    close the website at /ExprSourceOfRequest/ with port 6063
+    delete {ExprSourceOfRequest}

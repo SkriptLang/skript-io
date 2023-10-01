@@ -118,19 +118,26 @@ public class SecAcceptResponse extends EffectSection {
         }
         response = new IncomingResponse(request.exchange());
         push(event, response);
-        if (first == null) return;
-        Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
-            if (variables != null)
-                Variables.setLocalVariables(event, variables);
-            if (last != null) last.setNext(new DummyCloseTrigger(request, next) {
-                @Override
-                protected boolean run(Event e) {
-                    pop(e);
-                    return super.run(e);
-                }
+        if (first == null) { // we skip straight on
+            Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+                if (variables != null)
+                    Variables.setLocalVariables(event, variables);
+                TriggerItem.walk(next, event);
             });
-            TriggerItem.walk(first, event);
-        });
+        } else {
+            Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+                if (variables != null)
+                    Variables.setLocalVariables(event, variables);
+                if (last != null) last.setNext(new DummyCloseTrigger(request, next) {
+                    @Override
+                    protected boolean run(Event e) {
+                        pop(e);
+                        return super.run(e);
+                    }
+                });
+                TriggerItem.walk(first, event);
+            });
+        }
     }
     
     @Override
