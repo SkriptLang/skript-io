@@ -152,7 +152,7 @@ run.
 
 ```sk
 edit file ./test.txt:
-	set the contents of the file to "line 1"
+	set the text contents of the file to "line 1"
 	add "line 2" to the lines of the file
 ```
 
@@ -390,6 +390,8 @@ Since `1.0.0`
 Opens a website at the provided path and port, defaulting to the root path `/` on port 80.
 Whenever a request is received, the code inside the section will be run.
 
+Responses to a request should start by sending a status code (e.g. 200 = OK) and then any data.
+
 Website paths should end in a separator `/`, and will handle any requests to their directory.
 A website on the root path `/` will accept any unhandled requests.
 
@@ -397,8 +399,8 @@ Multiple websites cannot be opened on the same port and path.
 Multiple websites can be opened on *different* paths with the same port, such as `/foo/` and `/bar/`
 
 ```sk
-open a website for /landing/:
-	transfer ./site/welcome.html to the response
+open a website on port 12345:
+	set the status code to 200	add "<body>" to the response	add "<h1>hello!!!</h1>" to the response	add "<p>there are %size of all players% players online</p>" to the response	add "</body>" to the response
 ```
 
 ## Common
@@ -434,3 +436,24 @@ Useful for responding to a web request with a file (or copying one file into ano
 transfer {input} to {output}
 transfer ./test.html to the response
 ```
+
+#### Change: Reverse Indexed Set
+
+Since `1.0.0`
+
+A special edition of the set changer that can maintain the indices of target data.
+
+```sk
+set yaml contents of file to {_options::*}
+```
+
+#### Change: Indexed Set
+
+Since `1.0.0`
+
+A special edition of the set changer that can maintain the indices of source data.
+
+```sk
+set {_options::*} to yaml contents of file
+```
+
