@@ -58,7 +58,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         this.setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
         this.classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
         this.returnType = classInfo.getC();
-        if (classInfo.getC() == String.class) return isString = true;
+        if (returnType == String.class) return isString = true;
         if (classInfo instanceof FormatInfo<?>) this.isFormat = true;
         else {
             final Parser<?> parser = classInfo.getParser();

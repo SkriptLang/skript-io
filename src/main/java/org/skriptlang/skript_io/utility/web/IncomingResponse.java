@@ -27,7 +27,7 @@ public record IncomingResponse(HttpURLConnection exchange,
             @Override
             public void execute() throws IOException {
                 try (final InputStream stream = acquireReader()) {
-                    while (stream.skip(Long.MAX_VALUE) == Long.MAX_VALUE);
+                    while (stream.skip(Long.MAX_VALUE) == Long.MAX_VALUE) ;
                 }
             }
         }).await();

@@ -32,7 +32,6 @@ import java.net.URI;
 @Since("1.0.0")
 public class EffTransfer extends Effect {
     
-    
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffTransfer.class, "transfer %readable% [in]to %writable%",
