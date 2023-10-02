@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io;
 
+import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
@@ -15,6 +16,8 @@ import org.skriptlang.skript.lang.comparator.Relation;
 import org.skriptlang.skript.lang.converter.Converter;
 import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript_io.elements.file.effects.EffDeleteFile;
+import org.skriptlang.skript_io.format.Format;
+import org.skriptlang.skript_io.format.FormatInfo;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
@@ -164,6 +167,14 @@ public class Types {
                 return null;
             }
         }, Converter.NO_LEFT_CHAINING);
+    }
+    
+    public void loadFormat(Format<?> format, SkriptAddon addon) {
+        final FormatInfo<?> info = format.getInfo();
+        Classes.registerClass(info.name(format.getName() + " (File Format)")
+            .description("A special converter for the " + info.getCodeName() + " file format.")
+            .examples("the " + info.getCodeName() + " content of the file")
+            .since(addon.version.toString()));
     }
     
 }

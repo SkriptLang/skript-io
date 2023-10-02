@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.skriptlang.skript_io.format.GZipFormat;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,6 +90,7 @@ public class SkriptIO extends JavaPlugin {
             this.types.registerFileFormats();
             this.types.registerComparators();
             this.types.registerConverters();
+            this.types.loadFormat(new GZipFormat(), addon);
         } catch (IOException e) {
             this.getLogger().severe("An error occurred while trying to enable this addon.");
             SkriptIO.error(e);
