@@ -27,6 +27,8 @@ import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 
+import java.util.Map;
+
 @Name("Contents of Resource")
 @Description("""
     The contents of (the stuff inside) a resource, such as an open file.
@@ -58,6 +60,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         this.setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
         this.classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
         this.returnType = classInfo.getC();
+        if (returnType == Map.class) return false; // this needs indexed set
         if (returnType == String.class) return isString = true;
         if (classInfo instanceof FormatInfo<?>) this.isFormat = true;
         else {

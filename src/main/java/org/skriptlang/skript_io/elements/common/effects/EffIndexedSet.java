@@ -2,21 +2,23 @@ package org.skriptlang.skript_io.elements.common.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
+import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Effect;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.SkriptParser;
-import ch.njol.skript.lang.Variable;
+import ch.njol.skript.lang.*;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.format.FormatInfo;
+import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Resource;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Name("Change: Indexed Set")
@@ -30,16 +32,23 @@ public class EffIndexedSet extends Effect { // todo make sure this actually work
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerEffect(EffIndexedSet.class, "set %~objects% to %objects%", "map %~objects% to %objects%");
+            Skript.registerEffect(EffIndexedSet.class, "set %~objects% to [the] %*classinfo% content[s] of %resource%",
+                "set %~objects% to %resource%'[s] %*classinfo% content[s]");
     }
     
-    private Expression<Object> sourceExpression;
+    
+    private FormatInfo<?> classInfo;
+    private Expression<Resource> sourceExpression;
     private Variable<?> target;
     
     @Override
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
-        this.sourceExpression = (Expression<Object>) expressions[1];
+        this.sourceExpression = (Expression<Resource>) expressions[2 - matchedPattern];
+        if (((Literal<ClassInfo<?>>) expressions[1 + matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
+            this.classInfo = info;
+            if (info.getFormat().getType() != Map.class) return false;
+        } else return false;
         if (expressions[0] instanceof Variable<?> variable) target = variable;
         else return false;
         return true;
@@ -47,12 +56,17 @@ public class EffIndexedSet extends Effect { // todo make sure this actually work
     
     @Override
     protected void execute(@NotNull Event event) {
-        final Object source = sourceExpression.getSingle(event);
+        final Object source = this.get(sourceExpression.getSingle(event));
         if (!(source instanceof Map<?, ?> map) || !target.isList()) {
             this.target.change(event, sourceExpression.getArray(event), Changer.ChangeMode.SET);
             return;
         }
         this.set(event, target, map);
+    }
+    
+    protected Object get(Resource resource) {
+        if (!(resource instanceof Readable readable)) return new HashMap<>();
+        return classInfo.getFormat().from(readable);
     }
     
     protected void set(Event event, Variable<?> variable, Map<?, ?> map) {
@@ -84,7 +98,8 @@ public class EffIndexedSet extends Effect { // todo make sure this actually work
     
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "map " + target.toString(event, debug) + " to " + sourceExpression.toString(event, debug);
+        return "set " + target.toString(event, debug) + " to the " +
+            this.classInfo.getCodeName() + " contents of " + sourceExpression.toString(event, debug);
     }
     
 }
