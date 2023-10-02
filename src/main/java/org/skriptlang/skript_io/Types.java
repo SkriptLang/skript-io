@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
 
 public class Types {
     
-    public void register() {
+    public void registerTypes() {
         Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)[s]").name("Resource Path")
             .description("Represents a path to something, such as a relative file path or an internet URL.")
             .examples("set {_file} to ./test.txt").since("1.0.0").changer(new Changer<>() {
@@ -125,6 +125,13 @@ public class Types {
             .description(
                 "Represents an incoming website request (a browser asking for a page or data)," + " or an outgoing request (your server contacting a website).")
             .examples("the request").since("1.0.0"));
+    }
+    
+    public void registerFileFormats() {
+    
+    }
+    
+    public void registerComparators() {
         Comparators.registerComparator(FileController.class, FileController.class, new Comparator<>() {
             @Override
             public @NotNull Relation compare(FileController o1, FileController o2) {
@@ -146,6 +153,9 @@ public class Types {
                 return Relation.NOT_EQUAL;
             }
         });
+    }
+    
+    public void registerConverters() {
         Converters.registerConverter(FileController.class, URI.class, FileController::getPath);
         Converters.registerConverter(String.class, URI.class, text -> {
             try {
@@ -153,7 +163,7 @@ public class Types {
             } catch (URISyntaxException e) {
                 return null;
             }
-        }, Converter.NO_RIGHT_CHAINING);
+        }, Converter.NO_LEFT_CHAINING);
     }
     
 }

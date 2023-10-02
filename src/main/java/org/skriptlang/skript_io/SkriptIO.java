@@ -85,7 +85,10 @@ public class SkriptIO extends JavaPlugin {
         try {
             this.addon = Skript.registerAddon(this);
             this.addon.loadClasses("org.skriptlang.skript_io.elements");
-            this.types.register();
+            this.types.registerTypes();
+            this.types.registerFileFormats();
+            this.types.registerComparators();
+            this.types.registerConverters();
         } catch (IOException e) {
             this.getLogger().severe("An error occurred while trying to enable this addon.");
             SkriptIO.error(e);
