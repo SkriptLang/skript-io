@@ -19,7 +19,10 @@ import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.lang.converter.Converters;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.format.Format;
+import org.skriptlang.skript_io.format.FormatInfo;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
@@ -46,18 +49,23 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     }
     
     private ClassInfo<?> classInfo;
-    private boolean stringMode;
+    private boolean isString, isFormat;
+    private Class<?> returnType = Object.class;
     
     @Override
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
         this.setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
         this.classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
-        final Parser<?> parser = classInfo.getParser();
-        if (classInfo.getC() == String.class) return stringMode = true;
-        if (parser == null) { // TODO special parse context?
-            Skript.error("Content cannot be parsed as " + classInfo.getName().withIndefiniteArticle());
-            return false;
+        this.returnType = classInfo.getC();
+        if (classInfo.getC() == String.class) return isString = true;
+        if (classInfo instanceof FormatInfo<?>) this.isFormat = true;
+        else {
+            final Parser<?> parser = classInfo.getParser();
+            if (parser == null) { // TODO special parse context?
+                Skript.error("Content cannot be parsed as " + classInfo.getName().withIndefiniteArticle());
+                return false;
+            }
         }
         return true;
     }
@@ -68,25 +76,36 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     }
     
     @Override
+    protected Object @NotNull [] get(@NotNull Event event, Resource[] source) {
+        final Resource resource = source[0];
+        return this.get(resource);
+    }
+    
+    @Override
     public @Nullable Object convert(Resource resource) {
-        if (resource instanceof Readable readable) {
-            if (stringMode) return readable.readAll();
-            final Parser<?> parser = classInfo.getParser();
-            if (parser == null) return null;
-            return parser.parse(readable.readAll(), ParseContext.DEFAULT);
-        }
-        return null;
+        final Object[] objects = this.get(resource);
+        if (objects.length == 0) return null;
+        return objects[0];
+    }
+    
+    protected Object @NotNull [] get(Resource resource) {
+        if (!(resource instanceof Readable readable)) return new Object[0];
+        if (isString) return new String[]{readable.readAll()};
+        else if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().from(readable);
+        final Parser<?> parser = classInfo.getParser();
+        if (parser == null) return new Object[0];
+        return new Object[]{parser.parse(readable.readAll(), ParseContext.DEFAULT)};
     }
     
     @Override
     public @NotNull Class<?> getReturnType() {
-        return classInfo.getC();
+        return returnType;
     }
     
     @Override
     public Class<?> @Nullable [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
-            case SET -> CollectionUtils.array(classInfo.getC());
+            case SET -> CollectionUtils.array(returnType);
             case RESET, DELETE -> CollectionUtils.array();
             default -> null;
         };
@@ -96,14 +115,24 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (mode == Changer.ChangeMode.SET && delta != null && delta.length != 0 && delta[0] != null) {
-            if (!classInfo.getC().isInstance(delta[0])) return;
-            final Parser parser = classInfo.getParser();
             final Resource[] files = this.getExpr().getArray(event);
-            final String content;
-            if (parser == null) content = String.valueOf(delta[0]);
-            else content = parser.toString(delta[0], StringMode.COMMAND);
-            for (final Resource file : files)
-                if (file instanceof Writable writable) writable.write(content);
+            if (isString) {
+                this.writeString(files, delta);
+            } else if (isFormat && classInfo instanceof FormatInfo<?> info) {
+                final Format<?> format = info.getFormat();
+                final Object[] array = new Object[delta.length];
+                for (int i = 0; i < array.length; i++) array[i] = Converters.convert(delta[i], returnType);
+                for (final Resource file : files)
+                    if (file instanceof Writable writable) format.to(writable, array);
+            } else {
+                final Parser parser = classInfo.getParser();
+                final Object object = Converters.convert(delta[0], returnType);
+                final String content;
+                if (parser == null) content = String.valueOf(object);
+                else content = parser.toString(object, StringMode.COMMAND);
+                for (final Resource file : files)
+                    if (file instanceof Writable writable) writable.write(content);
+            }
         } else {
             final Resource[] files = this.getExpr().getArray(event);
             for (final Resource file : files)
@@ -111,8 +140,15 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         }
     }
     
+    private void writeString(Resource[] resources, Object[] delta) {
+        final String content = String.valueOf(delta[0]);
+        for (final Resource file : resources)
+            if (file instanceof Writable writable) writable.write(content);
+    }
+    
     @Override
     public boolean isSingle() {
+        if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().isSingular();
         return true;
     }
     
