@@ -84,6 +84,7 @@ public class SkriptIO extends JavaPlugin {
             return;
         }
         this.types = new Types();
+        this.types.removeEffChange();
         try {
             this.addon = Skript.registerAddon(this);
             this.addon.loadClasses("org.skriptlang.skript_io.elements");
@@ -97,6 +98,9 @@ public class SkriptIO extends JavaPlugin {
             this.getLogger().severe("An error occurred while trying to enable this addon.");
             SkriptIO.error(e);
             manager.disablePlugin(this);
+            return;
+        } finally {
+            this.types.reAddEffChange();
         }
         queue = new IOQueue();
         remoteQueue = new IOQueue();

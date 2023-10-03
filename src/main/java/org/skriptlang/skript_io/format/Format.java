@@ -13,11 +13,17 @@ import java.lang.reflect.Array;
 public abstract class Format<Type> {
     
     protected final String name;
+    protected final String pattern;
     protected final Class<Type> type;
     
-    protected Format(String name, Class<Type> type) {
+    protected Format(String name, Class<Type> type, String pattern) {
         this.name = name;
         this.type = type;
+        this.pattern = pattern;
+    }
+    
+    protected Format(String name, Class<Type> type) {
+        this(name, type, name.toLowerCase());
     }
     
     public @Nullable Type[] from(Readable readable) {
@@ -54,7 +60,8 @@ public abstract class Format<Type> {
     
     @SuppressWarnings("unchecked")
     public FormatInfo<Type> getInfo() {
-        return new FormatInfo<>((Class<Format<Type>>) this.getClass(), name.toLowerCase(), this);
+        return (FormatInfo<Type>) new FormatInfo<>((Class<Format<Type>>) this.getClass(), name.toLowerCase(), this)
+            .user(pattern);
     }
     
     public String getName() {

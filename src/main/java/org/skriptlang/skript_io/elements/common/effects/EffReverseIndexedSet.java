@@ -25,7 +25,7 @@ import java.util.Map;
 @Description("A special edition of the set changer that can maintain the indices of target data.")
 @Examples({"set yaml contents of file to {_options::*}"})
 @Since("1.0.0")
-public class EffReverseIndexedSet extends Effect { // todo make sure this actually works
+public class EffReverseIndexedSet extends Effect {
     
     static {
         if (!SkriptIO.isTest())

@@ -1,11 +1,14 @@
 package org.skriptlang.skript_io;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.classes.Serializer;
+import ch.njol.skript.effects.EffChange;
 import ch.njol.skript.lang.ParseContext;
+import ch.njol.skript.lang.SyntaxElementInfo;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.yggdrasil.Fields;
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +30,17 @@ import org.skriptlang.skript_io.utility.web.WebServer;
 
 import java.io.File;
 import java.io.StreamCorruptedException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class Types {
+    
+    private SyntaxElementInfo<?> change;
+    private Collection<SyntaxElementInfo<?>> effects;
+    private Collection<SyntaxElementInfo<?>> syntax;
     
     public void registerTypes() {
         Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)[s]").name("Resource Path")
@@ -157,7 +167,7 @@ public class Types {
             }
         });
     }
-    
+
     public void registerConverters() {
         Converters.registerConverter(FileController.class, URI.class, FileController::getPath);
         Converters.registerConverter(String.class, URI.class, text -> {
@@ -168,13 +178,47 @@ public class Types {
             }
         }, Converter.NO_LEFT_CHAINING);
     }
-    
+
     public void loadFormat(Format<?> format, SkriptAddon addon) {
         final FormatInfo<?> info = format.getInfo();
         Classes.registerClass(info.name(format.getName() + " (File Format)")
             .description("A special converter for the " + info.getCodeName() + " file format.")
             .examples("the " + info.getCodeName() + " content of the file")
             .since(addon.version.toString()));
+    }
+    
+    void removeEffChange() {
+        try {
+            {
+                final Field field = Skript.class.getDeclaredField("effects");
+                field.setAccessible(true);
+                this.effects = (Collection<SyntaxElementInfo<?>>) field.get(null);
+            }
+            {
+                final Field field = Skript.class.getDeclaredField("statements");
+                field.setAccessible(true);
+                this.syntax = (Collection<SyntaxElementInfo<?>>) field.get(null);
+            }
+            final Iterator<SyntaxElementInfo<?>> iterator = effects.iterator();
+            while (iterator.hasNext()) {
+                final SyntaxElementInfo<?> next = iterator.next();
+                if (next.c != EffChange.class) continue;
+                this.change = next;
+                iterator.remove();
+                break;
+            }
+            this.syntax.remove(change);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    void reAddEffChange() {
+        this.effects.add(change);
+        this.syntax.add(change);
+        this.effects = null;
+        this.syntax = null;
+        this.change = null;
     }
     
 }

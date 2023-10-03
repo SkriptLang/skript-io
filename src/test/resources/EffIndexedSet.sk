@@ -1,0 +1,16 @@
+
+on script load:
+    broadcast "EffIndexedSet"
+    create file ./test/EffIndexedSet.txt:
+        add "hello: there" to the file
+        add newline to the file
+        add "general: kenobi" to the file
+        add newline to the file
+        add "foo: 3" to the file
+    read file ./test/EffIndexedSet.txt:
+        set {_text::*} to the yaml contents of file
+    if size of {_text::*} is 3:
+        broadcast "true"
+    else:
+        broadcast "false: size of '%{_text::*}%' was wrong"
+    delete file ./test/EffIndexedSet.txt

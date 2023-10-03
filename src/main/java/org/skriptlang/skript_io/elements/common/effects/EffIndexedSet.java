@@ -25,14 +25,15 @@ import java.util.Map;
 @Description("A special edition of the set changer that can maintain the indices of source data.")
 @Examples({"set {_options::*} to yaml contents of file"})
 @Since("1.0.0")
-public class EffIndexedSet extends Effect { // todo make sure this actually works
+public class EffIndexedSet extends Effect {
     
     
     private static final String SEPARATOR = Variable.SEPARATOR;
     
     static {
         if (!SkriptIO.isTest())
-            Skript.registerEffect(EffIndexedSet.class, "set %~objects% to [the] %*classinfo% content[s] of %resource%",
+            Skript.registerEffect(EffIndexedSet.class,
+                "set %~objects% to [the] %*classinfo% content[s] of %resource%",
                 "set %~objects% to %resource%'[s] %*classinfo% content[s]");
     }
     
@@ -66,7 +67,9 @@ public class EffIndexedSet extends Effect { // todo make sure this actually work
     
     protected Object get(Resource resource) {
         if (!(resource instanceof Readable readable)) return new HashMap<>();
-        return classInfo.getFormat().from(readable);
+        final Object[] things = classInfo.getFormat().from(readable);
+        if (things.length > 1) return new HashMap<>();
+        return things[0];
     }
     
     protected void set(Event event, Variable<?> variable, Map<?, ?> map) {

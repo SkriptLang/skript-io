@@ -1,0 +1,16 @@
+
+on script load:
+    broadcast "EffReverseIndexedSet"
+    set {_text::hello} to "there"
+    set {_text::general} to "kenobi"
+    set {_text::foo} to 3
+    create file ./test/EffReverseIndexedSet.txt:
+        set the yaml contents of file to {_text::*}
+    read file ./test/EffReverseIndexedSet.txt:
+        set {_text} to the text content of the file
+    set {_expected} to "foo: 3%newline%general: kenobi%newline%hello: there%newline%"
+    if {_text} is {_expected}:
+        broadcast "true"
+    else:
+        broadcast "false: content '%{_text}%' was not read out correctly"
+    delete file ./test/EffReverseIndexedSet.txt
