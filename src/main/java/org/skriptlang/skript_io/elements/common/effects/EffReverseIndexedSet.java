@@ -19,6 +19,9 @@ import org.skriptlang.skript_io.format.FormatInfo;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Name("Change: Reverse Indexed Set")
@@ -66,6 +69,38 @@ public class EffReverseIndexedSet extends Effect {
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "set the " + classInfo.getCodeName() + " contents of " +
             this.targetExpression.toString(event, debug) + " to " + source.toString(event, debug);
+    }
+    
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    private void convertLists(Map<?, ?> map) {
+        for (final Map.Entry entry : map.entrySet()) {
+            final Object value = entry.getValue();
+            if (!(value instanceof Map<?, ?> child)) continue;
+            if (this.couldBeList(child)) entry.setValue(this.convertToList(child));
+            else this.convertLists(child);
+        }
+    }
+    
+    private List<?> convertToList(Map<?, ?> map) {
+        final HashMap<Integer, Object> sorter = new HashMap<>(map.size());
+        for (final Map.Entry<?, ?> entry : map.entrySet()) {
+            final String key = String.valueOf(entry.getKey());
+            final int number = Integer.parseInt(key);
+            sorter.put(number, entry.getValue());
+        }
+        return new ArrayList<>(sorter.values());
+    }
+    
+    private boolean couldBeList(Map<?, ?> map) {
+        for (final Object object : map.keySet()) {
+            if (object == null) return false;
+            final String string = String.valueOf(object);
+            for (final char c : string.toCharArray()) {
+                if (c < '0') return false;
+                if (c > '9') return false;
+            }
+        }
+        return true;
     }
     
 }

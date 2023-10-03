@@ -19,6 +19,7 @@ import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Name("Change: Indexed Set")
@@ -87,7 +88,10 @@ public class EffIndexedSet extends Effect {
             final Object value2 = entry.getValue();
             this.set(event, variable, key + SEPARATOR + key2, value2);
         }
-        else this.setIndex(event, variable, key, value);
+        else if (value instanceof List<?> list) {
+            int index = 0;
+            for (final Object object : list) this.set(event, variable, key + SEPARATOR + ++index, object);
+        } else this.setIndex(event, variable, key, value);
     }
     
     private void set(Event event, Variable<?> target, Object value) {
