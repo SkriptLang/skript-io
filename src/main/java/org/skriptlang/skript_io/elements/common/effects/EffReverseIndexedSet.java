@@ -61,6 +61,7 @@ public class EffReverseIndexedSet extends Effect {
         final String name = StringUtils.substring(source.getName().toString(event), 0, -1);
         final Object variable = Variables.getVariable(name + "*", event, source.isLocal());
         if (!(variable instanceof Map<?, ?> map)) return;
+        this.convertLists(map);
         for (final Resource file : targetExpression.getArray(event))
             if (file instanceof Writable writable) format.to(writable, map);
     }
