@@ -10,9 +10,13 @@ import java.util.Map;
 
 public class JsonFormat extends Format<Map<String, Object>> {
     
-    @SuppressWarnings("unchecked")
     public JsonFormat() {
-        super("JSON", (Class<Map<String, Object>>) (Object) Map.class, "json");
+        this("Json", "json");
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected JsonFormat(String name, String pattern) {
+        super(name, (Class<Map<String, Object>>) (Object) Map.class, pattern);
     }
     
     @Override
