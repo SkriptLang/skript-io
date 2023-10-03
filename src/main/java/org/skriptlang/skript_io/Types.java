@@ -167,7 +167,7 @@ public class Types {
             }
         });
     }
-
+    
     public void registerConverters() {
         Converters.registerConverter(FileController.class, URI.class, FileController::getPath);
         Converters.registerConverter(String.class, URI.class, text -> {
@@ -178,7 +178,7 @@ public class Types {
             }
         }, Converter.NO_LEFT_CHAINING);
     }
-
+    
     public void loadFormat(Format<?> format, SkriptAddon addon) {
         final FormatInfo<?> info = format.getInfo();
         Classes.registerClass(info.name(format.getName() + " (File Format)")

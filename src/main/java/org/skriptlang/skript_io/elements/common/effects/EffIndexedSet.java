@@ -28,7 +28,6 @@ import java.util.Map;
 @Since("1.0.0")
 public class EffIndexedSet extends Effect {
     
-    
     private static final String SEPARATOR = Variable.SEPARATOR;
     
     static {
@@ -69,7 +68,7 @@ public class EffIndexedSet extends Effect {
     protected Object get(Resource resource) {
         if (!(resource instanceof Readable readable)) return new HashMap<>();
         final Object[] things = classInfo.getFormat().from(readable);
-        if (things.length > 1) return new HashMap<>();
+        if (things.length == 0) return new HashMap<>();
         return things[0];
     }
     

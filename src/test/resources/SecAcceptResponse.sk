@@ -14,3 +14,26 @@ on script load:
     else:
         broadcast "false: response was '%{_text}%'"
     close the website at /SecAcceptResponse/ with port 6063
+    # format content
+    open a website for /SecAcceptResponse2/ with port 6063:
+        set the status code to 200
+        set {_json::hello} to "there"
+        set {_json::foo} to "bar"
+        set the json content of the response to {_json::*}
+    open a web request to http://localhost:6063/SecAcceptResponse2/:
+        set the method of request to "GET"
+        accept the response:
+            set {_response::*} to the json content of response
+    if size of {_response::*} is 2:
+        broadcast "true"
+    else:
+        broadcast "false: response size was '%size of {_response::*}%'"
+    if {_response::hello} is "there":
+        broadcast "true"
+    else:
+        broadcast "false: response 2 was '%{_response::hello}%'"
+    if {_response::foo} is "bar":
+        broadcast "true"
+    else:
+        broadcast "false: response 3 was '%{_response::foo}%'"
+    close the website at /SecAcceptResponse2/ with port 6063

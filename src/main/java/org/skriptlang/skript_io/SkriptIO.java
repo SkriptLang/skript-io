@@ -104,8 +104,8 @@ public class SkriptIO extends JavaPlugin {
         } finally {
             this.types.reAddEffChange();
         }
-        queue = new IOQueue();
-        remoteQueue = new IOQueue();
+        queue = new IOQueue(50);
+        remoteQueue = new IOQueue(100);
         this.loadConfig();
     }
     

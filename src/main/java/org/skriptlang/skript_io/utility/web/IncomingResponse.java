@@ -6,9 +6,7 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,8 +34,13 @@ public record IncomingResponse(HttpURLConnection exchange,
     
     @Override
     public @NotNull InputStream acquireReader() throws IOException {
-        this.wasRead.set(true);
-        return exchange.getInputStream();
+        try {
+            this.wasRead.set(true);
+            return exchange.getInputStream();
+        } catch (FileNotFoundException ex) {
+            SkriptIO.error("Unable to connect to website '" + ex.getMessage() + "'");
+            return new ByteArrayInputStream(new byte[0]);
+        }
     }
     
     public int statusCode() {
