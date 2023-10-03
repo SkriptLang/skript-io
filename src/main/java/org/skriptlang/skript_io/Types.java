@@ -7,7 +7,9 @@ import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
 import ch.njol.skript.classes.Serializer;
 import ch.njol.skript.effects.EffChange;
+import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.ParseContext;
+import ch.njol.skript.lang.Statement;
 import ch.njol.skript.lang.SyntaxElementInfo;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.yggdrasil.Fields;
@@ -30,7 +32,6 @@ import org.skriptlang.skript_io.utility.web.WebServer;
 
 import java.io.File;
 import java.io.StreamCorruptedException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -39,8 +40,8 @@ import java.util.Iterator;
 public class Types {
     
     private SyntaxElementInfo<?> change;
-    private Collection<SyntaxElementInfo<?>> effects;
-    private Collection<SyntaxElementInfo<?>> syntax;
+    private Collection<SyntaxElementInfo<? extends Effect>> effects;
+    private Collection<SyntaxElementInfo<? extends Statement>> syntax;
     
     public void registerTypes() {
         Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)[s]").name("Resource Path")
@@ -188,34 +189,23 @@ public class Types {
     }
     
     void removeEffChange() {
-        try {
-            {
-                final Field field = Skript.class.getDeclaredField("effects");
-                field.setAccessible(true);
-                this.effects = (Collection<SyntaxElementInfo<?>>) field.get(null);
-            }
-            {
-                final Field field = Skript.class.getDeclaredField("statements");
-                field.setAccessible(true);
-                this.syntax = (Collection<SyntaxElementInfo<?>>) field.get(null);
-            }
-            final Iterator<SyntaxElementInfo<?>> iterator = effects.iterator();
-            while (iterator.hasNext()) {
-                final SyntaxElementInfo<?> next = iterator.next();
-                if (next.c != EffChange.class) continue;
-                this.change = next;
-                iterator.remove();
-                break;
-            }
-            this.syntax.remove(change);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        this.effects = Skript.getEffects();
+        this.syntax = Skript.getStatements();
+        final Iterator<SyntaxElementInfo<? extends Effect>> iterator = effects.iterator();
+        while (iterator.hasNext()) {
+            final SyntaxElementInfo<?> next = iterator.next();
+            if (next.c != EffChange.class) continue;
+            this.change = next;
+            iterator.remove();
+            break;
         }
+        this.syntax.remove(change);
     }
     
+    @SuppressWarnings("unchecked")
     void reAddEffChange() {
-        this.effects.add(change);
-        this.syntax.add(change);
+        this.effects.add((SyntaxElementInfo<? extends Effect>) change);
+        this.syntax.add((SyntaxElementInfo<? extends Statement>) change);
         this.effects = null;
         this.syntax = null;
         this.change = null;
