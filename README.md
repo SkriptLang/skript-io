@@ -456,4 +456,3 @@ A special edition of the set changer that can maintain the indices of source dat
 ```sk
 set {_options::*} to yaml contents of file
 ```
-
