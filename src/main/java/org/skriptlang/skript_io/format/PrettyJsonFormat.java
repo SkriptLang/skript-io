@@ -9,7 +9,7 @@ import java.util.Map;
 public class PrettyJsonFormat extends JsonFormat {
     
     public PrettyJsonFormat() {
-        super("Pretty Json", "(pretty|formatted) json");
+        super("PrettyJson", "(pretty|formatted) json");
     }
     
     @Override

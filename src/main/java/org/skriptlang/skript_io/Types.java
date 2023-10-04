@@ -184,7 +184,7 @@ public class Types {
         final FormatInfo<?> info = format.getInfo();
         Classes.registerClass(info.name(format.getName() + " (File Format)")
             .description("A special converter for the " + info.getCodeName() + " file format.")
-            .examples("the " + info.getCodeName() + " content of the file")
+            .examples("the " + format.getName().toLowerCase() + " content of the file")
             .since(addon.version.toString()));
     }
     

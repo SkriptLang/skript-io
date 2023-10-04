@@ -9,10 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.skriptlang.skript_io.format.GZipFormat;
-import org.skriptlang.skript_io.format.JsonFormat;
-import org.skriptlang.skript_io.format.PrettyJsonFormat;
-import org.skriptlang.skript_io.format.YamlFormat;
+import org.skriptlang.skript_io.format.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +95,7 @@ public class SkriptIO extends JavaPlugin {
             this.types.loadFormat(new YamlFormat(), addon);
             this.types.loadFormat(new JsonFormat(), addon);
             this.types.loadFormat(new PrettyJsonFormat(), addon);
+            this.types.loadFormat(new URLEncodedFormat(), addon);
         } catch (IOException e) {
             this.getLogger().severe("An error occurred while trying to enable this addon.");
             SkriptIO.error(e);
