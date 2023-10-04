@@ -1,0 +1,27 @@
+
+on script load:
+    broadcast "EffEncode"
+    set {_text::hello} to "there"
+    set {_text::general} to "kenobi"
+    set {_text::foo} to 3
+    decode {_text::*} from yaml to {_text}
+    set {_expected} to "foo: 3%newline%general: kenobi%newline%hello: there%newline%"
+    if {_text} is {_expected}:
+        broadcast "true"
+    else:
+        broadcast "false: content '%{_text}%' was not decoded correctly"
+    delete {_text::*}
+    encode {_expected} as yaml to {_text::*}
+    if {_text::hello} is "there":
+        broadcast "true"
+    else:
+        broadcast "false: content '%{_text::hello}%' was not encoded correctly"
+    if {_text::general} is "kenobi":
+        broadcast "true"
+    else:
+        broadcast "false: content '%{_text::general}%' was not encoded correctly"
+    if {_text::foo} is 3:
+        broadcast "true"
+    else:
+        broadcast "false: content '%{_text::foo}%' was not encoded correctly"
+

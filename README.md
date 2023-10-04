@@ -447,6 +447,18 @@ A special edition of the set changer that can maintain the indices of target dat
 set yaml contents of file to {_options::*}
 ```
 
+#### Encode
+
+Since `1.0.0`
+
+Used for converting data from one format to another.
+This includes special list variable data structures.
+
+```sk
+encode {_raw text} as json to {_json::*}
+decode {_config::*} from yaml to {_raw text}
+```
+
 #### Change: Indexed Set
 
 Since `1.0.0`
