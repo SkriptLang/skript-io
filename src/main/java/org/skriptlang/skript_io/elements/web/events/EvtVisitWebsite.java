@@ -32,7 +32,7 @@ public class EvtVisitWebsite extends SkriptEvent {
         it is much safer to use the dedicated website section.""";
     
     static {
-        if (!SkriptIO.isTest()) {
+        if (!SkriptIO.isTest() && false) { // todo this is dangerous currently
             Skript.registerEvent(NAME, EvtVisitWebsite.class, VisitWebsiteEvent.class,
                     "website visit", "visiting [a] website", "web[site] request")
                 .description(DESCRIPTION)
