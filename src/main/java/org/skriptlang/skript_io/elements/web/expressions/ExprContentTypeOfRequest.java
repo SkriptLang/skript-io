@@ -23,7 +23,7 @@ import org.skriptlang.skript_io.utility.web.Request;
     """)
 @Examples({
     "open a web request to http://localhost:3000:",
-    "\tset the request's content-type"
+    "\tset the request's content-type to \"application/json\""
 })
 @Since("1.0.0")
 public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, String> {
