@@ -181,7 +181,7 @@ public class EffEncode extends Effect {
     }
     
     protected void set(Event event, Variable<?> variable, String key, Object value) {
-        //<editor-fold desc="Sets an individual index of a variable to a value">
+        //<editor-fold desc="Sets an individual index of a variable to a value" defaultstate="collapsed">
         if (value instanceof Map<?, ?> map) for (final Map.Entry<?, ?> entry : map.entrySet()) {
             final String key2 = String.valueOf(entry.getKey());
             final Object value2 = entry.getValue();
@@ -205,7 +205,7 @@ public class EffEncode extends Effect {
     
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     protected void convertLists(Map<?, ?> map) {
-        //<editor-fold desc="Checks whether entries in a map could be a list">
+        //<editor-fold desc="Checks whether entries in a map could be a list" defaultstate="collapsed">
         for (final Map.Entry entry : map.entrySet()) {
             final Object value = entry.getValue();
             if (!(value instanceof Map<?, ?> child)) continue;
@@ -216,7 +216,7 @@ public class EffEncode extends Effect {
     }
     
     private List<?> convertToList(Map<?, ?> map) {
-        //<editor-fold desc="Converts a map to an ordered list">
+        //<editor-fold desc="Converts a map to an ordered list" defaultstate="collapsed">
         final HashMap<Integer, Object> sorter = new HashMap<>(map.size());
         for (final Map.Entry<?, ?> entry : map.entrySet()) {
             final String key = String.valueOf(entry.getKey());
@@ -228,7 +228,7 @@ public class EffEncode extends Effect {
     }
     
     private boolean couldBeList(Map<?, ?> map) {
-        //<editor-fold desc="Checks whether a map could be a list">
+        //<editor-fold desc="Checks whether a map could be a list" defaultstate="collapsed">
         for (final Object object : map.keySet()) {
             if (object == null) return false;
             final String string = String.valueOf(object);
