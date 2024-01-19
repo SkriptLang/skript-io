@@ -233,7 +233,7 @@ Not all web requests will have data attached.
 
 ```sk
 open a web request to http://localhost:3000:
-	set the request's content-type
+	set the request's content-type to "application/json"
 ```
 
 #### Incoming Request
@@ -337,6 +337,23 @@ Sending data (e.g. submitting a form, searching) typically uses "POST".
 ```sk
 open a website:
 	if method of request is "GET":
+```
+
+### Events
+
+#### Visit Website
+
+Since `1.0.0`
+
+Called when a website running from this server is visited.
+This could be from a browser asking for a page or a web request.
+
+While requests can be read and responded to in this event listener,
+it is much safer to use the dedicated website section.
+
+```sk
+on website visit:
+	set the status code to 200
 ```
 
 ### Effects
