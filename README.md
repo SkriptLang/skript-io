@@ -476,6 +476,45 @@ encode {_raw text} as json to {_json::*}
 decode {_config::*} from yaml to {_raw text}
 ```
 
+#### Throw Error
+
+Since `1.0.0`
+
+Produces an error that terminates the current trigger, unless it is 'caught' by a try/catch section.
+
+```sk
+throw an error with message "oops!"
+```
+
+#### Catch Error
+
+Since `1.0.0`
+
+Obtains the error from the previous `try` section and stores it in a variable.
+This can also be used as a section that will run only if an error occurred.
+
+```sk
+try:
+	add "hello" to the file
+catch {error}
+```
+
+#### Try (Section)
+
+Since `1.0.0`
+
+Attempts to run the code in the section. If any part of the code encounters an error,the section will exit immediately
+and any remaining code will not be run.
+This means that the script may continue in an unexpected state (i.e. some variables may be different from expected)and
+so the `try` section should be used with caution.
+Any kind of delay is prohibited within the try section.
+
+```sk
+try:
+	add "hello" to the file
+catch {error}
+```
+
 #### Change: Indexed Set
 
 Since `1.0.0`
