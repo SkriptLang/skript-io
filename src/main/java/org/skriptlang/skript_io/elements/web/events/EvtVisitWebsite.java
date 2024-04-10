@@ -23,22 +23,22 @@ import static org.skriptlang.skript_io.elements.web.events.EvtVisitWebsite.*;
 @Examples({"on website visit:", "\tset the status code to 200"})
 @Since(SINCE)
 public class EvtVisitWebsite extends SkriptEvent {
-    
+
     protected static final String SINCE = "1.0.0", NAME = "Visit Website", DESCRIPTION = """
         Called when a website running from this server is visited.
         This could be from a browser asking for a page or a web request.
-        
+                
         While requests can be read and responded to in this event listener,
         it is much safer to use the dedicated website section.""";
-    
+
     static {
-        if (!SkriptIO.isTest() && false) { // todo this is dangerous currently
+        if (false) { // todo this is dangerous currently
             Skript.registerEvent(NAME, EvtVisitWebsite.class, VisitWebsiteEvent.class,
-                    "website visit", "visiting [a] website", "web[site] request")
-                .description(DESCRIPTION)
-                .examples("on website visit:",
-                    "\tset the status code to 200")
-                .since(SINCE);
+                                 "website visit", "visiting [a] website", "web[site] request")
+                  .description(DESCRIPTION)
+                  .examples("on website visit:",
+                            "\tset the status code to 200")
+                  .since(SINCE);
             EventValues.registerEventValue(VisitWebsiteEvent.class, WebServer.class, new Getter<>() {
                 @Override
                 public WebServer get(final VisitWebsiteEvent e) {
@@ -47,22 +47,23 @@ public class EvtVisitWebsite extends SkriptEvent {
             }, 0);
         }
     }
-    
-    public EvtVisitWebsite() {}
-    
-    @Override
-    public boolean check(final Event e) {
-        return true;
+
+    public EvtVisitWebsite() {
     }
-    
+
     @Override
     public boolean init(final Literal<?>[] args, final int matchedPattern, final SkriptParser.ParseResult parser) {
         return true;
     }
-    
+
+    @Override
+    public boolean check(final Event e) {
+        return true;
+    }
+
     @Override
     public @NotNull String toString(final Event e, final boolean debug) {
         return "website visit";
     }
-    
+
 }

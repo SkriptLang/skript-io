@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Name("Send Web Request")
 @Description("""
     Prepares an HTTP request to be sent to a website URL. This may have content written to it.
-    
+        
     Once the request has been dispatched, the response can be read.""")
 @Examples({
     "open a web request to https://skriptlang.org:",
@@ -42,18 +42,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 })
 @Since("1.0.0")
 public class SecOpenRequest extends EffectSection {
-    
+
     private static final Map<Event, Stack<OutgoingRequest>> requestMap = new WeakHashMap<>();
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerSection(SecOpenRequest.class,
-                "(open|send) ([a] web|[an] http) request [to] %path%"
-            );
+                                   "(open|send) ([a] web|[an] http) request [to] %path%"
+                                  );
     }
-    
+
     protected Expression<URI> pathExpression;
-    
+
     public static OutgoingRequest getCurrentRequest(Event event) {
         if (event == null) return null;
         final Stack<OutgoingRequest> stack = requestMap.get(event);
@@ -61,7 +61,7 @@ public class SecOpenRequest extends EffectSection {
         if (stack.isEmpty()) return null;
         return stack.peek();
     }
-    
+
     private static void push(Event event, OutgoingRequest request) {
         if (event == null || request == null) return;
         final Stack<OutgoingRequest> stack;
@@ -70,7 +70,7 @@ public class SecOpenRequest extends EffectSection {
         assert stack != null;
         stack.push(request);
     }
-    
+
     private static void pop(Event event) {
         if (event == null) return;
         final Stack<OutgoingRequest> stack = requestMap.get(event);
@@ -78,10 +78,12 @@ public class SecOpenRequest extends EffectSection {
         if (stack.isEmpty()) requestMap.remove(event);
         else stack.pop();
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> list) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
+                        @Nullable List<TriggerItem> list) {
         if (!this.hasSection()) return false;
         this.pathExpression = (Expression<URI>) expressions[0];
         assert sectionNode != null;
@@ -90,7 +92,7 @@ public class SecOpenRequest extends EffectSection {
         this.getParser().setHasDelayBefore(Kleenean.TRUE);
         return true;
     }
-    
+
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -121,7 +123,7 @@ public class SecOpenRequest extends EffectSection {
             return this.walk(event, false);
         }
     }
-    
+
     protected OutgoingRequest createRequest(URI uri) {
         final URL url;
         try {
@@ -146,10 +148,10 @@ public class SecOpenRequest extends EffectSection {
         }
         return request;
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "open web request to " + pathExpression.toString(event, debug);
     }
-    
+
 }

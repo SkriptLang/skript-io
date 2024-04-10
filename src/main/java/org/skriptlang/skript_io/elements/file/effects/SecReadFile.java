@@ -29,14 +29,14 @@ import static org.skriptlang.skript_io.utility.file.FileController.READ;
 })
 @Since("1.0.0")
 public class SecReadFile extends SecAccessFile {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerSection(SecReadFile.class,
-                "read [(a|the)] file [at] %path%"
-            );
+                                   "read [(a|the)] file [at] %path%"
+                                  );
     }
-    
+
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -45,17 +45,17 @@ public class SecReadFile extends SecAccessFile {
         if (file == null) return this.walk(event, false);
         return this.read(file, event);
     }
-    
+
     protected @Nullable TriggerItem read(File file, Event event) {
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
         assert first != null;
         final FileController controller = FileController.getController(file, READ);
         return this.walk(controller, event);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "read file " + pathExpression.toString(event, debug);
     }
-    
+
 }

@@ -1,0 +1,77 @@
+
+on script load:
+    broadcast "EffSecCatch"
+
+    # no throw effect
+    set {_EffSecCatch} to 0
+    try:
+        set {_EffSecCatch} to 1
+    catch {_error}
+    if {_EffSecCatch} is 1:
+        broadcast "true"
+    else:
+        broadcast "false: try code didn't run"
+    if {_error} exists:
+        broadcast "false: try code had unexpected error %{_error}%"
+    else:
+        broadcast "true"
+
+    # throw catch effect
+    set {_EffSecCatch} to 0
+    try:
+        throw a null pointer error
+        set {_EffSecCatch} to 1
+    catch {_error}
+    if {_EffSecCatch} is 1:
+        broadcast "false: try code didn't exit"
+    else:
+        broadcast "true"
+    if {_error} exists:
+        broadcast "true"
+    else:
+        broadcast "false: error not caught"
+
+    # catch sections
+    try:
+        set {_var} to 1
+        broadcast "true"
+    catch {_error}:
+        broadcast "false: catch section ran empty with %{_error}%"
+
+    set {_var} to 0
+    try:
+        throw an io error
+        set {_var} to 1
+        broadcast "false: error wasn't thrown"
+    catch {_error}:
+        broadcast "true"
+        if {_error} exists:
+            broadcast "true"
+        else:
+            broadcast "false: error not set"
+        if {_var} is not 0:
+            broadcast "false: empty thing was set"
+        else:
+            broadcast "true"
+        set {_var} to 5
+    if {_var} is 5:
+        broadcast "true"
+    else:
+        broadcast "false: var was not changed in catch section %{_var}%"
+
+    # catch specific errors
+    delete {_error}
+    try:
+        throw an io error
+    catch the null pointer error in {_null}:
+        broadcast "false: NPE thrown %{_null}%"
+    catch the io error in {_io}:
+        broadcast "true"
+    catch the error in {_error}:
+        broadcast "true"
+    if {_null} exists:
+        broadcast "false: NPE caught %{_null}%"
+    if {_io} does not exist:
+        broadcast "false: IO error not caught"
+    if {_error} does not exist:
+        broadcast "false: General error not caught"

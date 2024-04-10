@@ -38,18 +38,19 @@ import org.skriptlang.skript_io.utility.web.Request;
 })
 @Since("1.0.0")
 public class ExprRequest extends SimpleExpression<Request> {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprRequest.class, Request.class, ExpressionType.SIMPLE,
-                "[the] [current] request"
-            );
+                                      "[the] [current] request"
+                                     );
     }
-    
+
     private boolean outgoing;
-    
+
     @Override
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
+                        SkriptParser.@NotNull ParseResult result) {
         if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
             return true;
         } else if (this.getParser().isCurrentSection(SecOpenRequest.class)) {
@@ -59,36 +60,36 @@ public class ExprRequest extends SimpleExpression<Request> {
         Skript.error("You can't use '" + result.expr + "' outside a website section.");
         return true;
     }
-    
+
     @Override
     protected Request @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
-            return new Request[]{new IncomingRequest(visit.getExchange())};
+            return new Request[] {new IncomingRequest(visit.getExchange())};
         if (outgoing) {
             final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-            if (request != null) return new Request[]{request};
+            if (request != null) return new Request[] {request};
         }
         return new Request[0];
     }
-    
+
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
         return null;
     }
-    
+
     @Override
     public boolean isSingle() {
         return true;
     }
-    
+
     @Override
     public @NotNull Class<Request> getReturnType() {
         return Request.class;
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "the request";
     }
-    
+
 }

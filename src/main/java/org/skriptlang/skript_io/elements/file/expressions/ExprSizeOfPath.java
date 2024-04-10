@@ -20,34 +20,35 @@ import java.net.URI;
 @Examples({"set {_size} to the size of ./test.txt"})
 @Since("1.0.0")
 public class ExprSizeOfPath extends SimplePropertyExpression<URI, Number> {
-    
+
     static {
         if (!SkriptIO.isTest()) register(ExprSizeOfPath.class, Number.class, "[file] size", "path");
     }
-    
+
     @Override
-    public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+    public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
+                        SkriptParser.ParseResult parseResult) {
         return super.init(exprs, matchedPattern, isDelayed, parseResult);
     }
-    
+
     @Override
     protected @NotNull String getPropertyName() {
         return "size";
     }
-    
+
     @Override
     public @Nullable Number convert(URI uri) {
         return FileController.sizeOf(SkriptIO.fileNoError(uri));
     }
-    
+
     @Override
     public @NotNull Class<? extends Number> getReturnType() {
         return Long.class;
     }
-    
+
     @Override
     public boolean isSingle() {
         return true;
     }
-    
+
 }

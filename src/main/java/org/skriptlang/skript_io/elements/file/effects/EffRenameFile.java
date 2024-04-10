@@ -26,25 +26,26 @@ import java.net.URI;
 })
 @Since("1.0.0")
 public class EffRenameFile extends Effect {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffRenameFile.class,
-                "rename [the] file [at] %path% to %string%",
-                "rename %*path% to %string%");
+                                  "rename [the] file [at] %path% to %string%",
+                                  "rename %*path% to %string%");
     }
-    
+
     private Expression<URI> pathExpression;
     private Expression<String> stringExpression;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.pathExpression = (Expression<URI>) expressions[0];
         this.stringExpression = (Expression<String>) expressions[1];
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -56,11 +57,11 @@ public class EffRenameFile extends Effect {
         FileController.flagDirty(file);
         SkriptIO.queue().queue(new MoveTask(file, name));
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "rename file " + pathExpression.toString(event, debug) + " to " + this.stringExpression.toString(event,
-            debug);
+                                                                                                                debug);
     }
-    
+
 }

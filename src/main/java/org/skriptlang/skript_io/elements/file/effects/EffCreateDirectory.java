@@ -24,24 +24,25 @@ import java.net.URI;
 })
 @Since("1.0.0")
 public class EffCreateDirectory extends Effect {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffCreateDirectory.class,
-                "(create|make) [a] [new] folder [at] %path%",
-                "(create|make) [a] [new] directory [at] %path%"
-            );
+                                  "(create|make) [a] [new] folder [at] %path%",
+                                  "(create|make) [a] [new] directory [at] %path%"
+                                 );
     }
-    
+
     private Expression<URI> pathExpression;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.pathExpression = (Expression<URI>) expressions[0];
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -52,10 +53,10 @@ public class EffCreateDirectory extends Effect {
         final boolean result = file.mkdirs();
         assert result : "Directories were not made for '" + file + "'";
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "create directory " + pathExpression.toString(event, debug);
     }
-    
+
 }

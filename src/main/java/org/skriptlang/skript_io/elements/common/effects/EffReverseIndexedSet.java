@@ -29,20 +29,21 @@ import java.util.Map;
 @Examples({"set yaml contents of file to {_options::*}"})
 @Since("1.0.0")
 public class EffReverseIndexedSet extends EffEncode {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffReverseIndexedSet.class,
-                "set [the] %*classinfo% content[s] of %resource% to %objects%",
-                "set %resource%'[s] %*classinfo% content[s] to %objects%");
+                                  "set [the] %*classinfo% content[s] of %resource% to %objects%",
+                                  "set %resource%'[s] %*classinfo% content[s] to %objects%");
     }
-    
+
     private Expression<Resource> targetExpression;
     private Variable<?> source;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.targetExpression = (Expression<Resource>) expressions[1 - matchedPattern];
         if (((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
             this.classInfo = info;
@@ -52,7 +53,7 @@ public class EffReverseIndexedSet extends EffEncode {
         else return false;
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final Format<?> format = classInfo.getFormat();
@@ -63,11 +64,11 @@ public class EffReverseIndexedSet extends EffEncode {
         for (final Resource file : targetExpression.getArray(event))
             if (file instanceof Writable writable) format.to(writable, map);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "set the " + classInfo.getCodeName() + " contents of " +
             this.targetExpression.toString(event, debug) + " to " + source.toString(event, debug);
     }
-    
+
 }

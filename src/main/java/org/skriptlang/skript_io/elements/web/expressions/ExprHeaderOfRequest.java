@@ -21,7 +21,7 @@ import org.skriptlang.skript_io.utility.web.Request;
 @Name("Header of Request")
 @Description("""
     A key/value-based header in a request, such as "Content-Type" -> "text/html".
-    
+        
     Request headers information about the client requesting the resource.
     Response headers hold information about the response.
     """)
@@ -31,37 +31,38 @@ import org.skriptlang.skript_io.utility.web.Request;
 })
 @Since("1.0.0")
 public class ExprHeaderOfRequest extends SimpleExpression<String> {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprHeaderOfRequest.class, String.class, ExpressionType.PROPERTY,
-                "[the] %string% header of %request%", "%request%'[s] %string% header");
+                                      "[the] %string% header of %request%", "%request%'[s] %string% header");
     }
-    
+
     private Expression<Request> requestExpression;
     private Expression<String> headerExpression;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.ParseResult result) {
+    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
+                        SkriptParser.ParseResult result) {
         this.requestExpression = ((Expression<Request>) expressions[1 - matchedPattern]);
         this.headerExpression = ((Expression<String>) expressions[matchedPattern]);
         return true;
     }
-    
+
     @Override
     protected @Nullable String[] get(Event event) {
         final Request request = requestExpression.getSingle(event);
         if (request == null) return new String[0];
-        return new String[]{request.getHeader(headerExpression.getSingle(event))};
+        return new String[] {request.getHeader(headerExpression.getSingle(event))};
     }
-    
+
     @Override
     @Nullable
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
         return mode == Changer.ChangeMode.SET ? CollectionUtils.array(String.class) : null;
     }
-    
+
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null || delta.length < 1) return;
@@ -71,20 +72,20 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
         if (request == null) return;
         request.setHeader(headerExpression.getSingle(event), type);
     }
-    
-    @Override
-    public @NotNull Class<? extends String> getReturnType() {
-        return String.class;
-    }
-    
+
     @Override
     public boolean isSingle() {
         return true;
     }
-    
+
+    @Override
+    public @NotNull Class<? extends String> getReturnType() {
+        return String.class;
+    }
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "the " + headerExpression.toString(event, debug) + " of " + requestExpression.toString(event, debug);
     }
-    
+
 }

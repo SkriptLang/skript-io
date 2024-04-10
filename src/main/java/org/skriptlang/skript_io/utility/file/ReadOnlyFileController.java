@@ -16,9 +16,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 
 public class ReadOnlyFileController extends FileController implements Resource, Readable {
-    
+
     private final ByteBuffer buffer;
-    
+
     ReadOnlyFileController(File file, int size) {
         super(file);
         this.buffer = ByteBuffer.allocateDirect(size);
@@ -29,21 +29,21 @@ public class ReadOnlyFileController extends FileController implements Resource, 
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public synchronized @NotNull InputStream acquireReader() {
         return new ByteBufferInputStream(buffer);
     }
-    
+
     @Override
     public synchronized @NotNull OutputStream acquireWriter() {
         SkriptIO.error("Tried to edit a read-only file.");
         return DummyOutputStream.INSTANCE;
     }
-    
+
     @Override
     public boolean canWrite() {
         return false;
     }
-    
+
 }

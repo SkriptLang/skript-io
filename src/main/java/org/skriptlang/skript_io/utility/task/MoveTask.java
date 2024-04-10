@@ -10,15 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class MoveTask extends DataTask {
-    
+
     private final File file;
     private final String name;
-    
+
     public MoveTask(File file, String name) {
         this.file = file;
         this.name = name;
     }
-    
+
     @Override
     public void execute() throws IOException, InterruptedException {
         try {
@@ -31,5 +31,5 @@ public class MoveTask extends DataTask {
             FileController.flagClean(file);
         }
     }
-    
+
 }

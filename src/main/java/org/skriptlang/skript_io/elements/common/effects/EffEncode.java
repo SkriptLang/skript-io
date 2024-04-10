@@ -39,26 +39,27 @@ import java.util.Map;
 })
 @Since("1.0.0")
 public class EffEncode extends Effect {
-    
+
     private static final String SEPARATOR = Variable.SEPARATOR;
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffEncode.class,
-                "encode %object% as %*classinfo% (in|[in]to) %~objects%",
-                "decode %~objects% from %*classinfo% (in|[in]to) %object%"
-            );
+                                  "encode %object% as %*classinfo% (in|[in]to) %~objects%",
+                                  "decode %~objects% from %*classinfo% (in|[in]to) %object%"
+                                 );
     }
-    
+
     protected FormatInfo<?> classInfo;
     private Expression<Object> sourceExpression;
     private Expression<Object> targetExpression;
     private Variable<?> variable;
     private boolean isEncoding, isMap;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         if (((Literal<ClassInfo<?>>) expressions[1]).getSingle() instanceof FormatInfo<?> info) classInfo = info;
         else {
             Skript.error("The encoding must be a registered format.");
@@ -83,7 +84,7 @@ public class EffEncode extends Effect {
         }
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         //<editor-fold desc="Converts the source to the target" defaultstate="collapsed">
@@ -112,12 +113,12 @@ public class EffEncode extends Effect {
             }
             final Format<?> format = classInfo.getFormat();
             if (target instanceof Writable writable) format.to(writable, converted);
-            else targetExpression.change(event, new Object[]{Writable.format(format, converted)},
-                Changer.ChangeMode.SET);
+            else targetExpression.change(event, new Object[] {Writable.format(format, converted)},
+                                         Changer.ChangeMode.SET);
         }
         //</editor-fold>
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         if (isEncoding) return "encode " + sourceExpression.toString(event, debug) + " as " +
@@ -125,32 +126,32 @@ public class EffEncode extends Effect {
         else return "decode " + sourceExpression.toString(event, debug) + " from " +
             this.classInfo.toString(event, debug) + " into " + targetExpression.toString(event, debug);
     }
-    
+
     protected void change(Variable<?> target, Object source, Event event) {
         //<editor-fold desc="Changes a variable value" defaultstate="collapsed">
         if (!(source instanceof Map<?, ?> map) || !target.isList()) {
             final Object[] array;
             if (source instanceof Object[] objects) array = objects;
-            else array = new Object[]{source};
+            else array = new Object[] {source};
             target.change(event, array, Changer.ChangeMode.SET);
         } else this.set(event, target, map);
         //</editor-fold>
     }
-    
+
     protected Object mapFormat(String source) {
         //<editor-fold desc="Converts a text source for a map formatter" defaultstate="collapsed">
         final Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
         return this.deserialise(readable);
         //</editor-fold>
     }
-    
+
     protected Object mapFormatSingle(String source) {
         //<editor-fold desc="Converts a text source for a map formatter" defaultstate="collapsed">
         final Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
         return this.deserialise(readable);
         //</editor-fold>
     }
-    
+
     protected Object deserialise(Resource resource) {
         //<editor-fold desc="Gets the formatted content of a resource" defaultstate="collapsed">
         if (!(resource instanceof Readable readable)) return new HashMap<>();
@@ -159,7 +160,7 @@ public class EffEncode extends Effect {
         return things[0];
         //</editor-fold>
     }
-    
+
     protected Object deserialiseSingle(Resource resource) {
         //<editor-fold desc="Gets the single content of a resource" defaultstate="collapsed">
         if (!(resource instanceof Readable readable)) return null;
@@ -168,7 +169,7 @@ public class EffEncode extends Effect {
         return things[0];
         //</editor-fold>
     }
-    
+
     protected void set(Event event, Variable<?> variable, Map<?, ?> map) {
         //<editor-fold desc="Sets a list variable to an indexed map" defaultstate="collapsed">
         this.set(event, variable, (Object) null);
@@ -179,7 +180,7 @@ public class EffEncode extends Effect {
         }
         //</editor-fold>
     }
-    
+
     protected void set(Event event, Variable<?> variable, String key, Object value) {
         //<editor-fold desc="Sets an individual index of a variable to a value" defaultstate="collapsed">
         if (value instanceof Map<?, ?> map) for (final Map.Entry<?, ?> entry : map.entrySet()) {
@@ -193,16 +194,16 @@ public class EffEncode extends Effect {
         } else this.setIndex(event, variable, key, value);
         //</editor-fold>
     }
-    
+
     private void set(Event event, Variable<?> target, Object value) {
         Variables.setVariable(target.getName().toString(event), value, event, target.isLocal());
     }
-    
+
     private void setIndex(Event event, Variable<?> target, String index, @Nullable Object value) {
         final String name = target.getName().toString(event);
         Variables.setVariable(name.substring(0, name.length() - 1) + index, value, event, target.isLocal());
     }
-    
+
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     protected void convertLists(Map<?, ?> map) {
         //<editor-fold desc="Checks whether entries in a map could be a list" defaultstate="collapsed">
@@ -214,7 +215,7 @@ public class EffEncode extends Effect {
         }
         //</editor-fold>
     }
-    
+
     private List<?> convertToList(Map<?, ?> map) {
         //<editor-fold desc="Converts a map to an ordered list" defaultstate="collapsed">
         final HashMap<Integer, Object> sorter = new HashMap<>(map.size());
@@ -226,7 +227,7 @@ public class EffEncode extends Effect {
         return new ArrayList<>(sorter.values());
         //</editor-fold>
     }
-    
+
     private boolean couldBeList(Map<?, ?> map) {
         //<editor-fold desc="Checks whether a map could be a list" defaultstate="collapsed">
         for (final Object object : map.keySet()) {
@@ -240,5 +241,5 @@ public class EffEncode extends Effect {
         return true;
         //</editor-fold>
     }
-    
+
 }

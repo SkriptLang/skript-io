@@ -16,21 +16,22 @@ import java.io.IOException;
 import java.net.URI;
 
 @Name("Create File")
-@Description("Creates a new file at a path. If the file already exists or was successfully created, opens an editing section.")
+@Description("Creates a new file at a path. If the file already exists or was successfully created, opens an editing " +
+    "section.")
 @Examples({
     "create file ./test.txt:",
     "\tadd \"hello\" to the file"
 })
 @Since("1.0.0")
 public class SecCreateFile extends SecEditFile {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerSection(SecCreateFile.class,
-                "(create|make) [a] [new] file [at] %path%"
-            );
+                                   "(create|make) [a] [new] file [at] %path%"
+                                  );
     }
-    
+
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -46,10 +47,10 @@ public class SecCreateFile extends SecEditFile {
         }
         return this.edit(file, event);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "create file " + pathExpression.toString(event, debug);
     }
-    
+
 }

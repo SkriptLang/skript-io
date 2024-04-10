@@ -10,13 +10,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 
 public interface Readable extends Resource {
-    
+
     static Readable simple(InputStream stream) {
         return new SimpleReadable(stream);
     }
-    
-    @NotNull InputStream acquireReader() throws IOException;
-    
+
+    @NotNull
+    InputStream acquireReader() throws IOException;
+
     default String readAll() {
         final AtomicReference<String> reference = new AtomicReference<>();
         SkriptIO.queue().queue(new DataTask() {
@@ -30,7 +31,7 @@ public interface Readable extends Resource {
         }).await();
         return reference.get();
     }
-    
+
 }
 
 record SimpleReadable(InputStream acquireReader) implements Readable {

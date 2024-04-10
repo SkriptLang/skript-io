@@ -24,16 +24,17 @@ import java.net.URI;
 @Examples({"recursively delete folder ./test/", "delete folder ./test/", "delete the file at ./config.txt"})
 @Since("1.0.0")
 public class EffDeleteFile extends Effect {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffDeleteFile.class, "[recursive:recursive[ly]] delete [the] folder [at] %path%",
-                "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file [at] %path%");
+                                  "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file " +
+                                      "[at] %path%");
     }
-    
+
     private boolean recursive, folder;
     private Expression<URI> pathExpression;
-    
+
     public static void delete(File file, boolean folder, boolean recursive) {
         if (file == null) return;
         FileController.flagDirty(file);
@@ -57,9 +58,9 @@ public class EffDeleteFile extends Effect {
                 }
             }
         });
-        
+
     }
-    
+
     protected static void emptyDirectory(File file) {
         final File[] files = file.listFiles();
         if (files == null) return;
@@ -69,16 +70,17 @@ public class EffDeleteFile extends Effect {
             assert result : "Inner file '" + file + "' was not deleted.";
         }
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.pathExpression = (Expression<URI>) expressions[0];
         this.recursive = result.hasTag("recursive");
         this.folder = matchedPattern < 2;
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -86,11 +88,11 @@ public class EffDeleteFile extends Effect {
         final File file = SkriptIO.file(uri);
         delete(file, folder, recursive);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return (recursive ? "recursively " : "") + "delete " + (folder ? "folder " : "file ") + this.pathExpression.toString(
             event, debug);
     }
-    
+
 }

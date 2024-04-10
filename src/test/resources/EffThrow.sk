@@ -1,0 +1,21 @@
+
+on script load:
+    broadcast "EffThrow"
+    set {_EffThrow} to 0
+    try:
+        throw a null pointer error
+        throw a error
+        throw an io error
+        throw an io exception
+        throw an npe
+        throw an exception
+        set {_EffThrow} to 1
+    catch {_error}
+    if {_EffThrow} is 1:
+        broadcast "false: try code didn't exit"
+    else:
+        broadcast "true"
+    if {_error} exists:
+        broadcast "true"
+    else:
+        broadcast "false: error not thrown"

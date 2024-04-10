@@ -6,11 +6,13 @@ import org.skriptlang.skript_io.SkriptIO;
 import java.io.IOException;
 
 public class CloseTask extends DataTask {
-    
+
     private final AutoCloseable closeable;
-    
-    public CloseTask(AutoCloseable closeable) {this.closeable = closeable;}
-    
+
+    public CloseTask(AutoCloseable closeable) {
+        this.closeable = closeable;
+    }
+
     @Override
     public void execute() throws IOException, InterruptedException {
         try {
@@ -21,5 +23,5 @@ public class CloseTask extends DataTask {
             SkriptIO.error(ex);
         }
     }
-    
+
 }

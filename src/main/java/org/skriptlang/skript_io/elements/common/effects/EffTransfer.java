@@ -31,28 +31,29 @@ import java.net.URI;
 })
 @Since("1.0.0")
 public class EffTransfer extends Effect {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffTransfer.class, "transfer %readable% [in]to %writable%",
-                "transfer %path% [in]to %writable%");
+                                  "transfer %path% [in]to %writable%");
     }
-    
+
     private boolean path;
     private Expression<Readable> sourceExpression;
     private Expression<Writable> targetExpression;
     private Expression<URI> pathExpression;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         if (matchedPattern == 0) sourceExpression = (Expression<Readable>) expressions[0];
         else pathExpression = (Expression<URI>) expressions[0];
         this.targetExpression = (Expression<Writable>) expressions[1];
         this.path = matchedPattern == 1;
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final Writable target = targetExpression.getSingle(event);
@@ -67,11 +68,11 @@ public class EffTransfer extends Effect {
         if (source == null) return;
         SkriptIO.queue().queue(new TransferTask(target, source));
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         final String part = path ? pathExpression.toString(event, debug) : sourceExpression.toString(event, debug);
         return "transfer " + part + " to " + targetExpression.toString(event, debug);
     }
-    
+
 }

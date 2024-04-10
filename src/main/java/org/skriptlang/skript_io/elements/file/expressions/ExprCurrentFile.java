@@ -28,30 +28,31 @@ import org.skriptlang.skript_io.utility.file.FileController;
 })
 @Since("1.0.0")
 public class ExprCurrentFile extends SimpleExpression<Resource> {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprCurrentFile.class, Resource.class, ExpressionType.SIMPLE,
-                "[the] [(current|open)] file"
-            );
+                                      "[the] [(current|open)] file"
+                                     );
     }
-    
+
     @Override
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, Kleenean isDelayed,
+                        SkriptParser.ParseResult parseResult) {
         if (!this.getParser().isCurrentSection(SecAccessFile.class)) {
             Skript.error("You can't use '" + parseResult.expr + "' outside a file access section.");
             return false;
         }
         return true;
     }
-    
+
     @Override
     protected FileController @NotNull [] get(@NotNull Event event) {
         final FileController controller = FileController.currentSection(event);
         if (controller == null) return new FileController[0];
-        return new FileController[]{controller};
+        return new FileController[] {controller};
     }
-    
+
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
@@ -60,7 +61,7 @@ public class ExprCurrentFile extends SimpleExpression<Resource> {
             default -> null;
         };
     }
-    
+
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         final FileController controller = FileController.currentSection(event);
@@ -83,20 +84,20 @@ public class ExprCurrentFile extends SimpleExpression<Resource> {
                 controller.clear();
         }
     }
-    
+
     @Override
     public boolean isSingle() {
         return true;
     }
-    
+
     @Override
     public @NotNull Class<FileController> getReturnType() {
         return FileController.class;
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event e, boolean debug) {
         return "the file";
     }
-    
+
 }

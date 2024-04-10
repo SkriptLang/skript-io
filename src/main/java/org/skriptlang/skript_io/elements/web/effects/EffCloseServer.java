@@ -22,7 +22,7 @@ import java.net.URI;
 @Description("""
     Closes the website at a given path and/or port, or the current website.
     The website will stop accepting connections.
-    
+        
     Any currently-open tasks may continue to run in the background.
     """)
 @Examples({
@@ -32,22 +32,23 @@ import java.net.URI;
 })
 @Since("1.0.0")
 public class EffCloseServer extends Effect {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffCloseServer.class,
-                "close [the] (web[ ]|http )server [at %-path%] [(on|with) port %-number%]",
-                "close [the] web[ ]site [at %-path%] [(on|with) port %-number%]",
-                "close [the] [current] web[ ](site|server)");
+                                  "close [the] (web[ ]|http )server [at %-path%] [(on|with) port %-number%]",
+                                  "close [the] web[ ]site [at %-path%] [(on|with) port %-number%]",
+                                  "close [the] [current] web[ ](site|server)");
     }
-    
+
     protected @Nullable Expression<URI> pathExpression;
     protected @Nullable Expression<Number> portExpression;
     protected boolean current;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         if (matchedPattern == 2) {
             if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
                 Skript.error("You can't use '" + result.expr + "' outside a website section.");
@@ -60,7 +61,7 @@ public class EffCloseServer extends Effect {
         }
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         if (current && event instanceof VisitWebsiteEvent visit) {
@@ -95,7 +96,7 @@ public class EffCloseServer extends Effect {
         if (hasPath) server.closeHandler(uri);
         else server.closeAll();
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         if (current) return "close the current website";
@@ -103,5 +104,5 @@ public class EffCloseServer extends Effect {
             + (pathExpression != null ? "at " + pathExpression.toString(event, debug) : "")
             + (portExpression != null ? "with port " + portExpression.toString(event, debug) : "");
     }
-    
+
 }

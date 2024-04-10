@@ -25,21 +25,21 @@ import java.util.Map;
 @Examples({"set {_options::*} to yaml contents of file"})
 @Since("1.0.0")
 public class EffIndexedSet extends EffEncode {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffIndexedSet.class,
-                "set %~objects% to [the] %*classinfo% content[s] of %resource%",
-                "set %~objects% to %resource%'[s] %*classinfo% content[s]");
+                                  "set %~objects% to [the] %*classinfo% content[s] of %resource%",
+                                  "set %~objects% to %resource%'[s] %*classinfo% content[s]");
     }
-    
-    
+
     private Expression<Resource> sourceExpression;
     private Variable<?> target;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.sourceExpression = (Expression<Resource>) expressions[2 - matchedPattern];
         if (((Literal<ClassInfo<?>>) expressions[1 + matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
             this.classInfo = info;
@@ -49,17 +49,17 @@ public class EffIndexedSet extends EffEncode {
         else return false;
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final Object source = this.deserialise(sourceExpression.getSingle(event));
         this.change(this.target, source, event);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "set " + target.toString(event, debug) + " to the " +
             this.classInfo.getCodeName() + " contents of " + sourceExpression.toString(event, debug);
     }
-    
+
 }

@@ -24,12 +24,12 @@ import java.util.List;
 @Description("""
     Opens a website at the provided path and port, defaulting to the root path `/` on port 80.
     Whenever a request is received, the code inside the section will be run.
-    
+        
     Responses to a request should start by sending a status code (e.g. 200 = OK) and then any data.
-    
+        
     Website paths should end in a separator `/`, and will handle any requests to their directory.
     A website on the root path `/` will accept any unhandled requests.
-    
+        
     Multiple websites cannot be opened on the same port and path.
     Multiple websites can be opened on *different* paths with the same port, such as `/foo/` and `/bar/`
     """)
@@ -43,23 +43,25 @@ import java.util.List;
 })
 @Since("1.0.0")
 public class SecOpenServer extends EffectSection {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerSection(SecOpenServer.class,
-                "open ([a] web[ ]|[an] http )server [for %-path%] [(on|with) port %-number%]",
-                "open [a] web[ ]site [for %-path%] [(on|with) port %-number%]"
-            );
+                                   "open ([a] web[ ]|[an] http )server [for %-path%] [(on|with) port %-number%]",
+                                   "open [a] web[ ]site [for %-path%] [(on|with) port %-number%]"
+                                  );
     }
-    
+
     protected @Nullable Expression<URI> pathExpression;
-    
+
     protected @Nullable Expression<Number> portExpression;
     protected Trigger trigger;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> list) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
+                        @Nullable List<TriggerItem> list) {
         if (this.getParser().isCurrentSection(SecOpenServer.class)
             || this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
             Skript.error("You can't open a webserver inside a webserver response.");
@@ -81,7 +83,7 @@ public class SecOpenServer extends EffectSection {
         this.trigger = this.loadCode(sectionNode, "website visit event", VisitWebsiteEvent.class);
         return true;
     }
-    
+
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI path;
@@ -104,19 +106,19 @@ public class SecOpenServer extends EffectSection {
         server.prepareIfNecessary();
         return this.walk(event, false);
     }
-    
+
     protected PostHandler createHandler(WebServer server, URI path) {
         assert first != null;
         return new SimpleHandler(server, path, trigger);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "open a website"
             + (pathExpression != null ? " for " + pathExpression.toString(event, debug) : "")
             + (portExpression != null ? " with port " + portExpression.toString(event, debug) : "");
     }
-    
+
     private boolean validatePath(URI path) {
         if (path == null) return false;
         final String string = path.toString();
@@ -139,9 +141,9 @@ public class SecOpenServer extends EffectSection {
         }
         return true;
     }
-    
+
     private boolean validatePort(int port) {
         return port > 0 && port < 65535;
     }
-    
+
 }

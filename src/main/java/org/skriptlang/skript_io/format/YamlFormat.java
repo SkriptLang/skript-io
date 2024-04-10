@@ -9,12 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class YamlFormat extends Format<Map<String, Object>> {
-    
+
     @SuppressWarnings("unchecked")
     public YamlFormat() {
         super("YAML", (Class<Map<String, Object>>) (Object) Map.class, "y[a]ml");
     }
-    
+
     @Override
     protected @Nullable Map<String, Object>[] from(InputStream stream) throws IOException {
         final Map<String, Object> map = new LinkedHashMap<>();
@@ -22,9 +22,20 @@ public class YamlFormat extends Format<Map<String, Object>> {
             final YamlConfiguration file = YamlConfiguration.loadConfiguration(reader);
             this.read(file, map);
         }
-        return new Map[]{map};
+        return new Map[] {map};
     }
-    
+
+    @Override
+    protected void to(OutputStream stream, Map<String, Object> value) throws IOException {
+        if (value == null) return;
+        final YamlConfiguration file = new YamlConfiguration();
+        this.write(file, value);
+        final String data = file.saveToString();
+        try (final Writer writer = new OutputStreamWriter(stream)) {
+            writer.write(data);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private void read(ConfigurationSection section, Map<String, Object> map) {
         for (final String key : section.getKeys(false)) {
@@ -36,18 +47,7 @@ public class YamlFormat extends Format<Map<String, Object>> {
             map.put(key, value);
         }
     }
-    
-    @Override
-    protected void to(OutputStream stream, Map<String, Object> value) throws IOException {
-        if (value == null) return;
-        final YamlConfiguration file = new YamlConfiguration();
-        this.write(file, value);
-        final String data = file.saveToString();
-        try (final Writer writer = new OutputStreamWriter(stream)) {
-            writer.write(data);
-        }
-    }
-    
+
     @SuppressWarnings("unchecked")
     private void write(ConfigurationSection section, Map<String, Object> map) {
         for (final Map.Entry<String, Object> entry : map.entrySet()) {
@@ -59,5 +59,5 @@ public class YamlFormat extends Format<Map<String, Object>> {
             } else section.set(key, value);
         }
     }
-    
+
 }

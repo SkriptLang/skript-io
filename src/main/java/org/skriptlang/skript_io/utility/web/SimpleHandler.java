@@ -10,7 +10,7 @@ import org.skriptlang.skript_io.utility.task.CloseTask;
 import java.net.URI;
 
 public record SimpleHandler(WebServer server, URI path, Trigger trigger) implements PostHandler {
-    
+
     @Override
     public void handle(HttpExchange exchange) {
         try {
@@ -22,5 +22,5 @@ public record SimpleHandler(WebServer server, URI path, Trigger trigger) impleme
             SkriptIO.queue().queue(new CloseTask(exchange)).await();
         }
     }
-    
+
 }

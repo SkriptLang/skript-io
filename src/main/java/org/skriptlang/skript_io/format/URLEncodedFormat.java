@@ -9,11 +9,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class URLEncodedFormat extends Format<String> {
-    
+
     public URLEncodedFormat() {
         super("URLEncoded", String.class, "url(-| )(de|en)coded");
     }
-    
+
     @Override
     protected @Nullable String[] from(InputStream stream) throws IOException {
         final StringBuilder builder = new StringBuilder();
@@ -23,9 +23,9 @@ public class URLEncodedFormat extends Format<String> {
                 builder.append(read);
             }
         }
-        return new String[]{URLDecoder.decode(builder.toString(), StandardCharsets.UTF_8)};
+        return new String[] {URLDecoder.decode(builder.toString(), StandardCharsets.UTF_8)};
     }
-    
+
     @Override
     protected void to(OutputStream stream, String... values) {
         try (final Writer writer = new OutputStreamWriter(stream)) {
@@ -37,10 +37,10 @@ public class URLEncodedFormat extends Format<String> {
             SkriptIO.error(ex);
         }
     }
-    
+
     @Override
     protected void to(OutputStream stream, @Nullable String value) throws IOException {
         throw new IllegalStateException();
     }
-    
+
 }

@@ -14,11 +14,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public record IncomingResponse(HttpURLConnection exchange,
                                AtomicBoolean wasRead) implements Readable, Resource, Closeable {
-    
+
     public IncomingResponse(HttpURLConnection exchange) {
         this(exchange, new AtomicBoolean());
     }
-    
+
     @Override
     public void close() throws IOException {
         if (!wasRead.get() && exchange.getDoOutput()) SkriptIO.remoteQueue().queue(new DataTask() {
@@ -31,7 +31,7 @@ public record IncomingResponse(HttpURLConnection exchange,
         }).await();
         this.exchange.disconnect();
     }
-    
+
     @Override
     public @NotNull InputStream acquireReader() throws IOException {
         try {
@@ -42,15 +42,7 @@ public record IncomingResponse(HttpURLConnection exchange,
             return new ByteArrayInputStream(new byte[0]);
         }
     }
-    
-    public int statusCode() {
-        try {
-            return exchange.getResponseCode();
-        } catch (IOException ex) {
-            return 500;
-        }
-    }
-    
+
     @Override
     public String readAll() {
         final AtomicReference<String> reference = new AtomicReference<>();
@@ -65,5 +57,13 @@ public record IncomingResponse(HttpURLConnection exchange,
         }).await();
         return reference.get();
     }
-    
+
+    public int statusCode() {
+        try {
+            return exchange.getResponseCode();
+        } catch (IOException ex) {
+            return 500;
+        }
+    }
+
 }

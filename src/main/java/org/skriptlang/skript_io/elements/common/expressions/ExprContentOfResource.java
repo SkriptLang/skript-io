@@ -33,7 +33,7 @@ import java.util.Map;
 @Description("""
     The contents of (the stuff inside) a resource, such as an open file.
     This uses a type parser (e.g. the number context of X will parse X as a number).
-    
+        
     This will return nothing if the resource is unreadable.
     """)
 @Examples({
@@ -44,19 +44,20 @@ import java.util.Map;
 })
 @Since("1.0.0")
 public class ExprContentOfResource extends SimplePropertyExpression<Resource, Object> {
-    
+
     static {
         if (!SkriptIO.isTest())
             register(ExprContentOfResource.class, Object.class, "%*classinfo% content[s]", "resource");
     }
-    
+
     private ClassInfo<?> classInfo;
     private boolean isString, isFormat;
     private Class<?> returnType = Object.class;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
+                        SkriptParser.@NotNull ParseResult result) {
         this.setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
         this.classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
         this.returnType = classInfo.getC();
@@ -72,39 +73,39 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         }
         return true;
     }
-    
+
     @Override
     protected @NotNull String getPropertyName() {
         return classInfo.getCodeName() + " content";
     }
-    
-    @Override
-    protected Object @NotNull [] get(@NotNull Event event, Resource[] source) {
-        final Resource resource = source[0];
-        return this.get(resource);
-    }
-    
+
     @Override
     public @Nullable Object convert(Resource resource) {
         final Object[] objects = this.get(resource);
         if (objects.length == 0) return null;
         return objects[0];
     }
-    
+
+    @Override
+    protected Object @NotNull [] get(@NotNull Event event, Resource[] source) {
+        final Resource resource = source[0];
+        return this.get(resource);
+    }
+
     protected Object @NotNull [] get(Resource resource) {
         if (!(resource instanceof Readable readable)) return new Object[0];
-        if (isString) return new String[]{readable.readAll()};
+        if (isString) return new String[] {readable.readAll()};
         else if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().from(readable);
         final Parser<?> parser = classInfo.getParser();
         if (parser == null) return new Object[0];
-        return new Object[]{parser.parse(readable.readAll(), ParseContext.DEFAULT)};
+        return new Object[] {parser.parse(readable.readAll(), ParseContext.DEFAULT)};
     }
-    
+
     @Override
     public @NotNull Class<?> getReturnType() {
         return returnType;
     }
-    
+
     @Override
     public Class<?> @Nullable [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
@@ -113,7 +114,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
             default -> null;
         };
     }
-    
+
     @Override
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
@@ -142,17 +143,17 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
                 if (file instanceof Writable writable) writable.clear();
         }
     }
-    
+
     private void writeString(Resource[] resources, Object[] delta) {
         final String content = String.valueOf(delta[0]);
         for (final Resource file : resources)
             if (file instanceof Writable writable) writable.write(content);
     }
-    
+
     @Override
     public boolean isSingle() {
         if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().isSingular();
         return true;
     }
-    
+
 }

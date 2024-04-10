@@ -39,27 +39,28 @@ import java.nio.file.StandardCopyOption;
 })
 @Since("1.0.0")
 public class EffMoveFile extends Effect {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffMoveFile.class, "move [the] file [at] %path% [into:in]to %path%",
-                "move [the] (folder|directory) [at] %path% [into:in]to %path%");
+                                  "move [the] (folder|directory) [at] %path% [into:in]to %path%");
     }
-    
+
     private boolean folder;
     private boolean into;
     private Expression<URI> pathExpression, targetExpression;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.pathExpression = (Expression<URI>) expressions[0];
         this.targetExpression = (Expression<URI>) expressions[1];
         this.folder = matchedPattern > 0;
         this.into = result.hasTag("into");
         return true;
     }
-    
+
     @Override
     protected void execute(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event), result = targetExpression.getSingle(event);
@@ -89,11 +90,11 @@ public class EffMoveFile extends Effect {
             }
         });
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         final String into = this.into ? " into " : " to ", type = folder ? "move folder " : "move file ";
         return type + pathExpression.toString(event, debug) + into + this.targetExpression.toString(event, debug);
     }
-    
+
 }

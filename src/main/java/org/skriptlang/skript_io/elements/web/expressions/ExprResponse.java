@@ -35,7 +35,7 @@ import java.nio.charset.StandardCharsets;
 @Description("""
     Your website's response to a request made to your site.
     This resource can be written to (in order to send data back to the requester).
-    
+        
     This can be used to send data to a client, e.g. sending a page to a browser when requested.
     """)
 @Examples({
@@ -45,18 +45,19 @@ import java.nio.charset.StandardCharsets;
 })
 @Since("1.0.0")
 public class ExprResponse extends SimpleExpression<Resource> {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprResponse.class, Resource.class, ExpressionType.SIMPLE,
-                "[the] response"
-            );
+                                      "[the] response"
+                                     );
     }
-    
+
     private boolean outgoing;
-    
+
     @Override
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
+                        SkriptParser.@NotNull ParseResult result) {
         if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
             this.outgoing = true;
             return true;
@@ -66,11 +67,11 @@ public class ExprResponse extends SimpleExpression<Resource> {
         Skript.error("You can't use '" + result.expr + "' outside a website section.");
         return false;
     }
-    
+
     @Override
     protected Resource @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
-            return new Resource[]{
+            return new Resource[] {
                 new Writable() {
                     @Override
                     public @NotNull OutputStream acquireWriter() {
@@ -83,16 +84,16 @@ public class ExprResponse extends SimpleExpression<Resource> {
                 }
             };
         else if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse readable) {
-            return new Resource[]{readable};
+            return new Resource[] {readable};
         } else return new Resource[0];
     }
-    
+
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
         if (outgoing && mode == Changer.ChangeMode.ADD) return CollectionUtils.array(String.class, Readable.class);
         return null;
     }
-    
+
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (event instanceof VisitWebsiteEvent visit) {
@@ -115,20 +116,20 @@ public class ExprResponse extends SimpleExpression<Resource> {
             }
         }
     }
-    
+
     @Override
     public boolean isSingle() {
         return true;
     }
-    
+
     @Override
     public @NotNull Class<Resource> getReturnType() {
         return Resource.class;
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "the response";
     }
-    
+
 }

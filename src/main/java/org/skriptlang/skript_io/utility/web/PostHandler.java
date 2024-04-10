@@ -11,13 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public interface PostHandler extends HttpHandler {
-    
+
     default void write(HttpExchange exchange, int code, String body) throws IOException {
         final byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(code, bytes.length);
         exchange.getResponseBody().write(bytes);
     }
-    
+
     default Map<String, String> decode(BufferedReader reader) throws IOException {
         final Map<String, String> map = new LinkedHashMap<>();
         final StringBuilder builder = new StringBuilder();
@@ -41,5 +41,5 @@ public interface PostHandler extends HttpHandler {
         }
         return map;
     }
-    
+
 }

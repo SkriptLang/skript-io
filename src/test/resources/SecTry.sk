@@ -1,0 +1,11 @@
+
+on script load:
+    broadcast "SecTry"
+    set {_SecTry} to 0
+    try:
+        set {_SecTry} to 1
+    if {_SecTry} is 1:
+        broadcast "true"
+    else:
+        broadcast "false: try code didn't run, %{_SecTry}%"
+    delete {_SecTry}

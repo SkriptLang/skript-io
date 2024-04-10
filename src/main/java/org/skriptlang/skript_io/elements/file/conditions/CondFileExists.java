@@ -27,31 +27,32 @@ import java.net.URI;
 })
 @Since("1.0.0")
 public class CondFileExists extends Condition {
-    
+
     private static final int ALL = 0, FILE = 1, FOLDER = 2;
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerCondition(CondFileExists.class,
-                "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-                "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-                "folder[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-                "director(y|ies) %paths% (exist[s]|negated:do[es](n't| not) exist)"
-            );
+                                     "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
+                                     "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
+                                     "folder[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
+                                     "director(y|ies) %paths% (exist[s]|negated:do[es](n't| not) exist)"
+                                    );
     }
-    
+
     private Expression<URI> uriExpression;
     private int mode;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result) {
+    public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result) {
         this.uriExpression = (Expression<URI>) expressions[0];
         this.mode = Math.min(matchedPattern, 2);
         this.setNegated(result.hasTag("negated"));
         return true;
     }
-    
+
     @Override
     public boolean check(@NotNull Event event) {
         return uriExpression.check(event, uri -> {
@@ -62,7 +63,7 @@ public class CondFileExists extends Condition {
             return mode == 0 || mode == 1 && file.isFile() || mode == 2 && file.isDirectory();
         }, this.isNegated());
     }
-    
+
     @Override
     @NotNull
     public String toString(@Nullable Event e, boolean debug) {
@@ -73,5 +74,5 @@ public class CondFileExists extends Condition {
             default -> "paths ";
         } + uriExpression.toString(e, debug) + ending;
     }
-    
+
 }

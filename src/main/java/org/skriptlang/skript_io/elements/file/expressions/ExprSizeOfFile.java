@@ -21,36 +21,37 @@ import org.skriptlang.skript_io.utility.file.FileController;
 })
 @Since("1.0.0")
 public class ExprSizeOfFile extends SimplePropertyExpression<FileController, Number> {
-    
+
     static {
         if (!SkriptIO.isTest())
             register(ExprSizeOfFile.class, Number.class, "size", "file");
     }
-    
+
     @Override
-    public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+    public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
+                        SkriptParser.ParseResult parseResult) {
         if (!(exprs[0] instanceof ExprCurrentFile)) return false;
         return super.init(exprs, matchedPattern, isDelayed, parseResult);
     }
-    
+
     @Override
     protected @NotNull String getPropertyName() {
         return "size";
     }
-    
+
     @Override
     public @Nullable Number convert(FileController controller) {
         return FileController.sizeOf(controller.getFile());
     }
-    
+
     @Override
     public @NotNull Class<? extends Number> getReturnType() {
         return Long.class;
     }
-    
+
     @Override
     public boolean isSingle() {
         return true;
     }
-    
+
 }

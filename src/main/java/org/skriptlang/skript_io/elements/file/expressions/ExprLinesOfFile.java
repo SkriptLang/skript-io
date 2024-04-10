@@ -25,34 +25,34 @@ import java.util.List;
 })
 @Since("1.0.0")
 public class ExprLinesOfFile extends SimplePropertyExpression<FileController, String> {
-    
+
     static {
         if (!SkriptIO.isTest())
             register(ExprLinesOfFile.class, String.class, "lines", "file");
     }
-    
+
     @Override
     protected @NotNull String getPropertyName() {
         return "lines";
     }
-    
+
     @Override
     public @Nullable String convert(FileController controller) {
         return controller.readAll();
     }
-    
+
     @Override
     protected String @NotNull [] get(@NotNull Event event, FileController @NotNull [] source) {
         if (source.length == 0 || source[0] == null) return new String[0];
         final List<String> list = source[0].readAll().lines().toList();
         return list.toArray(new String[0]);
     }
-    
+
     @Override
     public @NotNull Class<? extends String> getReturnType() {
         return String.class;
     }
-    
+
     @Override
     public Class<?> @Nullable [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
@@ -60,7 +60,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
             default -> null;
         };
     }
-    
+
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null || delta.length == 0) return;
@@ -74,12 +74,12 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
             for (final FileController file : files) file.write(text);
         else if (mode == Changer.ChangeMode.ADD)
             for (final FileController file : files) file.append(System.lineSeparator() + text);
-        
+
     }
-    
+
     @Override
     public boolean isSingle() {
         return false;
     }
-    
+
 }

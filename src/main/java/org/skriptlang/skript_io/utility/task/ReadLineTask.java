@@ -10,17 +10,17 @@ import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ReadLineTask extends DataTask {
-    
+
     protected final FileController controller;
     protected final int line;
     protected final AtomicReference<String> reference;
-    
+
     public ReadLineTask(FileController controller, int line, AtomicReference<String> reference) {
         this.controller = controller;
         this.line = line;
         this.reference = reference;
     }
-    
+
     @Override
     public void execute() throws IOException {
         try (final InputStream stream = controller.acquireReader();
@@ -31,5 +31,5 @@ public class ReadLineTask extends DataTask {
             this.reference.set(line);
         }
     }
-    
+
 }

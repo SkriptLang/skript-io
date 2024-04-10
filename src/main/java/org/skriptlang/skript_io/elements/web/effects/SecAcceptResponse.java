@@ -33,18 +33,19 @@ import java.util.concurrent.ExecutionException;
 
 @Name("Expect Response")
 @Description("Notifies a connection that you expect a response (and waits for it).")
-@Examples({"open a request to https://skriptlang.org:", "\taccept the response:", "\t\tbroadcast the response's content"})
+@Examples({"open a request to https://skriptlang.org:", "\taccept the response:", "\t\tbroadcast the response's " +
+    "content"})
 @Since("1.0.0")
 public class SecAcceptResponse extends EffectSection {
-    
+
     private static final Map<Event, Stack<IncomingResponse>> requestMap = new WeakHashMap<>();
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerSection(SecAcceptResponse.class, "accept [the] response", "expect [the] response",
-                "await [the] response");
+                                   "await [the] response");
     }
-    
+
     public static Readable getCurrentRequest(Event event) {
         if (event == null) return null;
         final Stack<IncomingResponse> stack = requestMap.get(event);
@@ -52,7 +53,7 @@ public class SecAcceptResponse extends EffectSection {
         if (stack.isEmpty()) return null;
         return stack.peek();
     }
-    
+
     private static void push(Event event, IncomingResponse request) {
         if (event == null || request == null) return;
         final Stack<IncomingResponse> stack;
@@ -61,7 +62,7 @@ public class SecAcceptResponse extends EffectSection {
         assert stack != null;
         stack.push(request);
     }
-    
+
     private static void pop(Event event) {
         if (event == null) return;
         final Stack<IncomingResponse> stack = requestMap.get(event);
@@ -69,9 +70,11 @@ public class SecAcceptResponse extends EffectSection {
         if (stack.isEmpty()) requestMap.remove(event);
         else stack.pop();
     }
-    
+
     @Override
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> list) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
+                        @Nullable List<TriggerItem> list) {
         if (!this.getParser().isCurrentSection(SecOpenRequest.class)) {
             Skript.error("You can't use '" + result.expr + "' outside a request section.");
             return false;
@@ -84,8 +87,7 @@ public class SecAcceptResponse extends EffectSection {
         }
         return true;
     }
-    
-    
+
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
@@ -105,7 +107,7 @@ public class SecAcceptResponse extends EffectSection {
         });
         return null;
     }
-    
+
     protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next)
         throws ExecutionException, InterruptedException {
         final IncomingResponse response;
@@ -149,10 +151,10 @@ public class SecAcceptResponse extends EffectSection {
             });
         }
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "accept the response";
     }
-    
+
 }

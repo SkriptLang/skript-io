@@ -19,7 +19,8 @@ import static org.skriptlang.skript_io.utility.file.FileController.READ;
 import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
 
 @Name("Edit File")
-@Description("Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the section will not be run.")
+@Description("Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the " +
+    "section will not be run.")
 @Examples({
     "edit file ./test.txt:",
     "\tset the text contents of the file to \"line 1\"",
@@ -27,14 +28,14 @@ import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
 })
 @Since("1.0.0")
 public class SecEditFile extends SecAccessFile {
-    
+
     static {
         if (!SkriptIO.isTest())
             Skript.registerSection(SecEditFile.class,
-                "(edit|open) [(a|the)] file [at] %path%"
-            );
+                                   "(edit|open) [(a|the)] file [at] %path%"
+                                  );
     }
-    
+
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         final URI uri = pathExpression.getSingle(event);
@@ -43,17 +44,17 @@ public class SecEditFile extends SecAccessFile {
         if (file == null) return this.walk(event, false);
         return this.edit(file, event);
     }
-    
+
     protected @Nullable TriggerItem edit(File file, Event event) {
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
         assert first != null;
         final FileController controller = FileController.getController(file, READ | WRITE);
         return this.walk(controller, event);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "edit file " + pathExpression.toString(event, debug);
     }
-    
+
 }

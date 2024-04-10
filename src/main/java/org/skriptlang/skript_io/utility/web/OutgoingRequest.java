@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public record OutgoingRequest(HttpURLConnection exchange,
                               AtomicBoolean complete) implements Writable, Closeable, Request {
-    
+
     @Override
     public URI getPath() {
         try {
@@ -27,17 +27,17 @@ public record OutgoingRequest(HttpURLConnection exchange,
             return URI.create(exchange.getURL().toString());
         }
     }
-    
+
     @Override
     public String getSource() {
         return Bukkit.getIp();
     }
-    
+
     @Override
     public String getMethod() {
         return exchange.getRequestMethod();
     }
-    
+
     @Override
     public void setMethod(String mode) {
         try {
@@ -46,47 +46,47 @@ public record OutgoingRequest(HttpURLConnection exchange,
             SkriptIO.error(e);
         }
     }
-    
+
     @Override
     public String getContentType() {
         return exchange.getContentType();
     }
-    
+
     @Override
     public void setContentType(String type) {
         this.exchange.setRequestProperty("Content-Type", String.valueOf(type));
     }
-    
+
     @Override
     public String getHeader(String header) {
         return exchange.getRequestProperty(header);
     }
-    
+
     @Override
     public void setHeader(String header, String type) {
         this.exchange.setRequestProperty(header, type);
     }
-    
+
     @Override
     public void close() throws IOException {
         this.exchange.disconnect();
         this.complete.set(true);
     }
-    
+
+    @Override
+    public void write(String text) {
+        SkriptIO.remoteQueue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Override
+    public void clear() {
+        SkriptIO.remoteQueue().queue(new WriteTask(this, new byte[0]));
+    }
+
     @Override
     public @NotNull OutputStream acquireWriter() throws IOException {
         exchange.setDoInput(true);
         return exchange.getOutputStream();
     }
-    
-    @Override
-    public void write(String text) {
-        SkriptIO.remoteQueue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
-    }
-    
-    @Override
-    public void clear() {
-        SkriptIO.remoteQueue().queue(new WriteTask(this, new byte[0]));
-    }
-    
+
 }

@@ -23,13 +23,15 @@ import java.net.URI;
 import java.util.List;
 
 public abstract class SecAccessFile extends EffectSection {
-    
+
     protected Expression<URI> pathExpression;
     protected boolean async;
-    
+
     @Override
     @SuppressWarnings("unchecked")
-    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean, SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode, @Nullable List<TriggerItem> list) {
+    public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
+                        SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
+                        @Nullable List<TriggerItem> list) {
         this.pathExpression = (Expression<URI>) expressions[0];
         if (this.hasSection()) {
             assert sectionNode != null;
@@ -42,7 +44,7 @@ public abstract class SecAccessFile extends EffectSection {
         }
         return true;
     }
-    
+
     protected TriggerItem walk(FileController controller, Event event) {
         if (first == null) return this.walk(event, false);
         if (async) {
@@ -67,26 +69,26 @@ public abstract class SecAccessFile extends EffectSection {
         }
         return this.walk(event, false);
     }
-    
+
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "access file " + pathExpression.toString(event, debug);
     }
-    
+
     class AccessTask extends DataTask {
-        
+
         private final Object variables;
         private final TriggerItem next;
         private final Event event;
         private final FileController controller;
-        
+
         AccessTask(Object variables, TriggerItem next, Event event, FileController controller) {
             this.variables = variables;
             this.next = next;
             this.event = event;
             this.controller = controller;
         }
-        
+
         @Override
         public void execute() throws IOException, InterruptedException {
             if (first == null) { // we skip straight on
@@ -111,7 +113,7 @@ public abstract class SecAccessFile extends EffectSection {
                 });
             }
         }
-        
+
     }
-    
+
 }
