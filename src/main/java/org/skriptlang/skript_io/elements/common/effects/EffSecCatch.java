@@ -42,27 +42,30 @@ public class EffSecCatch extends EffectSection {
             Skript.registerSection(EffSecCatch.class, "catch %~object%", "catch [the|a[n]] %*classinfo% in %~object%");
     }
 
-    protected SecTry source;
+    protected EffSecTry source;
     private Class<?> errorType = Throwable.class;
     private Expression<?> catcher;
     private ClassInfo<?> info;
 
     @Nullable
-    private static SecTry getTrySection(List<TriggerItem> triggerItems) {
+    private static EffSecTry getTrySection(List<TriggerItem> triggerItems) {
+        //<editor-fold desc="Find the EffSecTry right before this EffSecCatch" defaultstate="collapsed">
         TriggerItem triggerItem = triggerItems.get(triggerItems.size() - 1);
         if (triggerItem instanceof EffSecCatch secCatch) // there was already a catch section
             return secCatch.source;
-        if (triggerItem instanceof SecTry secTry) {
+        if (triggerItem instanceof EffSecTry secTry) {
             return secTry;
         } else {
             return null;
         }
+        //</editor-fold>
     }
 
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         List<TriggerItem> list) {
+        //<editor-fold desc="Look for our preceding EffSecTry" defaultstate="collapsed">
         if (list != null) {
             this.source = getTrySection(list);
             if (source == null) {
@@ -70,15 +73,22 @@ public class EffSecCatch extends EffectSection {
                 return false;
             }
         }
+        //</editor-fold>
+        //<editor-fold desc="Load our section code (if present)" defaultstate="collapsed">
         if (this.hasSection()) {
             assert sectionNode != null;
             this.loadOptionalCode(sectionNode);
         }
+        //</editor-fold>
+        //<editor-fold desc="Get our error storage variable" defaultstate="collapsed">
         if (expressions[matchedPattern] instanceof Variable<?> variable) catcher = variable;
         else {
             Skript.error("The input for the 'catch' effect must be a variable to store the error.");
             return false;
         }
+        //</editor-fold>
+        //<editor-fold desc="Make sure ClassInfo is an error type" defaultstate="collapsed">
+        //noinspection PatternVariableHidesField
         if (matchedPattern == 1 && expressions[0] instanceof Literal<?> literal
             && literal.getSingle() instanceof ClassInfo<?> info) {
             this.info = info;
@@ -88,27 +98,32 @@ public class EffSecCatch extends EffectSection {
                 return false;
             }
         }
+        //</editor-fold>
         return true;
     }
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
+        //<editor-fold desc="Find the last thrown error" defaultstate="collapsed">
         final Throwable error;
         if (source != null) error = source.thrown;
         else error = lastThrownError.get();
         final boolean hasError = error != null;
+        //</editor-fold>
         if (hasError && errorType.isInstance(error)) {
+            //<editor-fold desc="Store the error, run the catch section" defaultstate="collapsed">
             EffSecCatch.lastThrownError.remove(); // we consumed it here
             this.catcher.change(event, new Object[] {error}, Changer.ChangeMode.SET);
             if (first == null) return this.walk(event, false);
             else return this.first;
+            //</editor-fold>
         } else if (!hasError) catcher.change(event, new Object[0], Changer.ChangeMode.DELETE);
         if (first == null) return this.walk(event, false);
         return this.getNext();
     }
 
     @Override
-    public @NotNull String toString(@Nullable Event event, boolean debug) {
+    public @NotNull String toString(Event event, boolean debug) {
         if (info != null) return "catch " + info.toString(event, debug) + " in " + catcher.toString(event, debug);
         return "catch " + catcher.toString(event, debug);
     }

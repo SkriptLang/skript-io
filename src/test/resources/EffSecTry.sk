@@ -1,0 +1,18 @@
+
+on script load:
+    broadcast "EffSecTry"
+    set {_SecTry} to 0
+    try:
+        set {_SecTry} to 1
+    if {_SecTry} is 1:
+        broadcast "true"
+    else:
+        broadcast "false: try code didn't run, %{_SecTry}%"
+    delete {_SecTry}
+
+    try to throw an io error
+    catch {_error}
+    if {_error} exists:
+        broadcast "true"
+    else:
+        broadcast "false: inline try didn't work"

@@ -12,7 +12,6 @@ import ch.njol.skript.lang.SkriptParser;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.format.ErrorInfo;
 
@@ -65,7 +64,7 @@ public class EffThrow extends Effect {
     }
 
     @Override
-    public @NotNull String toString(@Nullable Event event, boolean debug) {
+    public @NotNull String toString(Event event, boolean debug) {
         if (hasMessage)
             return "throw an " + errorType.toString(event, debug) + " with message " + message.toString(event, debug);
         else return "throw an " + errorType.toString(event, debug);
