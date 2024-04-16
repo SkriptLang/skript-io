@@ -1,0 +1,17 @@
+
+on script load:
+    broadcast "ExprErrorMessage"
+
+    # throw catch effect
+    set {_EffSecCatch} to 0
+    try:
+        throw a null pointer error with message "foo bar"
+    catch {_error}
+    if {_error} exists:
+        broadcast "true"
+    else:
+        broadcast "false - no error"
+    if {_error}'s message is "foo bar":
+        broadcast "true"
+    else:
+        broadcast "false - message was %{_error}%"
