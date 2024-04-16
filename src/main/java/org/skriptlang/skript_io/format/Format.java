@@ -1,5 +1,6 @@
 package org.skriptlang.skript_io.format;
 
+import mx.kenzie.jupiter.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.Readable;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public abstract class Format<Type> {
 
@@ -39,9 +41,8 @@ public abstract class Format<Type> {
 
     @SuppressWarnings("unchecked")
     public void to(Writable writable, @Nullable Object... values) {
-        final Type[] types = (Type[]) Array.newInstance(type, values.length);
-        System.arraycopy(values, 0, types, 0, values.length);
-        try (final OutputStream stream = writable.acquireWriter()) {
+        final Type[] types = Arrays.copyOf(values, values.length, (Class<Type[]>) type.arrayType());
+        try (final OutputStream stream = Stream.keepalive(writable.acquireWriter())) {
             this.to(stream, types);
         } catch (IOException ex) {
             SkriptIO.error(ex);
@@ -49,8 +50,8 @@ public abstract class Format<Type> {
     }
 
     protected void to(OutputStream stream, Type... values) {
-        try {
-            for (final Type value : values) this.to(stream, value);
+        try (OutputStream output = Stream.keepalive(stream)) {
+            for (final Type value : values) this.to(output, value);
         } catch (IOException ex) {
             SkriptIO.error(ex);
         }

@@ -66,6 +66,12 @@
         </dependency>
         <dependency>
             <groupId>mx.kenzie</groupId>
+            <artifactId>jupiter</artifactId>
+            <version>1.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>mx.kenzie</groupId>
             <artifactId>argo</artifactId>
             <version>1.2.2</version>
             <scope>compile</scope>

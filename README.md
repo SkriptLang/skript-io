@@ -417,7 +417,11 @@ Multiple websites can be opened on *different* paths with the same port, such as
 
 ```sk
 open a website on port 12345:
-	set the status code to 200	add "<body>" to the response	add "<h1>hello!!!</h1>" to the response	add "<p>there are %size of all players% players online</p>" to the response	add "</body>" to the response
+	set the status code to 200
+	add "<body>" to the response
+	add "<h1>hello!!!</h1>" to the response
+	add "<p>there are %size of all players% players online</p>" to the response
+	add "</body>" to the response
 ```
 
 ## Common
