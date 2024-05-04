@@ -47,33 +47,25 @@ public class Types {
 
     public void registerTypes() {
         Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)[s]").name("Resource Path")
-                                                                .description("Represents a path to something, such as" +
-                                                                                 " a relative file path or an " +
-                                                                                 "internet URL.")
-                                                                .examples("set {_file} to ./test.txt").since("1.0.0")
-                                                                .changer(new Changer<>() {
-                                                                    @Override
-                                                                    public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
-                                                                        if (mode == ChangeMode.DELETE)
-                                                                            return new Class[0];
-                                                                        return null;
-                                                                    }
+            .description("Represents a path to something, such as a relative file path or an internet URL.")
+            .examples("set {_file} to ./test.txt").since("1.0.0").changer(new Changer<>() {
+                @Override
+                public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
+                    if (mode == ChangeMode.DELETE) return new Class[0];
+                    return null;
+                }
 
-                                                                    @Override
-                                                                    public void change(URI[] what,
-                                                                                       @Nullable Object[] delta,
-                                                                                       ChangeMode mode) {
-                                                                        if (mode == ChangeMode.DELETE) {
-                                                                            for (final URI uri : what) {
-                                                                                final File file =
-                                                                                    SkriptIO.fileNoError(uri);
-                                                                                if (file == null) continue;
-                                                                                EffDeleteFile.delete(file,
-                                                                                                     file.isDirectory(), true);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }).serializer(new Serializer<>() {
+                @Override
+                public void change(URI[] what, @Nullable Object[] delta, ChangeMode mode) {
+                    if (mode == ChangeMode.DELETE) {
+                        for (final URI uri : what) {
+                            final File file = SkriptIO.fileNoError(uri);
+                            if (file == null) continue;
+                            EffDeleteFile.delete(file, file.isDirectory(), true);
+                        }
+                    }
+                }
+            }).serializer(new Serializer<>() {
                 @Override
                 public Fields serialize(URI o) {
                     final Fields fields = new Fields();
@@ -131,40 +123,24 @@ public class Types {
                 }
             }));
         Classes.registerClass(new ClassInfo<>(Readable.class, "readable").user("readable[s]").name("Readable Resource")
-                                                                         .description("Represents a resource than can" +
-                                                                                          " be read as text (e.g. a " +
-                                                                                          "file, a webpage).")
-                                                                         .examples("transfer the request to the " +
-                                                                                       "current file")
-                                                                         .since("1.0.0"));
+            .description("Represents a resource than can be read as text (e.g. a file, a webpage).")
+            .examples("transfer the request to the current file").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(Writable.class, "writable").user("writable[s]").name("Writable Resource")
-                                                                         .description("Represents a resource than can" +
-                                                                                          " have text written to it " +
-                                                                                          "(e.g. a file, a response).")
-                                                                         .examples("transfer {text} to the response")
-                                                                         .since("1.0.0"));
+            .description("Represents a resource than can have text written to it (e.g. a file, a response).")
+            .examples("transfer {text} to the response").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(Resource.class, "resource").user("resource[s]").name("Resource")
-                                                                         .description("Represents a non-specific kind" +
-                                                                                          " of i/o resource, such as " +
-                                                                                          "a file, a request, etc.")
-                                                                         .examples("the request", "the current file")
-                                                                         .since("1.0.0"));
+            .description("Represents a non-specific kind of i/o resource, such as a file, a request, etc.")
+            .examples("the request", "the current file").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(FileController.class, "file").user("file[s]").name("File")
-                                                                           .description("Represents a file that has " +
-                                                                                            "been opened for access.")
-                                                                           .examples("broadcast the contents of the " +
-                                                                                         "file")
-                                                                           .since("1.0.0"));
+            .description("Represents a file that has been opened for access.")
+            .examples("broadcast the contents of the file").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(WebServer.class, "website").user("website").name("Website")
-                                                                         .description("Represents a hosted website " +
-                                                                                          "when receiving a request.")
-                                                                         .examples("close the current website")
-                                                                         .since("1.0.0"));
+            .description("Represents a hosted website when receiving a request.").examples("close the current website")
+            .since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(Request.class, "request").user("[web] request[s]").name("Web Request")
-                                                                       .description(
-                                                                           "Represents an incoming website request (a" +
-                                                                               " browser asking for a page or data)," + " or an outgoing request (your server contacting a website).")
-                                                                       .examples("the request").since("1.0.0"));
+            .description("Represents an incoming website request (a browser asking for a page or data), or an " +
+                "outgoing request (your server contacting a website).")
+            .examples("the request").since("1.0.0"));
     }
 
     public void registerFileFormats() {
@@ -209,9 +185,9 @@ public class Types {
     public void loadFormat(Format<?> format, SkriptAddon addon) {
         final FormatInfo<?> info = format.getInfo();
         Classes.registerClass(info.name(format.getName() + " (File Format)")
-                                  .description("A special converter for the " + info.getCodeName() + " file format.")
-                                  .examples("the " + format.getName().toLowerCase() + " content of the file")
-                                  .since(addon.version.toString()));
+            .description("A special converter for the " + info.getCodeName() + " file format.")
+            .examples("the " + format.getName().toLowerCase() + " content of the file")
+            .since(addon.version.toString()));
     }
 
     void removeEffChange() {
@@ -220,7 +196,7 @@ public class Types {
         final Iterator<SyntaxElementInfo<? extends Effect>> iterator = effects.iterator();
         while (iterator.hasNext()) {
             final SyntaxElementInfo<?> next = iterator.next();
-            if (next.c != EffChange.class) continue;
+            if (next.elementClass != EffChange.class) continue;
             this.change = next;
             iterator.remove();
             break;
@@ -238,21 +214,18 @@ public class Types {
     }
 
     public void registerErrorTypes(SkriptAddon addon) {
-        this.registerErrorType(new ErrorInfo<>("error", Exception.class, Exception::new, Exception::new)
-                                   .user("error", "exception"), addon);
-        this.registerErrorType(new ErrorInfo<>("ioexception", IOException.class, IOException::new, IOException::new)
-                                   .user("io exception", "io error"), addon);
+        this.registerErrorType(new ErrorInfo<>("error", Exception.class, Exception::new, Exception::new).user("error"
+            , "exception"), addon);
+        this.registerErrorType(new ErrorInfo<>("ioexception", IOException.class, IOException::new, IOException::new).user("io exception", "io error"), addon);
         this.registerErrorType(new ErrorInfo<>("nullpointerexception", NullPointerException.class,
-                                               NullPointerException::new,
-                                               NullPointerException::new)
-                                   .user("null(-| )pointer (error|exception)", "npe"), addon);
+            NullPointerException::new, NullPointerException::new).user("null(-| )pointer (error|exception)", "npe"),
+            addon);
     }
 
     private void registerErrorType(ClassInfo<?> info, SkriptAddon addon) {
         Classes.registerClass(info.name(info.getC().getSimpleName() + " (Error)")
-                                  .description("A special converter for the " + info.getCodeName() + " file format.")
-                                  .examples("throw an " + info.getCodeName())
-                                  .since(addon.version.toString()));
+            .description("A special converter for the " + info.getCodeName() + " file format.")
+            .examples("throw an " + info.getCodeName()).since(addon.version.toString()));
     }
 
 }

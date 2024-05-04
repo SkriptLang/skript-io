@@ -27,11 +27,11 @@ import org.skriptlang.skript_io.utility.file.FileController;
     "\tadd \"hello\" to the file"
 })
 @Since("1.0.0")
-public class ExprCurrentFile extends SimpleExpression<Resource> {
+public class ExprCurrentFile extends SimpleExpression<FileController> {
 
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprCurrentFile.class, Resource.class, ExpressionType.SIMPLE,
+            Skript.registerExpression(ExprCurrentFile.class, FileController.class, ExpressionType.SIMPLE,
                                       "[the] [(current|open)] file"
                                      );
     }

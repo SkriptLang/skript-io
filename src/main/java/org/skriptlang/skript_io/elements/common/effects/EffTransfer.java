@@ -19,6 +19,7 @@ import org.skriptlang.skript_io.utility.task.TransferTask;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Arrays;
 
 @Name("Transfer")
 @Description("""
@@ -47,6 +48,7 @@ public class EffTransfer extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
+        System.out.println("HELLO? " + Arrays.toString(expressions)); // todo
         if (matchedPattern == 0) sourceExpression = (Expression<Readable>) expressions[0];
         else pathExpression = (Expression<URI>) expressions[0];
         this.targetExpression = (Expression<Writable>) expressions[1];

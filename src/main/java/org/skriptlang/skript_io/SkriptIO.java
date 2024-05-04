@@ -55,11 +55,11 @@ public class SkriptIO extends JavaPlugin {
     }
 
     public static void error(String message) {
-        Bukkit.getLogger().log(Level.SEVERE, message);
+        Bukkit.getLogger().log(Level.SEVERE, message); // todo
     }
 
     public static void error(Throwable throwable) {
-        Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable);
+        Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable); // todo
     }
 
     public static boolean isTest() {
@@ -95,10 +95,10 @@ public class SkriptIO extends JavaPlugin {
             manager.disablePlugin(this);
             return;
         } else if (!Skript.getVersion()
-                          .isLargerThan(new Version(2, 7, 0))) { // Skript is not any version after 2.5.3 (aka 2.6)
+            .isLargerThan(new Version(2, 8, 0))) { // Skript is not any version after 2.5.3 (aka 2.6)
             this.getLogger().severe(
-                "[skript-io] You are running an unsupported version of Skript. Please update to at least Skript 2.7.0" +
-                    ". Disabling...");
+                "[skript-io] You are running an unsupported version of Skript. " +
+                    "Please update to at least Skript 2.7.0. Disabling...");
             manager.disablePlugin(this);
             return;
         }
