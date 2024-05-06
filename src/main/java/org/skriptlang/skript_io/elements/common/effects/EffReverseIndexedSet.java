@@ -21,6 +21,7 @@ import org.skriptlang.skript_io.format.Format;
 import org.skriptlang.skript_io.format.FormatInfo;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
+import org.skriptlang.skript_io.utility.task.FormatTask;
 
 import java.util.Map;
 
@@ -33,8 +34,8 @@ public class EffReverseIndexedSet extends EffEncode {
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffReverseIndexedSet.class,
-                                  "set [the] %*classinfo% content[s] of %resource% to %objects%",
-                                  "set %resource%'[s] %*classinfo% content[s] to %objects%");
+                "set [the] %*classinfo% content[s] of %resource% to %objects%",
+                "set %resource%'[s] %*classinfo% content[s] to %objects%");
     }
 
     private Expression<Resource> targetExpression;
@@ -62,7 +63,8 @@ public class EffReverseIndexedSet extends EffEncode {
         if (!(variable instanceof Map<?, ?> map)) return;
         this.convertLists(map);
         for (final Resource file : targetExpression.getArray(event))
-            if (file instanceof Writable writable) format.to(writable, map);
+            if (file instanceof Writable writable)
+                SkriptIO.queue().queue(new FormatTask(format, writable, map)).await();
     }
 
     @Override
