@@ -24,16 +24,15 @@ public class EffThrow extends Effect {
     static {
         if (!SkriptIO.isTest())
             Skript.registerEffect(EffThrow.class, "throw a[n] %*classinfo%",
-                                  "throw a[n] %*classinfo% with message %string%");
+                "throw a[n] %*classinfo% with message %string%");
     }
 
     private boolean hasMessage;
     private ErrorInfo<?> errorType;
     private Expression<String> message;
 
-    @SuppressWarnings("unchecked")
-    static <Unknown extends Throwable> void throwUncheckedException(Throwable exception) throws Unknown {
-        throw (Unknown) exception;
+    static void throwUncheckedException(Throwable exception) {
+        SkriptIO.throwSafe(exception);
     }
 
     @Override
@@ -59,7 +58,7 @@ public class EffThrow extends Effect {
         this.throwException(throwable);
     }
 
-    private void throwException(Throwable exception) {//<RuntimeException>
+    private void throwException(Throwable exception) {
         EffThrow.throwUncheckedException(exception);
     }
 

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.skriptlang.skript_io.format.*;
 
 import java.io.File;
+import java.io.IOError;
 import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Level;
@@ -128,6 +129,21 @@ public class SkriptIO extends JavaPlugin {
         queue = new IOQueue(50);
         remoteQueue = new IOQueue(100);
         this.loadConfig();
+    }
+
+    public static void throwSafe(Throwable throwable) {
+        if (throwable == null) throw new RuntimeException();
+        if (throwable instanceof IOError
+            || throwable instanceof Exception) {
+            throwUncheckedException(throwable);
+        } else {
+            throw new RuntimeException(throwable);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <Unknown extends Throwable> void throwUncheckedException(Throwable exception) throws Unknown {
+        throw (Unknown) exception;
     }
 
 }
