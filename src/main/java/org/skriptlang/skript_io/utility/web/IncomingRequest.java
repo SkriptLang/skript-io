@@ -2,7 +2,9 @@ package org.skriptlang.skript_io.utility.web;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.jetbrains.annotations.NotNull;
+import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.task.CloseTask;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -63,7 +65,7 @@ public record IncomingRequest(HttpExchange exchange) implements Readable, Closea
 
     @Override
     public void close() throws IOException {
-        this.exchange.close();
+        SkriptIO.queue(new CloseTask(exchange));
     }
 
 }

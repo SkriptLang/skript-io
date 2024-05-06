@@ -31,9 +31,7 @@ public class SecEditFile extends SecAccessFile {
 
     static {
         if (!SkriptIO.isTest())
-            Skript.registerSection(SecEditFile.class,
-                                   "(edit|open) [(a|the)] file [at] %path%"
-                                  );
+            Skript.registerSection(SecEditFile.class, "(edit|open) [(a|the)] file [at] %path%");
     }
 
     @Override

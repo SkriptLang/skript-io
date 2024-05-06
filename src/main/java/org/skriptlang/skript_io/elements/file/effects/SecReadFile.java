@@ -32,9 +32,7 @@ public class SecReadFile extends SecAccessFile {
 
     static {
         if (!SkriptIO.isTest())
-            Skript.registerSection(SecReadFile.class,
-                                   "read [(a|the)] file [at] %path%"
-                                  );
+            Skript.registerSection(SecReadFile.class, "read [(a|the)] file [at] %path%");
     }
 
     @Override

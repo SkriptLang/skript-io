@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.DummyCloseTrigger;
+import org.skriptlang.skript_io.utility.task.CloseTask;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 
 import java.io.IOException;
@@ -112,13 +113,12 @@ public class SecOpenRequest extends EffectSection {
             TriggerItem.walk(first, event); // execute the section now
             return null; // the pop is done in our close dummy
         } else {
-            try (request) {
+            try {
                 push(event, request);
                 TriggerItem.walk(first, event); // execute the section now
-            } catch (IOException ex) {
-                SkriptIO.error(ex);
             } finally {
                 pop(event);
+                SkriptIO.queue(new CloseTask(request));
             }
             return this.walk(event, false);
         }

@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.DummyCloseTrigger;
 import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.task.CloseTask;
 import org.skriptlang.skript_io.utility.web.IncomingResponse;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 

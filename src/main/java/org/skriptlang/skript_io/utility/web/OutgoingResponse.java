@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.Writable;
+import org.skriptlang.skript_io.utility.task.CloseTask;
 import org.skriptlang.skript_io.utility.task.WriteTask;
 
 import java.io.Closeable;
@@ -45,17 +46,17 @@ public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.H
 
     @Override
     public void close() throws IOException {
-        this.exchange.close();
+        SkriptIO.queue(new CloseTask(exchange));
     }
 
     @Override
     public void write(String text) {
-        SkriptIO.remoteQueue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
+        SkriptIO.queue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
     }
 
     @Override
     public void clear() {
-        SkriptIO.remoteQueue().queue(new WriteTask(this, new byte[0]));
+        SkriptIO.queue().queue(new WriteTask(this, new byte[0]));
     }
 
     @Override

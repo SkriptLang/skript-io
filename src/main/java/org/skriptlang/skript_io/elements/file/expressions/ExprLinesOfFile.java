@@ -14,6 +14,7 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.file.FileController;
+import org.skriptlang.skript_io.utility.task.CloseTask;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,7 +84,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
             try {
                 final String string = reader.readLine();
                 if (string == null) {
-                    this.reader.close();
+                    SkriptIO.queue().queue(new CloseTask(reader));
                     return false;
                 }
                 this.nextLine.set(string);

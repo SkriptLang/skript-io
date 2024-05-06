@@ -98,7 +98,9 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         else if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().from(readable);
         final Parser<?> parser = classInfo.getParser();
         if (parser == null) return new Object[0];
-        return new Object[] {parser.parse(readable.readAll(), ParseContext.DEFAULT)};
+        final String string = readable.readAll();
+        if (string == null) return new Object[0];
+        return new Object[] {parser.parse(string, ParseContext.DEFAULT)};
     }
 
     @Override

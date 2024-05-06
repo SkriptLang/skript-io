@@ -3,6 +3,7 @@ package org.skriptlang.skript_io;
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.util.Version;
+import mx.kenzie.clockwork.io.DataTask;
 import mx.kenzie.clockwork.io.IOQueue;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -23,8 +24,15 @@ public class SkriptIO extends JavaPlugin {
     public static IOConfig config;
     public static boolean testMode;
     private static IOQueue queue, remoteQueue;
+    private static final ThreadLocal<Boolean> areWeInQueue = ThreadLocal.withInitial(() -> false);
     private SkriptAddon addon;
     private Types types;
+
+    public static DataTask queue(DataTask task) {
+        if (areWeInQueue.get()) task.run();
+        else return queue().queue(task);
+        return task;
+    }
 
     public static @NotNull IOQueue queue() {
         return queue;
@@ -60,7 +68,8 @@ public class SkriptIO extends JavaPlugin {
     }
 
     public static void error(Throwable throwable) {
-        Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable); // todo
+        throwSafe(throwable);
+//        Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable); // todo ???
     }
 
     public static boolean isTest() {
@@ -128,6 +137,14 @@ public class SkriptIO extends JavaPlugin {
         }
         queue = new IOQueue(50);
         remoteQueue = new IOQueue(100);
+        final DataTask markQueue = new DataTask() {
+            @Override
+            public void execute() {
+                areWeInQueue.set(true);
+            }
+        }; // Tell things we're inside a queue right now
+        queue.queue(markQueue);
+        remoteQueue.queue(markQueue);
         this.loadConfig();
     }
 
