@@ -15,3 +15,67 @@ on script load:
     else:
         broadcast "false: response was '%{_text}%'"
     close the website at /ExprContentTypeOfRequest/ with port 6063
+
+on script load:
+    broadcast "ExprContentTypeOfRequest (advanced)"
+
+    open a website for /ExprContentTypeOfRequest2/ with port 6063:
+        set {_data::*} to the json content of the request
+        # We expect a POST request
+        if the method of request is "POST":
+            if {_data::foo} is "bar":
+                set the status code to 200
+            else:
+                set the status code to 300
+        else:
+            set the status code to 301
+
+        set the content type of the response to "application/json"
+        set {_response::hello} to "there"
+        set {_response::key} to "value"
+        set {_response::number} to 5
+        set {_response::array::*} to "a", "b" and "c"
+        set the json content of the response to {_response::*}
+
+    set {_status} to 0
+    open a web request to http://localhost:6063/ExprContentTypeOfRequest2/:
+        set the method of request to "POST"
+        set the content type of request to "application/json"
+        set {_json::foo} to "bar"
+        set the json content of the request to {_json::*}
+
+        await the response:
+            set {_status} to the status code of the response
+            set {_result::*} to the json content of the response
+
+    if {_status} is 200:
+        broadcast "true"
+    else:
+        broadcast "false: status was '%{_status}%'"
+    if size of {_result::*} is 3:
+        broadcast "true"
+        if {_result::hello} is "there":
+            broadcast "true"
+        else:
+            broadcast "false: wrong response content '%{_result::*}%'"
+        if {_result::key} is "value":
+            broadcast "true"
+        else:
+            broadcast "false: wrong response text content '%{_result::*}%'"
+        if {_result::number} is 5:
+            broadcast "true"
+        else:
+            broadcast "false: wrong response number content '%{_result::*}%'"
+        if all:
+            {_result::array::*} contains "a"
+            {_result::array::*} contains "b"
+            {_result::array::*} contains "c"
+            size of {_result::array::*} is 3
+        then:
+            broadcast "true"
+        else:
+            broadcast "false: wrong response array content '%{_result::array::*}%'"
+    else:
+        broadcast "false: wrong size of response '%{_result::*}%'"
+
+    close the website at /ExprContentTypeOfRequest2/ with port 6063
