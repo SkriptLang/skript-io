@@ -11,6 +11,8 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.utility.Readable;
+import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.file.FileController;
 
 import java.io.BufferedReader;
@@ -22,20 +24,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Name("Lines of File")
-@Description("The lines of a currently-open file as a list of text.")
+@Name("Lines of Resource")
+@Description("The lines of a currently-open resource as a list of texts.")
 @Examples({
     "open file ./test.txt:",
     "\tloop the lines of file:",
     "\t\tbroadcast loop-value",
-    "\tset the lines of file to \"hello\" and \"there\""
+    "edit file ./something.txt:",
+    "\tset the lines of file to {lines::*}"
 })
 @Since("1.0.0")
-public class ExprLinesOfFile extends SimplePropertyExpression<FileController, String> {
+public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> {
 
     static {
         if (!SkriptIO.isTest())
-            register(ExprLinesOfFile.class, String.class, "lines", "file");
+            register(ExprLinesOfFile.class, String.class, "lines", "readable");
     }
 
     @Override
@@ -44,12 +47,12 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
     }
 
     @Override
-    public @Nullable String convert(FileController controller) {
-        return controller.readAll();
+    public @Nullable String convert(Readable readable) {
+        return readable.readAll();
     }
 
     @Override
-    protected String @NotNull [] get(@NotNull Event event, FileController @NotNull [] source) {
+    protected String @NotNull [] get(@NotNull Event event, Readable @NotNull [] source) {
         if (source.length == 0 || source[0] == null) return new String[0];
         final List<String> list = source[0].readAll().lines().toList();
         return list.toArray(new String[0]);
@@ -57,10 +60,10 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
 
     @Override
     public Iterator<? extends String> iterator(@NotNull Event event) {
-        final FileController controller = this.getExpr().getSingle(event);
+        final Readable controller = this.getExpr().getSingle(event);
         if (controller == null) return Collections.emptyIterator();
         try {
-            return new LineIterator(controller.acquireReader(true));
+            return new LineIterator(controller.acquireReader());
         } catch (IOException e) {
             SkriptIO.throwSafe(e);
             return Collections.emptyIterator();
@@ -107,7 +110,9 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
     @Override
     public Class<?> @Nullable [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
-            case SET, ADD -> CollectionUtils.array(String.class);
+            case SET, ADD -> Writable.class.isAssignableFrom(this.getExpr().getReturnType())
+                ? CollectionUtils.array(String.class)
+                : null;
             default -> null;
         };
     }
@@ -119,12 +124,16 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
         for (int i = 0; i < strings.length; i++) {
             strings[i] = delta[i] != null ? String.valueOf(delta[i]) : "";
         }
-        final FileController[] files = this.getExpr().getArray(event);
+        final Readable[] files = this.getExpr().getArray(event);
         final String text = String.join(System.lineSeparator(), strings);
-        if (mode == Changer.ChangeMode.SET)
-            for (final FileController file : files) file.write(text);
-        else if (mode == Changer.ChangeMode.ADD)
-            for (final FileController file : files) file.append(System.lineSeparator() + text);
+        if (mode == Changer.ChangeMode.SET) {
+            for (final Readable readable : files) if (readable instanceof Writable file) file.write(text);
+        } else if (mode == Changer.ChangeMode.ADD) {
+            for (final Readable readable : files) {
+                if (readable instanceof FileController file) file.append(System.lineSeparator() + text);
+                else if (readable instanceof Writable file) file.write(System.lineSeparator() + text);
+            }
+        }
 
     }
 

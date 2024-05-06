@@ -11,6 +11,14 @@ on script load:
         add newline to the file
         add "test" to the file
     read file ./test/ExprLinesOfFile.txt:
+        set {_count} to 0
+        loop the lines of the file:
+            add 1 to {_count}
+    if {_count} is 2:
+        broadcast "true"
+    else:
+        broadcast "false: line count was wrong %{_count}%"
+    read file ./test/ExprLinesOfFile.txt:
         set {_text::*} to the lines of the file
     if size of {_text::*} is 2:
         broadcast "true"
