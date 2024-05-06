@@ -13,7 +13,14 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.file.FileController;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Name("Lines of File")
 @Description("The lines of a currently-open file as a list of text.")
@@ -46,6 +53,50 @@ public class ExprLinesOfFile extends SimplePropertyExpression<FileController, St
         if (source.length == 0 || source[0] == null) return new String[0];
         final List<String> list = source[0].readAll().lines().toList();
         return list.toArray(new String[0]);
+    }
+
+    @Override
+    public Iterator<? extends String> iterator(@NotNull Event event) {
+        final FileController controller = this.getExpr().getSingle(event);
+        if (controller == null) return Collections.emptyIterator();
+        try {
+            return new LineIterator(controller.acquireReader(true));
+        } catch (IOException e) {
+            SkriptIO.throwSafe(e);
+            return Collections.emptyIterator();
+        }
+    }
+
+    private record LineIterator(BufferedReader reader, AtomicReference<String> nextLine) implements Iterator<String> {
+
+        //<editor-fold desc="Iterate lines directly from reader." defaultstate="collapsed">
+        public LineIterator(InputStream stream) {
+            this(new BufferedReader(new InputStreamReader(stream)), new AtomicReference<>());
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (nextLine.get() != null) return true;
+            try {
+                final String string = reader.readLine();
+                if (string == null) {
+                    this.reader.close();
+                    return false;
+                }
+                this.nextLine.set(string);
+                return true;
+            } catch (IOException ex) {
+                SkriptIO.throwSafe(ex);
+                return false;
+            }
+        }
+
+        @Override
+        public String next() {
+            return nextLine.getAndSet(null);
+        }
+        //</editor-fold>
+
     }
 
     @Override
