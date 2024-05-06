@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.web.Request;
+import org.skriptlang.skript_io.utility.web.Transaction;
 
 @Name("Method of Request")
 @Description("""
@@ -25,11 +26,11 @@ import org.skriptlang.skript_io.utility.web.Request;
     "\tif method of request is \"GET\":"
 })
 @Since("1.0.0")
-public class ExprMethodOfRequest extends SimplePropertyExpression<Request, String> {
+public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, String> {
 
     static {
         if (!SkriptIO.isTest())
-            register(ExprMethodOfRequest.class, String.class, "method", "request");
+            register(ExprMethodOfRequest.class, String.class, "method", "transaction");
     }
 
     @Override
@@ -38,7 +39,7 @@ public class ExprMethodOfRequest extends SimplePropertyExpression<Request, Strin
     }
 
     @Override
-    public @Nullable String convert(Request request) {
+    public @Nullable String convert(Transaction request) {
         return request.getMethod();
     }
 
@@ -53,7 +54,7 @@ public class ExprMethodOfRequest extends SimplePropertyExpression<Request, Strin
         if (delta == null) return;
         final String method = (String) delta[0];
         if (method == null) return;
-        final Request request = this.getExpr().getSingle(event);
+        final Transaction request = this.getExpr().getSingle(event);
         if (request == null) return;
         request.setMethod(method);
     }

@@ -18,7 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
-import org.skriptlang.skript_io.utility.web.IncomingResponse;
+import org.skriptlang.skript_io.utility.web.Response;
+import org.skriptlang.skript_io.utility.web.Transaction;
 
 @Name("Status Code")
 @Description("""
@@ -40,27 +41,37 @@ public class ExprStatusCode extends SimpleExpression<Number> {
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprStatusCode.class, Number.class, ExpressionType.SIMPLE,
-                                      "[the] status code"
+                "[the] status code",
+                "([the] status code of %-response%|%-response%'[s] status code)"
                                      );
     }
 
+    private @Nullable Expression<Transaction> response;
+
     @Override
+    @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
         if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)
-            || this.getParser().isCurrentSection(SecAcceptResponse.class)
-        ) {
+            || this.getParser().isCurrentSection(SecAcceptResponse.class)) {
             return true;
         }
-        Skript.error("You can't use '" + result.expr + "' outside a website section.");
-        return false;
+        if (matchedPattern == 0) {
+            Skript.error("You can't use '" + result.expr + "' outside a website section.");
+            return false;
+        } else {
+            this.response = (Expression<Transaction>) expressions[0];
+            return true;
+        }
     }
 
     @Override
     protected Number @NotNull [] get(@NotNull Event event) {
-        if (event instanceof VisitWebsiteEvent visit)
+        if (response != null && response.getSingle(event) instanceof Response response) {
+            return new Number[] {response.statusCode()};
+        } else if (event instanceof VisitWebsiteEvent visit)
             return new Number[] {visit.getStatusCode()};
-        else if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse response) {
+        else if (SecAcceptResponse.getCurrentRequest(event) instanceof Response response) {
             return new Number[] {response.statusCode()};
         } else return new Number[0];
     }
@@ -73,7 +84,13 @@ public class ExprStatusCode extends SimpleExpression<Number> {
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (event instanceof VisitWebsiteEvent visit) {
+        if (response != null && response.getSingle(event) instanceof Response response) {
+            if (mode == Changer.ChangeMode.SET) {
+                if (delta == null) return;
+                if (delta.length < 1) return;
+                if (delta[0] instanceof Number number) response.setStatusCode(number.intValue());
+            }
+        } else if (event instanceof VisitWebsiteEvent visit) {
             if (mode == Changer.ChangeMode.SET) {
                 if (delta == null) return;
                 if (delta.length < 1) return;
@@ -94,6 +111,7 @@ public class ExprStatusCode extends SimpleExpression<Number> {
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
+        if (response != null) return "the status code of " + response.toString(event, debug);
         return "the status code";
     }
 

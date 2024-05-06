@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.web.Request;
+import org.skriptlang.skript_io.utility.web.Transaction;
 
 @Name("Header of Request")
 @Description("""
@@ -35,24 +36,25 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprHeaderOfRequest.class, String.class, ExpressionType.PROPERTY,
-                                      "[the] %string% header of %request%", "%request%'[s] %string% header");
+                "[the] %string% header of %transaction%",
+                "%transaction%'[s] %string% header");
     }
 
-    private Expression<Request> requestExpression;
+    private Expression<Transaction> requestExpression;
     private Expression<String> headerExpression;
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.ParseResult result) {
-        this.requestExpression = ((Expression<Request>) expressions[1 - matchedPattern]);
+        this.requestExpression = ((Expression<Transaction>) expressions[1 - matchedPattern]);
         this.headerExpression = ((Expression<String>) expressions[matchedPattern]);
         return true;
     }
 
     @Override
     protected @Nullable String[] get(Event event) {
-        final Request request = requestExpression.getSingle(event);
+        final Transaction request = requestExpression.getSingle(event);
         if (request == null) return new String[0];
         return new String[] {request.getHeader(headerExpression.getSingle(event))};
     }
@@ -68,7 +70,7 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
         if (delta == null || delta.length < 1) return;
         final String type = String.valueOf(delta[0]);
         if (type == null) return;
-        final Request request = this.requestExpression.getSingle(event);
+        final Transaction request = this.requestExpression.getSingle(event);
         if (request == null) return;
         request.setHeader(headerExpression.getSingle(event), type);
     }

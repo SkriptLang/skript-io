@@ -11,9 +11,9 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.web.Request;
+import org.skriptlang.skript_io.utility.web.Transaction;
 
-@Name("Content Type of Request")
+@Name("Content Type of Request/Response")
 @Description("""
     The data format a web request will use, such as "application/json" or "text/html".
         
@@ -26,11 +26,11 @@ import org.skriptlang.skript_io.utility.web.Request;
     "\tset the request's content-type to \"application/json\""
 })
 @Since("1.0.0")
-public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, String> {
+public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transaction, String> {
 
     static {
         if (!SkriptIO.isTest())
-            register(ExprContentTypeOfRequest.class, String.class, "content(-| )type", "request");
+            register(ExprContentTypeOfRequest.class, String.class, "content(-| )type", "transaction");
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, 
     }
 
     @Override
-    public @Nullable String convert(Request request) {
+    public @Nullable String convert(Transaction request) {
         return request.getContentType();
     }
 
@@ -54,7 +54,7 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Request, 
         if (delta == null || delta.length < 1) return;
         final String type = String.valueOf(delta[0]);
         if (type == null) return;
-        final Request request = this.getExpr().getSingle(event);
+        final Transaction request = this.getExpr().getSingle(event);
         if (request == null) return;
         request.setContentType(type);
     }
