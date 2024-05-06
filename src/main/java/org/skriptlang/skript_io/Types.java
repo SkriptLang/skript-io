@@ -29,6 +29,8 @@ import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.file.FileController;
 import org.skriptlang.skript_io.utility.web.Request;
+import org.skriptlang.skript_io.utility.web.Response;
+import org.skriptlang.skript_io.utility.web.Transaction;
 import org.skriptlang.skript_io.utility.web.WebServer;
 
 import java.io.File;
@@ -137,10 +139,19 @@ public class Types {
         Classes.registerClass(new ClassInfo<>(WebServer.class, "website").user("website").name("Website")
             .description("Represents a hosted website when receiving a request.").examples("close the current website")
             .since("1.0.0"));
+        Classes.registerClass(new ClassInfo<>(Transaction.class, "transaction").user("transaction[s]").name("HTTP Transaction")
+            .description("Represents an incoming HTTP request or an outgoing HTTP response (e.g. asking for, being " +
+                "asked for, sending, or receiving data). Common request/response features are available here, such as " +
+                "content types and status codes.")
+            .examples("the response").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(Request.class, "request").user("[web] request[s]").name("Web Request")
             .description("Represents an incoming website request (a browser asking for a page or data), or an " +
                 "outgoing request (your server contacting a website).")
             .examples("the request").since("1.0.0"));
+        Classes.registerClass(new ClassInfo<>(Response.class, "response").user("[web] response[s]").name("Web Response")
+            .description("Represents an incoming website response (a website sending you a page or data), or an " +
+                "outgoing response (your server replying to a request).")
+            .examples("the response").since("1.0.0"));
     }
 
     public void registerFileFormats() {

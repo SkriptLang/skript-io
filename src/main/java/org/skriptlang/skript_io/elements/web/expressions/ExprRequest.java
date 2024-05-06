@@ -42,8 +42,7 @@ public class ExprRequest extends SimpleExpression<Request> {
     static {
         if (!SkriptIO.isTest())
             Skript.registerExpression(ExprRequest.class, Request.class, ExpressionType.SIMPLE,
-                                      "[the] [current] request"
-                                     );
+                "[the] [current] request");
     }
 
     private boolean outgoing;
@@ -73,7 +72,7 @@ public class ExprRequest extends SimpleExpression<Request> {
     }
 
     @Override
-    public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
+    public Class<?> [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return null;
     }
 

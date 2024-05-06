@@ -1,8 +1,11 @@
 package org.skriptlang.skript_io.utility.web;
 
+import org.skriptlang.skript_io.utility.Resource;
+
+import java.io.Closeable;
 import java.net.URI;
 
-public interface Request {
+public interface Request extends Transaction {
 
     URI getPath();
 
@@ -12,20 +15,14 @@ public interface Request {
 
     String getSource();
 
-    String getMethod();
-
+    @Override
     default void setMethod(String mode) {
 
     }
 
-    String getContentType();
-
+    @Override
     default void setContentType(String type) {
 
     }
-
-    String getHeader(String header);
-
-    void setHeader(String header, String type);
 
 }

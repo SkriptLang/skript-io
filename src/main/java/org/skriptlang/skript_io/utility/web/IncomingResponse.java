@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public record IncomingResponse(HttpURLConnection exchange,
-                               AtomicBoolean wasRead) implements Readable, Resource, Closeable {
+                               AtomicBoolean wasRead) implements Response, Readable, Resource, Closeable {
 
     public IncomingResponse(HttpURLConnection exchange) {
         this(exchange, new AtomicBoolean());
@@ -58,12 +58,28 @@ public record IncomingResponse(HttpURLConnection exchange,
         return reference.get();
     }
 
+    @Override
     public int statusCode() {
         try {
             return exchange.getResponseCode();
         } catch (IOException ex) {
             return 500;
         }
+    }
+
+    @Override
+    public String getMethod() {
+        return exchange.getRequestMethod();
+    }
+
+    @Override
+    public String getContentType() {
+        return exchange.getContentType();
+    }
+
+    @Override
+    public String getHeader(String header) {
+        return exchange.getHeaderField(header);
     }
 
 }

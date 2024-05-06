@@ -19,16 +19,16 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
 import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
-import org.skriptlang.skript_io.utility.DummyOutputStream;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.TransferTask;
 import org.skriptlang.skript_io.utility.task.WriteTask;
 import org.skriptlang.skript_io.utility.web.IncomingResponse;
+import org.skriptlang.skript_io.utility.web.OutgoingResponse;
+import org.skriptlang.skript_io.utility.web.Response;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 @Name("Web Response")
@@ -44,12 +44,12 @@ import java.nio.charset.StandardCharsets;
     "\ttransfer ./site/index.html to the response"
 })
 @Since("1.0.0")
-public class ExprResponse extends SimpleExpression<Resource> {
+public class ExprResponse extends SimpleExpression<Response> {
 
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprResponse.class, Resource.class, ExpressionType.SIMPLE,
-                                      "[the] response"
+            Skript.registerExpression(ExprResponse.class, Response.class, ExpressionType.SIMPLE,
+                "[the] response"
                                      );
     }
 
@@ -69,23 +69,14 @@ public class ExprResponse extends SimpleExpression<Resource> {
     }
 
     @Override
-    protected Resource @NotNull [] get(@NotNull Event event) {
+    protected Response @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
-            return new Resource[] {
-                new Writable() {
-                    @Override
-                    public @NotNull OutputStream acquireWriter() {
-                        if (!visit.isStatusCodeSet()) {
-                            SkriptIO.error("Tried to send data before setting the status code.");
-                            return DummyOutputStream.INSTANCE;
-                        }
-                        return visit.getExchange().getResponseBody();
-                    }
-                }
+            return new Response[] {
+                new OutgoingResponse(visit, visit.getExchange())
             };
         else if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse readable) {
-            return new Resource[] {readable};
-        } else return new Resource[0];
+            return new Response[] {readable};
+        } else return new Response[0];
     }
 
     @Override
@@ -123,8 +114,8 @@ public class ExprResponse extends SimpleExpression<Resource> {
     }
 
     @Override
-    public @NotNull Class<Resource> getReturnType() {
-        return Resource.class;
+    public @NotNull Class<Response> getReturnType() {
+        return Response.class;
     }
 
     @Override
