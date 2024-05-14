@@ -31,11 +31,33 @@ import java.util.Map;
 @Name("Encode")
 @Description("""
     Used for converting data from one format to another.
-    This includes special list variable data structures.
+    The `encode %source% as %format% (in|[in]to) %target%` pattern converts string text into
+    the format, and stores the result in the target variable.
+    The `decode %source% from %format% (in|[in]to) %target%` pattern converts an encoded variable into
+    text, and stores the result in the target.
+    
+    Some data formats encode from one text to another (e.g. text -> url-encoded text, text -> gzip).
+    These formats require a regular variable as their encoding target/decoding source.
+    
+    Other data formats support special text <-> list variable mapping, (e.g. json objects, yaml trees).
+    These formats require a **list** variable as their encoding target/decoding source.
     """)
 @Examples({
-    "encode {_raw text} as json to {_json::*}",
-    "decode {_config::*} from yaml to {_raw text}"
+    """
+    set {_raw text} to "{""key"": ""value""}"
+    encode {_raw text} as json to {_json::*}
+    # _json::key = "value"\s""",
+    """
+    set {_json::key} to "value"
+    set {_json::number} to 5.5
+    decode {_json::*} from json to {_raw text}
+    # {"key": "value", "number": 5.5}""",
+    """
+    encode "hello there" as gzip to {_compressed}""",
+    """
+    decode {_compressed} from gzip to {_raw text}""",
+    """
+    decode {_config::*} from yaml to {_raw text}""",
 })
 @Since("1.0.0")
 public class EffEncode extends Effect {

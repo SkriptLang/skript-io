@@ -22,13 +22,18 @@ import java.net.URI;
 @Description("""
     Closes the website at a given path and/or port, or the current website.
     The website will stop accepting connections.
-        
+    
     Any currently-open tasks may continue to run in the background.
+    
+    After closing a website, its path will become available for reuse.
+    After closing all websites running on a port, it may take a little time before the
+    operating system frees the port for reuse.
     """)
 @Examples({
-    "open a website for /landing/:",
-    "\ttransfer ./site/welcome.html to the response",
-    "\tclose the current website"
+    """
+    open a website for /landing/:
+        transfer ./site/welcome.html to the response
+        close the current website"""
 })
 @Since("1.0.0")
 public class EffCloseServer extends Effect {

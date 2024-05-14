@@ -21,8 +21,18 @@ import org.skriptlang.skript_io.utility.Resource;
 import java.util.Map;
 
 @Name("Change: Indexed Set")
-@Description("A special edition of the set changer that can maintain the indices of source data.")
-@Examples({"set {_options::*} to yaml contents of file"})
+@Description("""
+A special edition of the set changer that can maintain the indices of source data.
+Used for converting resources from encoded formats (e.g. json, yaml) to indexed list variables.
+""")
+@Examples({
+    "set {_options::*} to yaml contents of file",
+    "set {_json::*} to json contents of the response",
+    """
+    open a web request to https://localhost:3000/mysite:
+        await the response:
+          set {_result::*} to the response's json content"""
+})
 @Since("1.0.0")
 public class EffIndexedSet extends EffEncode {
 

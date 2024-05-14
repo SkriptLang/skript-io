@@ -21,8 +21,9 @@ import org.skriptlang.skript_io.utility.web.WebServer;
 @Name("Current Website")
 @Description("The current website, in a website section.")
 @Examples({
-    "open a website:",
-    "\tclose the current website"
+    """
+    open a website:
+        close the current website"""
 })
 @Since("1.0.0")
 public class ExprCurrentWebsite extends SimpleExpression<WebServer> {

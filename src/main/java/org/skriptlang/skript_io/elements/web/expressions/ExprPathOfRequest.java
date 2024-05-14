@@ -19,12 +19,17 @@ import java.net.URI;
 @Description("""
     The (file) path a web request is asking for.
     This is typically a browser asking for a page, e.g. `/something/page.html`.
-        
-    Properly-formatted requests typically start with an absolute `/...` - be careful when serving content.
+    
+    Properly-formatted requests typically start with an absolute `/...`.
+    
+    > Be careful when serving content based on a request!
+    > If you do not filter requests (e.g. prohibiting `../`) then the requester may be able to
+    access system files outside the server directory.
     """)
 @Examples({
-    "open a website:",
-    "\tbroadcast the request's path"
+    """
+    open a website:
+        broadcast the request's path"""
 })
 @Since("1.0.0")
 public class ExprPathOfRequest extends SimplePropertyExpression<Request, URI> {

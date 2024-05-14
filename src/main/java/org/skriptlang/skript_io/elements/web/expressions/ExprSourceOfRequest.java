@@ -12,10 +12,13 @@ import org.skriptlang.skript_io.utility.web.Request;
 
 @Name("Source of Request")
 @Description("""
-    The address a request was made from, in IP format.""")
+    The address a request was made from, in IP format.
+    If present, this will be a text, e.g. `"127.0.0.1"`.
+    """)
 @Examples({
-    "open a website:",
-    "\tbroadcast the request's source"
+    """
+    open a website:
+        broadcast the request's source"""
 })
 @Since("1.0.0")
 public class ExprSourceOfRequest extends SimplePropertyExpression<Request, String> {

@@ -16,11 +16,15 @@ import java.io.IOException;
 import java.net.URI;
 
 @Name("Create File")
-@Description("Creates a new file at a path. If the file already exists or was successfully created, opens an editing " +
-    "section.")
+@Description("""
+    Creates a new file at a path.
+    If the file already exists or was successfully created, opens an editing section.
+    If creation fails and the file does not exist, the editing section will be skipped.
+    """)
 @Examples({
-    "create file ./test.txt:",
-    "\tadd \"hello\" to the file"
+    """
+    create file ./test.txt:
+        add "hello" to the file"""
 })
 @Since("1.0.0")
 public class SecCreateFile extends SecEditFile {

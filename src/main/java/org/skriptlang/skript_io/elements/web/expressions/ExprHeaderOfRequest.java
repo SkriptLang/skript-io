@@ -22,13 +22,14 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 @Name("Header of Request")
 @Description("""
     A key/value-based header in a request, such as "Content-Type" -> "text/html".
-        
+    
     Request headers information about the client requesting the resource.
     Response headers hold information about the response.
     """)
 @Examples({
-    "open a web request to http://localhost:3000:",
-    "\tset the request's \"Content-Encoding\" header to \"gzip\""
+    """
+    open a web request to http://localhost:3000:
+        set the request's "Content-Encoding" header to "gzip\""""
 })
 @Since("1.0.0")
 public class ExprHeaderOfRequest extends SimpleExpression<String> {

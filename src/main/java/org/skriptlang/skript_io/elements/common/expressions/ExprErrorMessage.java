@@ -11,12 +11,15 @@ import org.skriptlang.skript_io.SkriptIO;
 
 @Name("Message of Error")
 @Description("""
-    The message attached to an error (if one is present).""")
+    The text-message attached to an error (if one is present).
+    Not all errors specify a message.
+    """)
 @Examples({
-    "try:",
-    "\tbroadcast the text content of the request's body",
-    "catch {_error}:",
-    "\tbroadcast {_error}'s message"
+    """
+    try:
+        broadcast the text content of the request's body
+    catch {_error}:
+        broadcast {_error}'s message"""
 })
 @Since("1.0.0")
 public class ExprErrorMessage extends SimplePropertyExpression<Throwable, String> {

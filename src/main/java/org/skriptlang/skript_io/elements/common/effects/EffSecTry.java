@@ -21,20 +21,42 @@ import java.util.List;
 
 @Name("Try")
 @Description("""
-    Attempts to run the code in the section. If any part of the code encounters a (recoverable) error,\
+    Attempts to run the code in the section. If any part of the code encounters a (recoverable) error,
     the section will exit immediately and any remaining code will not be run.
-    This means that the script may continue in an unexpected state (i.e. some variables may be different from expected)\
+    
+    This means that the script may continue in an unexpected state (i.e. some variables may be different from expected)
     and so the `try` section should be used with caution.
+    > To properly recover the program, specify the error you expect using a catch section.
+    
     Any kind of delay is prohibited within the try section.
+    ```
+    try:
+        do something
+        wait 1 second # NO!
+        do something
+    ```
+    If a delay is needed, the try-section should be split into multiple blocks around the delay.
+    ```
+    try:
+        do something
+    wait 1 second # ok
+    try:
+        do something
+    ```
+    
     Note that some errors are considered unrecoverable and the trigger *must* terminate.
-    These will not be hidden by the try section.""")
+    These will not be suppressed by a `try` section.""")
 @Examples({
-    "try:",
-    "\tadd \"hello\" to the file",
-    "catch {_error}:",
-    "\tbroadcast \"An error occurred!\"",
-    "try to kill player",
-    "catch the null pointer error in {_error}"
+    """
+    try:
+        add "hello" to the file""",
+    """
+    try:
+        set {_text} to the text content of the response
+    catch {_error}""",
+    """
+    try to kill player
+    catch the null pointer error in {_error}"""
 })
 @Since("1.0.0")
 public class EffSecTry extends EffectSection {

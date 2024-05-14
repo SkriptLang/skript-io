@@ -27,14 +27,17 @@ import org.skriptlang.skript_io.utility.web.Request;
     This is typically a browser asking for a page.
     """)
 @Examples({
-    "open a website:",
-    "\tset {_file} to path of request",
-    "\tif file {_file} exists:",
-    "\t\tset the status code to 200",
-    "\t\ttransfer {_file} to the response",
-    "\telse:",
-    "\t\tset the status code to 404",
-    "\t\tadd \"Page not found.\" to the response",
+    """
+    open a website:
+        set {_file} to path of request
+        if file {_file} exists:
+            set the status code to 200
+            transfer {_file} to the response
+            # Be careful!
+            # This example doesn't restrict access to any files
+        else:
+            set the status code to 404
+            add "Page not found." to the response""",
 })
 @Since("1.0.0")
 public class ExprRequest extends SimpleExpression<Request> {

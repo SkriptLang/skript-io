@@ -65,7 +65,7 @@ public record IncomingRequest(HttpExchange exchange) implements Readable, Closea
 
     @Override
     public void close() throws IOException {
-        SkriptIO.queue(new CloseTask(exchange));
+        SkriptIO.remoteQueue().queue(new CloseTask(exchange));
     }
 
 }

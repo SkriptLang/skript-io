@@ -16,8 +16,21 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.format.ErrorInfo;
 
 @Name("Throw Error")
-@Description("Produces an error that terminates the current trigger, unless it is 'caught' by a try/catch section.")
-@Examples({"throw an error with message \"oops!\""})
+@Description("""
+Produces an error that terminates the current trigger, unless it is 'caught' by a try/catch section.
+
+This error will terminate each section in turn, propagating up the program,
+until it reaches a 'breakpoint' (a delay, a function call, an event trigger) or a try/catch section.
+No code after this error will be run, unless it was previously scheduled in the trigger.
+""")
+@Examples({
+    """
+    throw an error with message "oops!\"""",
+    """
+    throw an io error with message "file broke :(\"""",
+    """
+    throw a null pointer error""",
+})
 @Since("1.0.0")
 public class EffThrow extends Effect {
 

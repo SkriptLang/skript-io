@@ -35,13 +35,14 @@ import java.nio.charset.StandardCharsets;
 @Description("""
     Your website's response to a request made to your site.
     This resource can be written to (in order to send data back to the requester).
-        
+    
     This can be used to send data to a client, e.g. sending a page to a browser when requested.
     """)
 @Examples({
-    "open a website:",
-    "\tadd {_greeting} to the response",
-    "\ttransfer ./site/index.html to the response"
+    """
+    open a website:
+        add {_greeting} to the response
+        transfer ./site/index.html to the response"""
 })
 @Since("1.0.0")
 public class ExprResponse extends SimpleExpression<Response> {

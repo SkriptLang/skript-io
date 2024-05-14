@@ -20,14 +20,17 @@ import static org.skriptlang.skript_io.elements.web.events.EvtVisitWebsite.*;
 
 @Name(NAME)
 @Description(DESCRIPTION)
-@Examples({"on website visit:", "\tset the status code to 200"})
+@Examples({
+    """
+    on website visit:
+        set the status code to 200"""})
 @Since(SINCE)
 public class EvtVisitWebsite extends SkriptEvent {
 
     protected static final String SINCE = "1.0.0", NAME = "Visit Website", DESCRIPTION = """
         Called when a website running from this server is visited.
         This could be from a browser asking for a page or a web request.
-                
+        
         While requests can be read and responded to in this event listener,
         it is much safer to use the dedicated website section.""";
 

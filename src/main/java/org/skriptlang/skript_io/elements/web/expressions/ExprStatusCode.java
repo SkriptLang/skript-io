@@ -25,15 +25,16 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 @Description("""
     The status code of a web request.
     A `200` status is OK.
-        
+    
     When receiving a response, this is the status of your previous request.
-        
+    
     When responding to a request, this must be set before data can be transferred.
     """)
 @Examples({
-    "open a website:",
-    "\tset the status code to 200 # OK",
-    "\ttransfer ./site/index.html to the response"
+    """
+    open a website:
+        set the status code to 200 # OK
+        transfer ./site/index.html to the response"""
 })
 @Since("1.0.0")
 public class ExprStatusCode extends SimpleExpression<Number> {

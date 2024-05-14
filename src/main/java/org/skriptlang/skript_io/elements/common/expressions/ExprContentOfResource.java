@@ -33,14 +33,16 @@ import java.util.Map;
 @Description("""
     The contents of (the stuff inside) a resource, such as an open file.
     This uses a type parser (e.g. the number context of X will parse X as a number).
-        
+    
     This will return nothing if the resource is unreadable.
     """)
 @Examples({
-    "open a website:",
-    "\tbroadcast the text content of the request's body",
-    "open file ./test.txt:",
-    "\tbroadcast the text contents of file"
+    """
+    open a website:
+        broadcast the text content of the request's body""",
+    """
+    open file ./test.txt:
+        broadcast the text contents of file"""
 })
 @Since("1.0.0")
 public class ExprContentOfResource extends SimplePropertyExpression<Resource, Object> {

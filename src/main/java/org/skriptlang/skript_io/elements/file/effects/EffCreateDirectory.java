@@ -20,7 +20,8 @@ import java.net.URI;
 @Name("Create Directory")
 @Description("Creates a new folder at the given path, if one does not exist.")
 @Examples({
-    "create a new folder ./test/"
+    """
+    create a new folder ./test/"""
 })
 @Since("1.0.0")
 public class EffCreateDirectory extends Effect {

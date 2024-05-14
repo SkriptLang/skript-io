@@ -33,9 +33,24 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutionException;
 
 @Name("Expect Response")
-@Description("Notifies a connection that you expect a response (and waits for it).")
-@Examples({"open a request to https://skriptlang.org:", "\taccept the response:", "\t\tbroadcast the response's " +
-    "content"})
+@Description("""
+    Notifies a connection that you expect a response (and waits for it).
+    
+    Accepting a response marks the outgoing connection as complete
+    (e.g. you cannot send more data in the request) and anything waiting to be sent will be dispatched.
+    """)
+@Examples({
+    """
+    open a request to https://skriptlang.org:
+        expect the response:
+            broadcast the response's content""",
+    """
+    open a request to http://my-api-here:
+        set the request's json content to {_data::*}
+        accept the response:
+            set {_result::*} to the response's json content
+    # {_result::*} is available here"""
+})
 @Since("1.0.0")
 public class SecAcceptResponse extends EffectSection {
 

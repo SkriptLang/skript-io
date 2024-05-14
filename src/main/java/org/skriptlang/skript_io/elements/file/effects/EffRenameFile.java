@@ -22,7 +22,8 @@ import java.net.URI;
 @Name("Rename File")
 @Description("Renames a file or directory. To rename a directory please use the 'move' effect.")
 @Examples({
-    "rename file ./example/test.txt to \"blob.txt\""
+    """
+    rename file ./example/test.txt to "blob.txt\""""
 })
 @Since("1.0.0")
 public class EffRenameFile extends Effect {

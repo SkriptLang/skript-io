@@ -19,12 +19,15 @@ import static org.skriptlang.skript_io.utility.file.FileController.READ;
 import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
 
 @Name("Edit File")
-@Description("Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the " +
-    "section will not be run.")
+@Description("""
+    Opens a file at a path for reading and writing.
+    If the file does not exist or is inaccessible, the section will not be run.
+    """)
 @Examples({
-    "edit file ./test.txt:",
-    "\tset the text contents of the file to \"line 1\"",
-    "\tadd \"line 2\" to the lines of the file"
+    """
+    edit file ./test.txt:
+        set the text contents of the file to "line 1"
+        add "line 2" to the lines of the file"""
 })
 @Since("1.0.0")
 public class SecEditFile extends SecAccessFile {

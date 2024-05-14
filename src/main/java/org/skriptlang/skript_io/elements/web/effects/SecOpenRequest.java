@@ -33,13 +33,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Name("Send Web Request")
 @Description("""
     Prepares an HTTP request to be sent to a website URL. This may have content written to it.
-        
-    Once the request has been dispatched, the response can be read.""")
+    
+    Once the request has been dispatched, the response can be read using the `accept the response` section.""")
 @Examples({
-    "open a web request to https://skriptlang.org:",
-    "\tset the request's method to \"GET\"",
-    "\tawait the response:",
-    "\t\tbroadcast the response's text content"
+    """
+    open a web request to https://skriptlang.org:
+        set the request's method to "GET"
+        await the response:
+            broadcast the response's text content""",
+    """
+    open a request to http://my-api-here:
+        set the request's json content to {_data::*}"""
 })
 @Since("1.0.0")
 public class SecOpenRequest extends EffectSection {

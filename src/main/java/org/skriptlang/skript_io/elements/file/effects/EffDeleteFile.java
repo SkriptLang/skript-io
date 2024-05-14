@@ -21,7 +21,14 @@ import java.net.URI;
 
 @Name("Delete File/Directory")
 @Description("Deletes the folder or file at the given path.")
-@Examples({"recursively delete folder ./test/", "delete folder ./test/", "delete the file at ./config.txt"})
+@Examples({
+    """
+    recursively delete folder ./test/""",
+    """
+    delete folder ./test/""",
+    """
+    delete the file at ./config.txt"""
+})
 @Since("1.0.0")
 public class EffDeleteFile extends Effect {
 

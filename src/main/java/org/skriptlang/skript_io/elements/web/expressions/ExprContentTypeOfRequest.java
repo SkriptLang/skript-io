@@ -16,14 +16,15 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 @Name("Content Type of Request/Response")
 @Description("""
     The data format a web request will use, such as "application/json" or "text/html".
-        
+    
     When making a request you may have to use a specific content type (and format your data accordingly!)
     When receiving a request, this should indicate the format of the incoming data.
     Not all web requests will have data attached.
     """)
 @Examples({
-    "open a web request to http://localhost:3000:",
-    "\tset the request's content-type to \"application/json\""
+    """
+    open a web request to http://localhost:3000:
+        set the request's content-type to "application/json\""""
 })
 @Since("1.0.0")
 public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transaction, String> {

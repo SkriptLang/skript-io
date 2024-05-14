@@ -20,12 +20,16 @@ import static org.skriptlang.skript_io.utility.file.FileController.READ;
 @Name("Read File")
 @Description("""
     Opens a file at a path only for reading.
-    The file cannot be written to.
+    The file **cannot** be written to.
     If the file does not exist or is unreadable, the section will not be run.""")
 @Examples({
-    "read file ./test.txt:",
-    "\tloop the lines of the file:",
-    "\t\tbroadcast loop-value"
+    """
+    read file ./test.txt:
+        loop the lines of the file:
+            broadcast loop-value""",
+    """
+    read file ./test.txt:
+        broadcast the text contents of the file""",
 })
 @Since("1.0.0")
 public class SecReadFile extends SecAccessFile {

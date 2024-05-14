@@ -25,10 +25,14 @@ import java.util.Arrays;
 @Description("""
     Safely copies data from one (readable) resource to another (writable) resource.
     Useful for responding to a web request with a file (or copying one file into another).
+    
+    For moving files between folders, see the move file effect.
     """)
 @Examples({
     "transfer {input} to {output}",
-    "transfer ./test.html to the response"
+    """
+    open a website for /site/ with port 3000:
+        transfer ./test.html to the response"""
 })
 @Since("1.0.0")
 public class EffTransfer extends Effect {

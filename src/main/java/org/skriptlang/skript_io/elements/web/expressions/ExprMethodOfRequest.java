@@ -17,13 +17,15 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 @Name("Method of Request")
 @Description("""
     The type of a web request, such as "GET" or "POST" or "PATCH".
-        
+    
     Requests for data (e.g. asking for a webpage) typically use "GET".
     Sending data (e.g. submitting a form, searching) typically uses "POST".
     """)
 @Examples({
-    "open a website:",
-    "\tif method of request is \"GET\":"
+    """
+    open a website:
+        if method of request is "GET":
+            # ..."""
 })
 @Since("1.0.0")
 public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, String> {

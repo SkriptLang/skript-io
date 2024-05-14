@@ -26,8 +26,18 @@ import org.skriptlang.skript_io.utility.task.FormatTask;
 import java.util.Map;
 
 @Name("Change: Reverse Indexed Set")
-@Description("A special edition of the set changer that can maintain the indices of target data.")
-@Examples({"set yaml contents of file to {_options::*}"})
+@Description("""
+A special edition of the set changer that can maintain the indices of target data.
+Used for converting resources from list variables to encoded formats (e.g. json, yaml).
+""")
+@Examples({
+    "set yaml contents of file to {_options::*}",
+    """
+    set {_json::key} to "something"
+    set {_json::array::*} to "a", "b" and "c"
+    open a web request to https://localhost:3000/mysite:
+        set the request's method to "POST"
+        set the json content of request to {_json::*}"""})
 @Since("1.0.0")
 public class EffReverseIndexedSet extends EffEncode {
 

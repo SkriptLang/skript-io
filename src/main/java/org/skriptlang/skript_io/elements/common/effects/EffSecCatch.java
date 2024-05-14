@@ -20,11 +20,34 @@ import java.util.List;
 @Name("Catch Error")
 @Description("""
     Obtains the error from the previous `try` section and stores it in a variable.
-    This can also be used as a section that will run only if an error occurred.""")
+    This can also be used as a section that will run only if an error occurred.
+    
+    The catch section can also be used to filter specific errors by type, as long
+    as an 'error info' is provided for the error class.
+    """)
 @Examples({
-    "try:",
-    "\tadd \"hello\" to the file",
-    "catch {error}"
+    """
+    try:
+        add "hello" to the file
+    catch {_error}
+    # _error will be empty if no error occurred
+    if {_error} exists:
+        broadcast "An error occurred!\"""",
+    """
+    try:
+        add "hello" to the file
+    catch {_error}:
+        # run if an error occurred
+        broadcast "Error! " + {_error}'s message""",
+    """
+    try:
+        add "hello" to the file
+    catch the io error in {_io}:
+        # run if an 'io exception' occurred
+        broadcast "Unable to write to the file."
+    catch the null pointer error in {_null}:
+        # run if a 'null pointer exception' occurred
+        broadcast "Something was null.\"""",
 })
 @Since("1.0.0")
 public class EffSecCatch extends EffectSection {

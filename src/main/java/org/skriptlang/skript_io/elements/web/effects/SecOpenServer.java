@@ -22,24 +22,39 @@ import java.util.List;
 
 @Name("Open Website")
 @Description("""
-    Opens a website at the provided path and port, defaulting to the root path `/` on port 80.
+    Opens a website at the provided path and port, defaulting to the root path `/` on port `80`.
     Whenever a request is received, the code inside the section will be run.
-        
-    Responses to a request should start by sending a status code (e.g. 200 = OK) and then any data.
-        
+    
+    Responses to a request should start by sending a status code (e.g. `200` = OK) and then any data.
+    
     Website paths should end in a separator `/`, and will handle any requests to their directory.
     A website on the root path `/` will accept any unhandled requests.
-        
-    Multiple websites cannot be opened on the same port and path.
-    Multiple websites can be opened on *different* paths with the same port, such as `/foo/` and `/bar/`
+    This means that a website for `/foo/` will see requests to `/foo/page.html`,
+    `/foo/q?key=value&key=value`, etc.
+    
+    Multiple websites cannot be opened on the same port *and* path.
+    Multiple websites can be opened on *different* paths with the same port,
+    such as `/foo/` and `/bar/`.
+    Multiple websites can be opened on *different* ports with the same path,
+    such as `localhost:321/foo/` and `localhost:123/foo/`.
     """)
 @Examples({
-    "open a website on port 12345:",
-    "\tset the status code to 200",
-    "\tadd \"<body>\" to the response",
-    "\tadd \"<h1>hello!!!</h1>\" to the response",
-    "\tadd \"<p>there are %size of all players% players online</p>\" to the response",
-    "\tadd \"</body>\" to the response"
+    """
+    open a website for /homepage/ on port 12345:
+        # http://localhost:12345/homepage
+        set the status code to 200
+        add "<body>" to the response
+        add "<h1>Hello!</h1>" to the response
+        add "<p>There are %size of all players% players online.</p>" to the response
+        add "</body>" to the response""",
+    """
+    open a website on port 8123:
+        # http://localhost:8123
+        if the source of request is not "127.0.0.1":
+            set the status code to 403 # forbidden
+        else:
+            set the status code to 200 # ok
+    """
 })
 @Since("1.0.0")
 public class SecOpenServer extends EffectSection {

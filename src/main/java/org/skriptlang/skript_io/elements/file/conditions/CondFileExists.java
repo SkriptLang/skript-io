@@ -22,8 +22,9 @@ import java.net.URI;
 @Name("File/Directory Exists")
 @Description("Checks whether the given path is a file that exists.")
 @Examples({
-    "if file ./test.txt exists:",
-    "\tdelete file ./test.txt"
+    """
+    if file ./test.txt exists:
+        delete file ./test.txt"""
 })
 @Since("1.0.0")
 public class CondFileExists extends Condition {
