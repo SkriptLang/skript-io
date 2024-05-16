@@ -1,0 +1,21 @@
+
+on script load:
+    broadcast "ExprFileInDirectory"
+    create file ./test/ExprFileInDirectory.txt
+    if file ./test/ExprFileInDirectory.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    if file (ExprFileInDirectory.txt in ./test/) does not exist:
+        broadcast "false: missing file %ExprFileInDirectory.txt in ./test/%"
+    else:
+        broadcast "true"
+    if file ExprFileInDirectory.txt in directory ./test/ does not exist:
+        broadcast "false: missing file %ExprFileInDirectory.txt in directory ./test/%"
+    else:
+        broadcast "true"
+    if file file ./ExprFileInDirectory.txt in directory ./test/ does not exist:
+        broadcast "false: missing file %file ./ExprFileInDirectory.txt in directory ./test/%"
+    else:
+        broadcast "true"
+    delete file ./test/ExprFileInDirectory.txt
