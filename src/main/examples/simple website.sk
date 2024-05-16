@@ -1,0 +1,11 @@
+
+on script load:
+    open a website on port 3333:
+        set {_file} to path of request
+        if file ./test/{_file} exists:
+            set the status code to 200
+            set the content-type of the response to html
+            transfer ./test/{_file} to the response
+        else:
+            set the status code to 404
+            add "Page not found." to the response

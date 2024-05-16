@@ -21,8 +21,9 @@ import java.net.URI;
 @Name("Files in Directory")
 @Description("Returns a list of (file/folder) paths in the given directory.")
 @Examples({
-    "loop the files in ./test/:",
-    "\tdelete the file at loop-value"
+    """
+        loop the files in ./test/:
+            delete the file at loop-value"""
 })
 @Since("1.0.0")
 public class ExprFilesInDirectory extends SimpleExpression<URI> {
