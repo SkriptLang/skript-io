@@ -40,12 +40,12 @@ import org.skriptlang.skript_io.utility.web.Request;
             add "Page not found." to the response""",
 })
 @Since("1.0.0")
-public class ExprRequest extends SimpleExpression<Request> {
+public class ExprIncomingRequest extends SimpleExpression<IncomingRequest> {
 
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprRequest.class, Request.class, ExpressionType.SIMPLE,
-                "[the] [current] request");
+            Skript.registerExpression(ExprIncomingRequest.class, IncomingRequest.class, ExpressionType.SIMPLE,
+                "[the] [incoming] request");
     }
 
     private boolean outgoing;
@@ -53,25 +53,14 @@ public class ExprRequest extends SimpleExpression<Request> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
-            return true;
-        } else if (this.getParser().isCurrentSection(SecOpenRequest.class)) {
-            this.outgoing = true;
-            return true;
-        }
-        Skript.error("You can't use '" + result.expr + "' outside a website section.");
-        return true;
+        return this.getParser().isCurrentEvent(VisitWebsiteEvent.class);
     }
 
     @Override
-    protected Request @NotNull [] get(@NotNull Event event) {
+    protected IncomingRequest @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
-            return new Request[] {new IncomingRequest(visit.getExchange())};
-        if (outgoing) {
-            final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-            if (request != null) return new Request[] {request};
-        }
-        return new Request[0];
+            return new IncomingRequest[] {new IncomingRequest(visit.getExchange())};
+        return new IncomingRequest[0];
     }
 
     @Override
@@ -85,13 +74,13 @@ public class ExprRequest extends SimpleExpression<Request> {
     }
 
     @Override
-    public @NotNull Class<Request> getReturnType() {
-        return Request.class;
+    public @NotNull Class<IncomingRequest> getReturnType() {
+        return IncomingRequest.class;
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "the request";
+        return "the incoming request";
     }
 
 }

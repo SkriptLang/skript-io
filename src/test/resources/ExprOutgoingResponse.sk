@@ -1,6 +1,6 @@
 
 on script load:
-    broadcast "ExprResponse"
+    broadcast "ExprOutgoingResponse"
     set {ExprResponse} to 0
     open a website for /ExprResponse/ with port 6063:
         set {ExprResponse} to 1

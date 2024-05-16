@@ -1,6 +1,6 @@
 
 on script load:
-    broadcast "ExprRequest"
+    broadcast "ExprIncomingResponse"
     open a website for /ExprRequest/ with port 6063:
         set the status code to 200
         set the text content of the response to "ok"
