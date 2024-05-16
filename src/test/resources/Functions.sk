@@ -1,0 +1,44 @@
+
+on script load:
+    broadcast "Functions: joinPaths"
+    create file ./test/joinPaths.txt
+    if file ./test/joinPaths.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    if joinPaths("./test/joinPaths.txt") does not exist:
+        broadcast "false: function failure 1 %joinPaths("./test/joinPaths.txt")%"
+    else:
+        broadcast "true"
+    if joinPaths(./test/, joinPaths.txt) does not exist:
+        broadcast "false: function failure 2 %joinPaths(./test/, joinPaths.txt)%"
+    else:
+        broadcast "true"
+    if joinPaths(./test/, "joinPaths.txt") does not exist:
+        broadcast "false: function failure 2 %joinPaths(./test/, "joinPaths.txt")%"
+    else:
+        broadcast "true"
+    if joinPaths("./test/", "joinPaths.txt") does not exist:
+        broadcast "false: function failure 2 %joinPaths("./test/", "joinPaths.txt")%"
+    else:
+        broadcast "true"
+    delete file ./test/joinPaths.txt
+
+
+
+on script load:
+    broadcast "Functions: file"
+    create file ./test/file.txt
+    if file ./test/file.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    if file(./test/file.txt) does not exist:
+        broadcast "false: function failure 1 %file(./test/file.txt)%"
+    else:
+        broadcast "true"
+    if file("./test/file.txt") does not exist:
+        broadcast "false: function failure 1 %file("./test/file.txt")%"
+    else:
+        broadcast "true"
+    delete file ./test/joinPaths.txt
