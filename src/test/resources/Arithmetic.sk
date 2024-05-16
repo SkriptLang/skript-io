@@ -1,0 +1,27 @@
+
+on script load:
+    broadcast "Arithmetic"
+    create file ./test/Arithmetic.txt
+    if file ./test/Arithmetic.txt does not exist:
+        broadcast "false: file not created"
+    else:
+        broadcast "true"
+    if file (./test/ + Arithmetic.txt) does not exist:
+        broadcast "false: sum arithmetic failure %(./test/ + Arithmetic.txt)%"
+    else:
+        broadcast "true"
+    if file (./test / Arithmetic.txt) does not exist:
+        broadcast "false: division arithmetic failure %(./test / Arithmetic.txt)%"
+    else:
+        broadcast "true"
+    set {_var} to "Arithmetic.txt"
+    if file (./test/{_var}) does not exist:
+        broadcast "false: division variable arithmetic failure %(./test/{_var})%"
+    else:
+        broadcast "true"
+    set {_var} to "Arithmetic"
+    if file (./test/ + {_var} + .txt) does not exist:
+        broadcast "false: division variable arithmetic failure %(./test/ + {_var} + .txt)%"
+    else:
+        broadcast "true"
+    delete file ./test/Arithmetic.txt
