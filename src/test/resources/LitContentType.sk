@@ -1,0 +1,15 @@
+
+on script load:
+    broadcast "LitContentType"
+    if csv is "text/csv":
+        broadcast "true"
+    else:
+        broadcast "false: %csv%"
+    if html is "text/html":
+        broadcast "true"
+    else:
+        broadcast "false: %html%"
+    if json is "application/json":
+        broadcast "true"
+    else:
+        broadcast "false: %json%"

@@ -32,7 +32,7 @@ public enum ContentType {
     JAR("jar", "application/java-archive"), // Java Archive (JAR)
     JPEG("jpeg", "image/jpeg"), // JPEG images
     JPG("jpg", "image/jpeg"), // JPEG images
-    JS("js", "text/javascript (Specifications: HTML and RFC 9239)"), // JavaScript
+    JS("js", "text/javascript"), // (Specifications: HTML and RFC 9239) JavaScript
     JSON("json", "application/json"), // JSON format
     JSONLD("jsonld", "application/ld+json"), // JSON-LD format
     MID("mid", "audio/midi, audio/x-midi"), // Musical Instrument Digital Interface (MIDI)
@@ -80,8 +80,8 @@ public enum ContentType {
     XML("xml", "application/xml"), // XML
     XUL("xul", "application/vnd.mozilla.xul+xml"), // XUL
     ZIP("zip", "application/zip"), // ZIP archive
-    TYPE_3GP("3gp", "video/3gpp; audio/3gpp if it doesn't contain video"), // 3GPP audio/video container
-    TYPE_3G2("3g2", "video/3gpp2; audio/3gpp2 if it doesn't contain video"), // 3GPP2 audio/video container
+    TYPE_3GP("3gp", "video/3gpp"), // audio/3gpp if it doesn't contain video 3GPP audio/video container
+    TYPE_3G2("3g2", "video/3gpp2"), // audio/3gpp2 if it doesn't contain video 3GPP2 audio/video container
     TYPE_7Z("7z", "application/x-7z-compressed"), // 7-zip archive
     UNKNOWN("unknown", "application/octet-stream"); // things we don't know about!
 
