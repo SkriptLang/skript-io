@@ -15,6 +15,8 @@ import ch.njol.skript.registrations.Classes;
 import ch.njol.yggdrasil.Fields;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.lang.arithmetic.Arithmetics;
+import org.skriptlang.skript.lang.arithmetic.Operator;
 import org.skriptlang.skript.lang.comparator.Comparator;
 import org.skriptlang.skript.lang.comparator.Comparators;
 import org.skriptlang.skript.lang.comparator.Relation;
@@ -28,10 +30,7 @@ import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.file.FileController;
-import org.skriptlang.skript_io.utility.web.Request;
-import org.skriptlang.skript_io.utility.web.Response;
-import org.skriptlang.skript_io.utility.web.Transaction;
-import org.skriptlang.skript_io.utility.web.WebServer;
+import org.skriptlang.skript_io.utility.web.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +45,43 @@ public class Types {
     private SyntaxElementInfo<?> change;
     private Collection<SyntaxElementInfo<? extends Effect>> effects;
     private Collection<SyntaxElementInfo<? extends Statement>> syntax;
+
+    public void registerPathArithmetic() {
+        Arithmetics.registerOperation(Operator.ADDITION, URI.class, String.class, (uri, string) ->
+            SkriptIO.uri(uri + string));
+        Arithmetics.registerOperation(Operator.ADDITION, URI.class, URI.class, this::add);
+        Arithmetics.registerOperation(Operator.SUBTRACTION, URI.class, URI.class, URI::relativize);
+        Arithmetics.registerOperation(Operator.DIVISION, URI.class, URI.class, this::subPath);
+    }
+
+    private URI subPath(URI base, URI child) {
+        final String initial = base.toString();
+        String addendum = child.getPath().replaceAll("^\\w+://", "");
+        if (initial.endsWith("/"))
+            while (addendum.startsWith("/")) addendum = addendum.substring(1);
+        else if (initial.endsWith(File.separator)) // windows patch
+            while (addendum.startsWith(File.separator)) addendum = addendum.substring(File.separator.length());
+        else if (!addendum.startsWith("/")) addendum = '/' + addendum;
+        return SkriptIO.uri(initial + addendum);
+    }
+
+    private URI add(URI base, URI child) {
+        if (!child.isOpaque()
+            && !base.isOpaque()
+            && child.getScheme() == null
+            && child.getRawAuthority() == null
+            && child.getPath().isEmpty()
+            && child.getRawFragment() != null
+            && child.getRawQuery() == null) return base.resolve(child);
+        final String initial = base.toString();
+        String addendum;
+        if (initial.endsWith("/")) // universal separator
+            addendum = child.getPath().replaceAll("^(?:\\w+://|/+)", "");
+        else if (initial.endsWith(File.separator)) // windows patch
+            addendum = child.getPath().replaceAll("^(?:\\w+://|" + File.separator + "+)", "");
+        else addendum = child.getPath().replaceAll("^\\w+://", "");
+        return SkriptIO.uri(initial + addendum);
+    }
 
     public void registerTypes() {
         Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)[s]").name("Resource Path")
@@ -93,15 +129,22 @@ public class Types {
                 protected URI deserialize(Fields fields) throws StreamCorruptedException {
                     final String string = fields.getObject("path", String.class);
                     if (string == null) return null;
-                    return URI.create(string);
+                    return SkriptIO.uri(string);
                 }
             }).parser(new Parser<>() {
 
                 @Override
                 public @Nullable URI parse(@NotNull String input, @NotNull ParseContext context) {
                     if (input.length() < 2) return null;
-                    if (!(input.contains("/") || input.contains(File.separator))) return null;
                     if (input.contains(" ")) return null;
+                    if (!(input.contains("/") || input.contains(File.separator))) {
+                        if (input.contains(".")) {
+                            final String extension = input.substring(input.lastIndexOf(".") + 1);
+                            if (ContentType.isKnown(extension))
+                                return SkriptIO.uri(input);
+                        }
+                        return null;
+                    }
                     try {
                         return new URI(input);
                     } catch (URISyntaxException e) {
@@ -139,10 +182,11 @@ public class Types {
         Classes.registerClass(new ClassInfo<>(WebServer.class, "website").user("website").name("Website")
             .description("Represents a hosted website when receiving a request.").examples("close the current website")
             .since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(Transaction.class, "transaction").user("transaction[s]").name("HTTP Transaction")
+        Classes.registerClass(new ClassInfo<>(Transaction.class, "transaction").user("transaction[s]")
+            .name("HTTP Transaction")
             .description("Represents an incoming HTTP request or an outgoing HTTP response (e.g. asking for, being " +
-                "asked for, sending, or receiving data). Common request/response features are available here, such as " +
-                "content types and status codes.")
+                "asked for, sending, or receiving data). Common request/response features are available here, such as" +
+                " content types and status codes.")
             .examples("the response").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(Request.class, "request").user("[web] request[s]").name("Web Request")
             .description("Represents an incoming website request (a browser asking for a page or data), or an " +
@@ -229,7 +273,7 @@ public class Types {
             , "exception"), addon);
         this.registerErrorType(new ErrorInfo<>("ioexception", IOException.class, IOException::new, IOException::new).user("io exception", "io error"), addon);
         this.registerErrorType(new ErrorInfo<>("nullpointerexception", NullPointerException.class,
-            NullPointerException::new, NullPointerException::new).user("null(-| )pointer (error|exception)", "npe"),
+                NullPointerException::new, NullPointerException::new).user("null(-| )pointer (error|exception)", "npe"),
             addon);
     }
 

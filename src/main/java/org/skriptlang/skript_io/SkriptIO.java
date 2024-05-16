@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOError;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 
 public class SkriptIO extends JavaPlugin {
@@ -49,6 +50,14 @@ public class SkriptIO extends JavaPlugin {
             else return new File(path.getPath());
         } catch (IllegalArgumentException ex) {
             SkriptIO.error(ex);
+            return null;
+        }
+    }
+
+    public static URI uri(String path) {
+        try {
+            return new URI(path);
+        } catch (URISyntaxException ex) {
             return null;
         }
     }
@@ -121,12 +130,14 @@ public class SkriptIO extends JavaPlugin {
             this.types.registerFileFormats();
             this.types.registerComparators();
             this.types.registerConverters();
+            this.types.registerPathArithmetic();
             this.types.registerErrorTypes(addon);
             this.types.loadFormat(new GZipFormat(), addon);
             this.types.loadFormat(new YamlFormat(), addon);
             this.types.loadFormat(new JsonFormat(), addon);
             this.types.loadFormat(new PrettyJsonFormat(), addon);
             this.types.loadFormat(new URLEncodedFormat(), addon);
+            Functions.registerFunctions();
         } catch (IOException e) {
             this.getLogger().severe("An error occurred while trying to enable this addon.");
             SkriptIO.error(e);
