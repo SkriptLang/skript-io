@@ -84,7 +84,7 @@ public class Types {
     }
 
     public void registerTypes() {
-        Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)[s]").name("Resource Path")
+        Classes.registerClass(new ClassInfo<>(URI.class, "path").user("(path|url)s?").name("Resource Path")
             .description("Represents a path to something, such as a relative file path or an internet URL.")
             .examples("set {_file} to ./test.txt").since("1.0.0").changer(new Changer<>() {
                 @Override
@@ -167,32 +167,32 @@ public class Types {
                     return "uri:" + uri;
                 }
             }));
-        Classes.registerClass(new ClassInfo<>(Readable.class, "readable").user("readable[s]").name("Readable Resource")
+        Classes.registerClass(new ClassInfo<>(Readable.class, "readable").user("readables?").name("Readable Resource")
             .description("Represents a resource than can be read as text (e.g. a file, a webpage).")
             .examples("transfer the request to the current file").since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(Writable.class, "writable").user("writable[s]").name("Writable Resource")
+        Classes.registerClass(new ClassInfo<>(Writable.class, "writable").user("writables?").name("Writable Resource")
             .description("Represents a resource than can have text written to it (e.g. a file, a response).")
             .examples("transfer {text} to the response").since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(Resource.class, "resource").user("resource[s]").name("Resource")
+        Classes.registerClass(new ClassInfo<>(Resource.class, "resource").user("resources?").name("Resource")
             .description("Represents a non-specific kind of i/o resource, such as a file, a request, etc.")
             .examples("the request", "the current file").since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(FileController.class, "file").user("file[s]").name("File")
+        Classes.registerClass(new ClassInfo<>(FileController.class, "file").user("files?").name("File")
             .description("Represents a file that has been opened for access.")
             .examples("broadcast the contents of the file").since("1.0.0"));
         Classes.registerClass(new ClassInfo<>(WebServer.class, "website").user("website").name("Website")
             .description("Represents a hosted website when receiving a request.").examples("close the current website")
             .since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(Transaction.class, "transaction").user("transaction[s]")
+        Classes.registerClass(new ClassInfo<>(Transaction.class, "transaction").user("transactions?")
             .name("HTTP Transaction")
             .description("Represents an incoming HTTP request or an outgoing HTTP response (e.g. asking for, being " +
                 "asked for, sending, or receiving data). Common request/response features are available here, such as" +
                 " content types and status codes.")
             .examples("the response").since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(Request.class, "request").user("[web] request[s]").name("Web Request")
+        Classes.registerClass(new ClassInfo<>(Request.class, "request").user("(?:web)? requests?").name("Web Request")
             .description("Represents an incoming website request (a browser asking for a page or data), or an " +
                 "outgoing request (your server contacting a website).")
             .examples("the request").since("1.0.0"));
-        Classes.registerClass(new ClassInfo<>(Response.class, "response").user("[web] response[s]").name("Web Response")
+        Classes.registerClass(new ClassInfo<>(Response.class, "response").user("(?:web)? responses?").name("Web Response")
             .description("Represents an incoming website response (a website sending you a page or data), or an " +
                 "outgoing response (your server replying to a request).")
             .examples("the response").since("1.0.0"));

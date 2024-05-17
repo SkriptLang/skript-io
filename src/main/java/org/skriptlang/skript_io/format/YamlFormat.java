@@ -12,7 +12,7 @@ public class YamlFormat extends Format<Map<String, Object>> {
 
     @SuppressWarnings("unchecked")
     public YamlFormat() {
-        super("YAML", (Class<Map<String, Object>>) (Object) Map.class, "y[a]ml");
+        super("YAML", (Class<Map<String, Object>>) (Object) Map.class, "ya?ml");
     }
 
     @Override

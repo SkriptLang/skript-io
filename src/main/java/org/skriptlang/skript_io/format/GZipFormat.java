@@ -12,7 +12,7 @@ import java.util.zip.GZIPOutputStream;
 public class GZipFormat extends Format<String> {
 
     public GZipFormat() {
-        super("GZip", String.class, "[g]zip");
+        super("GZip", String.class, "g?zip");
     }
 
     @Override
