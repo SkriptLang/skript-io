@@ -20,7 +20,6 @@ import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
 import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.Readable;
-import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.TransferTask;
 import org.skriptlang.skript_io.utility.task.WriteTask;
@@ -31,7 +30,7 @@ import org.skriptlang.skript_io.utility.web.Response;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@Name("Web Response")
+@Name("Outgoing Response")
 @Description("""
     Your website's response to a request made to your site.
     This resource can be written to (in order to send data back to the requester).
@@ -40,49 +39,41 @@ import java.nio.charset.StandardCharsets;
     """)
 @Examples({
     """
-    open a website:
-        add {_greeting} to the response
-        transfer ./site/index.html to the response"""
+        open a website:
+            add {_greeting} to the response
+            transfer ./site/index.html to the response"""
 })
 @Since("1.0.0")
-public class ExprResponse extends SimpleExpression<Response> {
+public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
 
     static {
         if (!SkriptIO.isTest())
-            Skript.registerExpression(ExprResponse.class, Response.class, ExpressionType.SIMPLE,
-                "[the] response"
-                                     );
+            Skript.registerExpression(ExprOutgoingResponse.class, OutgoingResponse.class, ExpressionType.SIMPLE,
+                "[the] [outgoing] response");
     }
-
-    private boolean outgoing;
 
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
-            this.outgoing = true;
-            return true;
-        } else if (this.getParser().isCurrentSection(SecOpenRequest.class)) {
-            return true;
-        }
-        Skript.error("You can't use '" + result.expr + "' outside a website section.");
-        return false;
+        return this.getParser().isCurrentEvent(VisitWebsiteEvent.class);
     }
 
     @Override
-    protected Response @NotNull [] get(@NotNull Event event) {
+    protected OutgoingResponse @NotNull [] get(@NotNull Event event) {
         if (event instanceof VisitWebsiteEvent visit)
-            return new Response[] {
-                new OutgoingResponse(visit, visit.getExchange())
-            };
-        else if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse readable) {
-            return new Response[] {readable};
-        } else return new Response[0];
+            return new OutgoingResponse[] {new OutgoingResponse(visit, visit.getExchange())
+        };
+        else return new OutgoingResponse[0];
+    }
+
+    @Override
+    public @NotNull Class<OutgoingResponse> getReturnType() {
+        return OutgoingResponse.class;
     }
 
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
-        if (outgoing && mode == Changer.ChangeMode.ADD) return CollectionUtils.array(String.class, Readable.class);
+        if (mode == Changer.ChangeMode.ADD) return CollectionUtils.array(String.class, Readable.class);
         return null;
     }
 
@@ -97,13 +88,14 @@ public class ExprResponse extends SimpleExpression<Response> {
                 }
                 if (delta == null) return;
                 for (final Object thing : delta) {
-                    if (thing == null) continue;
-                    if (thing instanceof String string)
-                        SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));
-                    else if (thing instanceof InputStream stream)
-                        SkriptIO.queue().queue(new TransferTask(writable, Readable.simple(stream)));
-                    else if (thing instanceof Readable readable)
-                        SkriptIO.queue().queue(new TransferTask(writable, readable));
+                    switch (thing) {
+                        case String string ->
+                            SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));
+                        case InputStream stream ->
+                            SkriptIO.queue().queue(new TransferTask(writable, Readable.simple(stream)));
+                        case Readable readable -> SkriptIO.queue().queue(new TransferTask(writable, readable));
+                        case null, default -> {}
+                    }
                 }
             }
         }
@@ -115,13 +107,8 @@ public class ExprResponse extends SimpleExpression<Response> {
     }
 
     @Override
-    public @NotNull Class<Response> getReturnType() {
-        return Response.class;
-    }
-
-    @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "the response";
+        return "the outgoing response";
     }
 
 }
