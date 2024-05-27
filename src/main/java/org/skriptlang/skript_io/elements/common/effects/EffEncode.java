@@ -113,12 +113,11 @@ public class EffEncode extends Effect {
         final Object source, target;
         final Object converted;
         if (isEncoding) {
+            source = sourceExpression.getSingle(event);
             if (isMap) {
-                source = sourceExpression.getSingle(event);
                 if (source instanceof Resource resource) converted = this.deserialise(resource);
                 else converted = this.mapFormat(String.valueOf(source));
             } else {
-                source = sourceExpression.getSingle(event);
                 if (source instanceof Resource resource) converted = this.deserialiseSingle(resource);
                 else converted = this.mapFormatSingle(String.valueOf(source));
             }

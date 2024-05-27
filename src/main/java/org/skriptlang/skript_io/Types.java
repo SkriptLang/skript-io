@@ -269,12 +269,13 @@ public class Types {
     }
 
     public void registerErrorTypes(SkriptAddon addon) {
-        this.registerErrorType(new ErrorInfo<>("error", Exception.class, Exception::new, Exception::new).user("error"
-            , "exception"), addon);
-        this.registerErrorType(new ErrorInfo<>("ioexception", IOException.class, IOException::new, IOException::new).user("io exception", "io error"), addon);
+        this.registerErrorType(new ErrorInfo<>("error", Exception.class, Exception::new, Exception::new)
+            .user("error", "exception"), addon);
+        this.registerErrorType(new ErrorInfo<>("ioexception", IOException.class, IOException::new, IOException::new)
+            .user("io exception", "io error"), addon);
         this.registerErrorType(new ErrorInfo<>("nullpointerexception", NullPointerException.class,
-                NullPointerException::new, NullPointerException::new).user("null(-| )pointer (error|exception)", "npe"),
-            addon);
+            NullPointerException::new, NullPointerException::new)
+            .user("null(-| )pointer (error|exception)", "npe"), addon);
     }
 
     private void registerErrorType(ClassInfo<?> info, SkriptAddon addon) {
