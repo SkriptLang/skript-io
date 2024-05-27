@@ -106,7 +106,7 @@ public class SecOpenRequest extends EffectSection {
         final OutgoingRequest request = this.createRequest(uri);
         if (request == null || first == null) return this.walk(event, false);
         if (last != null) {
-            last.setNext(new DummyCloseTrigger(request, this.walk(event, false)) {
+            this.last.setNext(new DummyCloseTrigger(request, this.walk(event, false)) {
                 @Override
                 protected boolean run(Event e) {
                     pop(event);
