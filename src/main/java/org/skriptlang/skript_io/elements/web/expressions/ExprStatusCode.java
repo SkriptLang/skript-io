@@ -16,6 +16,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.elements.web.effects.EffAcceptResponse;
 import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.web.Response;
@@ -72,7 +73,7 @@ public class ExprStatusCode extends SimpleExpression<Number> {
             return new Number[] {response.statusCode()};
         } else if (event instanceof VisitWebsiteEvent visit)
             return new Number[] {visit.getStatusCode()};
-        else if (SecAcceptResponse.getCurrentRequest(event) instanceof Response response) {
+        else if (EffAcceptResponse.getCurrentResponse(event) instanceof Response response) {
             return new Number[] {response.statusCode()};
         } else return new Number[0];
     }

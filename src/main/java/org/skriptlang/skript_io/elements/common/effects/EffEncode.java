@@ -97,7 +97,8 @@ public class EffEncode extends Effect {
                 return false;
             }
             this.variable = variable;
-        } else {
+        } else if (isMap ||
+            (!this.sourceExpression.isSingle() && !(sourceExpression instanceof Variable<?>))) {
             if (!(sourceExpression instanceof Variable<Object> variable) || (isMap && !variable.isList())) {
                 Skript.error("The decoding source must be a " + (isMap ? "list " : "") + "variable.");
                 return false;
@@ -124,13 +125,14 @@ public class EffEncode extends Effect {
             this.change(variable, converted, event);
         } else {
             if (isMap) {
+                assert variable != null;
                 target = targetExpression.getSingle(event);
                 final String name = StringUtils.substring(variable.getName().toString(event), 0, -1);
                 converted = Variables.getVariable(name + "*", event, this.variable.isLocal());
                 if (converted instanceof Map<?, ?> map) this.convertLists(map);
             } else {
                 target = targetExpression.getSingle(event);
-                converted = variable.getSingle(event);
+                converted = sourceExpression.getSingle(event);
             }
             final Format<?> format = classInfo.getFormat();
             if (target instanceof Writable writable) format.to(writable, converted);

@@ -15,7 +15,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
+import org.skriptlang.skript_io.elements.web.effects.EffAcceptResponse;
 import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.utility.web.IncomingResponse;
 
@@ -50,7 +50,7 @@ public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
 
     @Override
     protected IncomingResponse @NotNull [] get(@NotNull Event event) {
-        if (SecAcceptResponse.getCurrentRequest(event) instanceof IncomingResponse readable) {
+        if (EffAcceptResponse.getCurrentResponse(event) instanceof IncomingResponse readable) {
             return new IncomingResponse[] {readable};
         } else return new IncomingResponse[0];
     }

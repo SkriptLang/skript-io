@@ -16,16 +16,12 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
-import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.TransferTask;
 import org.skriptlang.skript_io.utility.task.WriteTask;
-import org.skriptlang.skript_io.utility.web.IncomingResponse;
 import org.skriptlang.skript_io.utility.web.OutgoingResponse;
-import org.skriptlang.skript_io.utility.web.Response;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;

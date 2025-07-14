@@ -1,8 +1,5 @@
 package org.skriptlang.skript_io.utility.web;
 
-import org.skriptlang.skript_io.utility.Resource;
-
-import java.io.Closeable;
 import java.net.URI;
 
 public interface Request extends Transaction {

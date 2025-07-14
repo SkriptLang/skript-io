@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.utility.DummyCloseTrigger;
 import org.skriptlang.skript_io.utility.Readable;
-import org.skriptlang.skript_io.utility.task.CloseTask;
 import org.skriptlang.skript_io.utility.web.IncomingResponse;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 
@@ -42,13 +41,13 @@ import java.util.concurrent.ExecutionException;
 @Examples({
     """
     open a request to https://skriptlang.org:
-        expect the response:
-            broadcast the response's content""",
+        expect the response
+        broadcast the response's content""",
     """
     open a request to http://my-api-here:
         set the request's json content to {_data::*}
-        accept the response:
-            set {_result::*} to the response's json content
+        accept the response
+        set {_result::*} to the response's json content
     # {_result::*} is available here"""
 })
 @Since("1.0.0")
@@ -57,12 +56,12 @@ public class SecAcceptResponse extends EffectSection {
     private static final Map<Event, Stack<IncomingResponse>> requestMap = new WeakHashMap<>();
 
     static {
-        if (!SkriptIO.isTest())
+        if (false)
             Skript.registerSection(SecAcceptResponse.class, "accept [the] response", "expect [the] response",
                                    "await [the] response");
     }
 
-    public static Readable getCurrentRequest(Event event) {
+    private static Readable getCurrentRequest(Event event) {
         if (event == null) return null;
         final Stack<IncomingResponse> stack = requestMap.get(event);
         if (stack == null) return null;
@@ -109,7 +108,7 @@ public class SecAcceptResponse extends EffectSection {
         if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
         Delay.addDelayedEvent(event);
         final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-        final Object variables = Variables.removeLocals(event);
+        final Object variables = Variables.copyLocalVariables(event);
         final TriggerItem next = this.walk(event, false);
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override

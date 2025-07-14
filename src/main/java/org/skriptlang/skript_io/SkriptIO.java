@@ -137,6 +137,8 @@ public class SkriptIO extends JavaPlugin {
             this.types.loadFormat(new JsonFormat(), addon);
             this.types.loadFormat(new PrettyJsonFormat(), addon);
             this.types.loadFormat(new URLEncodedFormat(), addon);
+            this.types.loadFormat(new Base64EncodedFormat(), addon);
+            this.types.loadFormat(new HTMLEncodedFormat(), addon);
             Functions.registerFunctions();
         } catch (IOException e) {
             this.getLogger().severe("An error occurred while trying to enable this addon.");

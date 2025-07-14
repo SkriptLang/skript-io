@@ -39,10 +39,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
     """
     open a web request to https://skriptlang.org:
         set the request's method to "GET"
-        await the response:
-            broadcast the response's text content""",
+        await the response
+        broadcast the response's text content""",
     """
-    open a request to http://my-api-here:
+    open an http request to http://my-api-here:
         set the request's json content to {_data::*}"""
 })
 @Since("1.0.0")
@@ -109,6 +109,7 @@ public class SecOpenRequest extends EffectSection {
             this.last.setNext(new DummyCloseTrigger(request, this.walk(event, false)) {
                 @Override
                 protected boolean run(Event e) {
+                    EffAcceptResponse.pop(e);
                     pop(event);
                     return super.run(e);
                 }
@@ -121,6 +122,7 @@ public class SecOpenRequest extends EffectSection {
                 push(event, request);
                 TriggerItem.walk(first, event); // execute the section now
             } finally {
+                EffAcceptResponse.pop(event);
                 pop(event);
                 SkriptIO.queue(new CloseTask(request));
             }
