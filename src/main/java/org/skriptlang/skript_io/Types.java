@@ -55,7 +55,7 @@ public class Types {
     }
 
     private URI subPath(URI base, URI child) {
-        final String initial = base.toString();
+        String initial = base.toString();
         String addendum = child.getPath().replaceAll("^\\w+://", "");
         if (initial.endsWith("/"))
             while (addendum.startsWith("/")) addendum = addendum.substring(1);
@@ -73,7 +73,7 @@ public class Types {
             && child.getPath().isEmpty()
             && child.getRawFragment() != null
             && child.getRawQuery() == null) return base.resolve(child);
-        final String initial = base.toString();
+        String initial = base.toString();
         String addendum;
         if (initial.endsWith("/")) // universal separator
             addendum = child.getPath().replaceAll("^(?:\\w+://|/+)", "");
@@ -96,8 +96,8 @@ public class Types {
                 @Override
                 public void change(URI[] what, @Nullable Object[] delta, ChangeMode mode) {
                     if (mode == ChangeMode.DELETE) {
-                        for (final URI uri : what) {
-                            final File file = SkriptIO.fileNoError(uri);
+                        for (URI uri : what) {
+                            File file = SkriptIO.fileNoError(uri);
                             if (file == null) continue;
                             EffDeleteFile.delete(file, file.isDirectory(), true);
                         }
@@ -106,7 +106,7 @@ public class Types {
             }).serializer(new Serializer<>() {
                 @Override
                 public Fields serialize(URI o) {
-                    final Fields fields = new Fields();
+                    Fields fields = new Fields();
                     fields.putObject("path", o.toString());
                     return fields;
                 }
@@ -127,7 +127,7 @@ public class Types {
 
                 @Override
                 protected URI deserialize(Fields fields) throws StreamCorruptedException {
-                    final String string = fields.getObject("path", String.class);
+                    String string = fields.getObject("path", String.class);
                     if (string == null) return null;
                     return SkriptIO.uri(string);
                 }
@@ -139,7 +139,7 @@ public class Types {
                     if (input.contains(" ")) return null;
                     if (!(input.contains("/") || input.contains(File.separator))) {
                         if (input.contains(".")) {
-                            final String extension = input.substring(input.lastIndexOf(".") + 1);
+                            String extension = input.substring(input.lastIndexOf(".") + 1);
                             if (ContentType.isKnown(extension))
                                 return SkriptIO.uri(input);
                         }
@@ -238,7 +238,7 @@ public class Types {
     }
 
     public void loadFormat(Format<?> format, SkriptAddon addon) {
-        final FormatInfo<?> info = format.getInfo();
+        FormatInfo<?> info = format.getInfo();
         Classes.registerClass(info.name(format.getName() + " (File Format)")
             .description("A special converter for the " + info.getCodeName() + " file format.")
             .examples("the " + format.getName().toLowerCase() + " content of the file")
@@ -248,9 +248,9 @@ public class Types {
     void removeEffChange() {
         this.effects = Skript.getEffects();
         this.syntax = Skript.getStatements();
-        final Iterator<SyntaxElementInfo<? extends Effect>> iterator = effects.iterator();
+        Iterator<SyntaxElementInfo<? extends Effect>> iterator = effects.iterator();
         while (iterator.hasNext()) {
-            final SyntaxElementInfo<?> next = iterator.next();
+            SyntaxElementInfo<?> next = iterator.next();
             if (next.elementClass != EffChange.class) continue;
             this.change = next;
             iterator.remove();

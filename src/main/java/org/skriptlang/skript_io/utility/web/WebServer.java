@@ -31,9 +31,9 @@ public class WebServer {
     }
 
     public static @NotNull WebServer getOrCreate(int port) {
-        final WebServer current = servers.get(port);
+        WebServer current = servers.get(port);
         if (current != null) return current;
-        final WebServer server = new WebServer(port);
+        WebServer server = new WebServer(port);
         servers.put(port, server);
         return server;
     }
@@ -60,9 +60,9 @@ public class WebServer {
         if (server != null) server.stop(0);
         try {
             this.server = HttpServer.create(new InetSocketAddress(port), DEFAULT_BACKLOG);
-            for (final Map.Entry<URI, PostHandler> entry : handlers.entrySet()) {
-                final URI uri = entry.getKey();
-                final PostHandler handler = entry.getValue();
+            for (Map.Entry<URI, PostHandler> entry : handlers.entrySet()) {
+                URI uri = entry.getKey();
+                PostHandler handler = entry.getValue();
                 this.server.createContext(uri.toString(), handler);
             }
             this.server.setExecutor(null);

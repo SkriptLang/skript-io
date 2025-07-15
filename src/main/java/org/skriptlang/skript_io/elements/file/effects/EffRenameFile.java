@@ -49,11 +49,11 @@ public class EffRenameFile extends Effect {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
-        final String name = stringExpression.getSingle(event);
+        URI uri = pathExpression.getSingle(event);
+        String name = stringExpression.getSingle(event);
         if (name == null || name.isBlank()) return;
         if (uri == null) return;
-        final File file = SkriptIO.file(uri);
+        File file = SkriptIO.file(uri);
         if (file == null) return;
         FileController.flagDirty(file);
         SkriptIO.queue().queue(new MoveTask(file, name));

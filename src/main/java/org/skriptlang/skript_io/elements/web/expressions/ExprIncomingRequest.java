@@ -15,11 +15,8 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.web.IncomingRequest;
-import org.skriptlang.skript_io.utility.web.OutgoingRequest;
-import org.skriptlang.skript_io.utility.web.Request;
 
 @Name("Incoming Request")
 @Description("""

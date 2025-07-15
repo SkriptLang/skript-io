@@ -61,7 +61,7 @@ public class SecOpenRequest extends EffectSection {
 
     public static OutgoingRequest getCurrentRequest(Event event) {
         if (event == null) return null;
-        final Stack<OutgoingRequest> stack = requestMap.get(event);
+        Stack<OutgoingRequest> stack = requestMap.get(event);
         if (stack == null) return null;
         if (stack.isEmpty()) return null;
         return stack.peek();
@@ -69,7 +69,7 @@ public class SecOpenRequest extends EffectSection {
 
     private static void push(Event event, OutgoingRequest request) {
         if (event == null || request == null) return;
-        final Stack<OutgoingRequest> stack;
+        Stack<OutgoingRequest> stack;
         requestMap.putIfAbsent(event, new Stack<>());
         stack = requestMap.get(event);
         assert stack != null;
@@ -78,7 +78,7 @@ public class SecOpenRequest extends EffectSection {
 
     private static void pop(Event event) {
         if (event == null) return;
-        final Stack<OutgoingRequest> stack = requestMap.get(event);
+        Stack<OutgoingRequest> stack = requestMap.get(event);
         if (stack == null) return;
         if (stack.isEmpty()) requestMap.remove(event);
         else stack.pop();
@@ -100,10 +100,10 @@ public class SecOpenRequest extends EffectSection {
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
+        URI uri = pathExpression.getSingle(event);
         if (uri == null) return this.walk(event, false);
         if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
-        final OutgoingRequest request = this.createRequest(uri);
+        OutgoingRequest request = this.createRequest(uri);
         if (request == null || first == null) return this.walk(event, false);
         if (last != null) {
             this.last.setNext(new DummyCloseTrigger(request, this.walk(event, false)) {
@@ -131,16 +131,16 @@ public class SecOpenRequest extends EffectSection {
     }
 
     protected OutgoingRequest createRequest(URI uri) {
-        final URL url;
+        URL url;
         try {
             url = uri.toURL();
         } catch (MalformedURLException e) {
             SkriptIO.error(e);
             return null;
         }
-        final OutgoingRequest request;
+        OutgoingRequest request;
         try {
-            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "text/html; charset=utf-8");
             connection.setConnectTimeout(5000);

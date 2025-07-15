@@ -18,7 +18,7 @@ public class AppendTask extends DataTask {
 
     @Override
     public void execute() throws IOException {
-        final OutputStream stream = controller.acquireWriter(true);
+        OutputStream stream = controller.acquireWriter(true);
         stream.write(content);
     }
 

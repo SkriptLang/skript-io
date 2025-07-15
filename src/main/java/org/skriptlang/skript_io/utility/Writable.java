@@ -17,8 +17,8 @@ public interface Writable extends Resource {
     }
 
     static String format(Format<?> format, Object... source) {
-        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        final Writable writable = new SimpleWritable(stream);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Writable writable = new SimpleWritable(stream);
         format.to(writable, source);
         return stream.toString(StandardCharsets.UTF_8);
     }

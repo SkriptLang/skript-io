@@ -58,7 +58,7 @@ public class EffDeleteFile extends Effect {
                     } else {
                         if (!file.isFile()) return;
                     }
-                    final boolean result = file.delete();
+                    boolean result = file.delete();
                     assert result : "File '" + file + "' was not deleted.";
                 } finally {
                     FileController.flagClean(file);
@@ -69,11 +69,11 @@ public class EffDeleteFile extends Effect {
     }
 
     protected static void emptyDirectory(File file) {
-        final File[] files = file.listFiles();
+        File[] files = file.listFiles();
         if (files == null) return;
-        for (final File child : files) {
+        for (File child : files) {
             if (child.isDirectory()) emptyDirectory(child);
-            final boolean result = child.delete();
+            boolean result = child.delete();
             assert result : "Inner file '" + file + "' was not deleted.";
         }
     }
@@ -90,9 +90,9 @@ public class EffDeleteFile extends Effect {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
+        URI uri = pathExpression.getSingle(event);
         if (uri == null) return;
-        final File file = SkriptIO.file(uri);
+        File file = SkriptIO.file(uri);
         delete(file, folder, recursive);
     }
 

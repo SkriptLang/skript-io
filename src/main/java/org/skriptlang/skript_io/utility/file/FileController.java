@@ -41,7 +41,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
     }
 
     public static void push(Event event, @NotNull FileController controller) {
-        final Stack<FileController> stack;
+        Stack<FileController> stack;
         if (!current.containsKey(event)) current.put(event, stack = new Stack<>());
         else stack = current.get(event);
         assert stack != null;
@@ -49,7 +49,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
     }
 
     public static void pop(Event event) {
-        final Stack<FileController> stack;
+        Stack<FileController> stack;
         if (!current.containsKey(event)) return;
         else stack = current.get(event);
         assert stack != null;
@@ -59,7 +59,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
 
     public static FileController getController(@NotNull File file, int mode) {
         synchronized (handlers) {
-            final FileController current = handlers.get(file), other;
+            FileController current = handlers.get(file), other;
             if (current != null && current.open) return current;
             other = new FileController(file);
             handlers.put(file, other);
@@ -132,7 +132,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
         if (this == o) return true;
         if (o instanceof File file) return this.file.equals(file);
         else if (o instanceof URI uri) return this.file.toURI().equals(uri);
-        if (!(o instanceof final FileController that)) return false;
+        if (!(o instanceof FileController that)) return false;
         return open == that.open && Objects.equals(file, that.file);
     }
 
@@ -211,7 +211,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
 
     public String getLine(int line) {
         if (!this.canRead()) return null;
-        final AtomicReference<String> reference = new AtomicReference<>();
+        AtomicReference<String> reference = new AtomicReference<>();
         SkriptIO.queue().queue(new ReadLineTask(this, line, reference)).await();
         return reference.get();
     }

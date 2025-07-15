@@ -46,12 +46,12 @@ public class EffCreateDirectory extends Effect {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
+        URI uri = pathExpression.getSingle(event);
         if (uri == null) return;
-        final File file = SkriptIO.file(uri);
+        File file = SkriptIO.file(uri);
         if (file == null) return;
         if (file.exists() || file.isFile()) return;
-        final boolean result = file.mkdirs();
+        boolean result = file.mkdirs();
         assert result : "Directories were not made for '" + file + "'";
     }
 

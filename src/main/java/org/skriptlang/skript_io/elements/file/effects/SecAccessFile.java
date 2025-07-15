@@ -35,7 +35,7 @@ public abstract class SecAccessFile extends EffectSection {
         this.pathExpression = (Expression<URI>) expressions[0];
         if (this.hasSection()) {
             assert sectionNode != null;
-            final Kleenean isDelayed;
+            Kleenean isDelayed;
             this.getParser().setHasDelayBefore(Kleenean.FALSE);
             this.loadOptionalCode(sectionNode);
             isDelayed = this.getParser().getHasDelayBefore();
@@ -51,8 +51,8 @@ public abstract class SecAccessFile extends EffectSection {
             if (last == null) return this.walk(event, false);
             FileController.push(event, controller);
             Delay.addDelayedEvent(event);
-            final Object variables = Variables.removeLocals(event);
-            final TriggerItem next = this.walk(event, false);
+            Object variables = Variables.removeLocals(event);
+            TriggerItem next = this.walk(event, false);
             SkriptIO.queue().queue(new AccessTask(variables, next, event, controller));
             return null;
         } else {

@@ -63,7 +63,7 @@ public class SecAcceptResponse extends EffectSection {
 
     private static Readable getCurrentRequest(Event event) {
         if (event == null) return null;
-        final Stack<IncomingResponse> stack = requestMap.get(event);
+        Stack<IncomingResponse> stack = requestMap.get(event);
         if (stack == null) return null;
         if (stack.isEmpty()) return null;
         return stack.peek();
@@ -71,7 +71,7 @@ public class SecAcceptResponse extends EffectSection {
 
     private static void push(Event event, IncomingResponse request) {
         if (event == null || request == null) return;
-        final Stack<IncomingResponse> stack;
+        Stack<IncomingResponse> stack;
         requestMap.putIfAbsent(event, new Stack<>());
         stack = requestMap.get(event);
         assert stack != null;
@@ -80,7 +80,7 @@ public class SecAcceptResponse extends EffectSection {
 
     private static void pop(Event event) {
         if (event == null) return;
-        final Stack<IncomingResponse> stack = requestMap.get(event);
+        Stack<IncomingResponse> stack = requestMap.get(event);
         if (stack == null) return;
         if (stack.isEmpty()) requestMap.remove(event);
         else stack.pop();
@@ -107,9 +107,9 @@ public class SecAcceptResponse extends EffectSection {
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
         Delay.addDelayedEvent(event);
-        final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-        final Object variables = Variables.copyLocalVariables(event);
-        final TriggerItem next = this.walk(event, false);
+        OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
+        Object variables = Variables.copyLocalVariables(event);
+        TriggerItem next = this.walk(event, false);
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws IOException, InterruptedException {
@@ -125,7 +125,7 @@ public class SecAcceptResponse extends EffectSection {
 
     protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next)
         throws ExecutionException, InterruptedException {
-        final IncomingResponse response;
+        IncomingResponse response;
         if (request == null) return;
         try {
             request.exchange().connect();

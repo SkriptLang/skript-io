@@ -19,7 +19,6 @@ import org.skriptlang.skript_io.utility.task.TransferTask;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Arrays;
 
 @Name("Transfer")
 @Description("""
@@ -61,22 +60,22 @@ public class EffTransfer extends Effect {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final Writable target = targetExpression.getSingle(event);
+        Writable target = targetExpression.getSingle(event);
         if (target == null) return;
         if (path) {
-            final File file = SkriptIO.file(pathExpression.getSingle(event));
+            File file = SkriptIO.file(pathExpression.getSingle(event));
             if (file == null || !file.isFile()) return;
             SkriptIO.queue().queue(TransferTask.forFile(file, target));
             return;
         }
-        final Readable source = sourceExpression.getSingle(event);
+        Readable source = sourceExpression.getSingle(event);
         if (source == null) return;
         SkriptIO.queue().queue(new TransferTask(target, source));
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        final String part = path ? pathExpression.toString(event, debug) : sourceExpression.toString(event, debug);
+        String part = path ? pathExpression.toString(event, debug) : sourceExpression.toString(event, debug);
         return "transfer " + part + " to " + targetExpression.toString(event, debug);
     }
 

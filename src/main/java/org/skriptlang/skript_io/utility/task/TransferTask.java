@@ -22,8 +22,8 @@ public class TransferTask extends DataTask {
 
     @Override
     public void execute() throws IOException {
-        try (final InputStream stream = readable.acquireReader();
-             final OutputStream output = writable.acquireWriter()) {
+        try (InputStream stream = readable.acquireReader();
+             OutputStream output = writable.acquireWriter()) {
             stream.transferTo(output);
         }
     }
@@ -44,8 +44,8 @@ class TransferFileTask extends DataTask {
     public void execute() throws IOException, InterruptedException {
         if (source == null || target == null) return;
         if (!source.isFile()) return;
-        try (final FileInputStream stream = new FileInputStream(source);
-             final OutputStream output = target.acquireWriter()) {
+        try (FileInputStream stream = new FileInputStream(source);
+             OutputStream output = target.acquireWriter()) {
             stream.transferTo(output);
         }
     }

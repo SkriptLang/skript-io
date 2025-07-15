@@ -67,7 +67,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         if (returnType == String.class) return isString = true;
         if (classInfo instanceof FormatInfo<?>) this.isFormat = true;
         else {
-            final Parser<?> parser = classInfo.getParser();
+            Parser<?> parser = classInfo.getParser();
             if (parser == null) { // TODO special parse context?
                 Skript.error("Content cannot be parsed as " + classInfo.getName().withIndefiniteArticle());
                 return false;
@@ -83,14 +83,14 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
 
     @Override
     public @Nullable Object convert(Resource resource) {
-        final Object[] objects = this.get(resource);
+        Object[] objects = this.get(resource);
         if (objects.length == 0) return null;
         return objects[0];
     }
 
     @Override
     protected Object @NotNull [] get(@NotNull Event event, Resource[] source) {
-        final Resource resource = source[0];
+        Resource resource = source[0];
         return this.get(resource);
     }
 
@@ -98,9 +98,9 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         if (!(resource instanceof Readable readable)) return new Object[0];
         if (isString) return new String[] {readable.readAll()};
         else if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().from(readable);
-        final Parser<?> parser = classInfo.getParser();
+        Parser<?> parser = classInfo.getParser();
         if (parser == null) return new Object[0];
-        final String string = readable.readAll();
+        String string = readable.readAll();
         if (string == null) return new Object[0];
         return new Object[] {parser.parse(string, ParseContext.DEFAULT)};
     }
@@ -123,34 +123,34 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (mode == Changer.ChangeMode.SET && delta != null && delta.length != 0 && delta[0] != null) {
-            final Resource[] files = this.getExpr().getArray(event);
+            Resource[] files = this.getExpr().getArray(event);
             if (isString) {
                 this.writeString(files, delta);
             } else if (isFormat && classInfo instanceof FormatInfo<?> info) {
-                final Format<?> format = info.getFormat();
-                final Object[] array = new Object[delta.length];
+                Format<?> format = info.getFormat();
+                Object[] array = new Object[delta.length];
                 for (int i = 0; i < array.length; i++) array[i] = Converters.convert(delta[i], returnType);
-                for (final Resource file : files)
+                for (Resource file : files)
                     if (file instanceof Writable writable) format.to(writable, array);
             } else {
-                final Parser parser = classInfo.getParser();
-                final Object object = Converters.convert(delta[0], returnType);
-                final String content;
+                Parser parser = classInfo.getParser();
+                Object object = Converters.convert(delta[0], returnType);
+                String content;
                 if (parser == null) content = String.valueOf(object);
                 else content = parser.toString(object, StringMode.COMMAND);
-                for (final Resource file : files)
+                for (Resource file : files)
                     if (file instanceof Writable writable) writable.write(content);
             }
         } else {
-            final Resource[] files = this.getExpr().getArray(event);
-            for (final Resource file : files)
+            Resource[] files = this.getExpr().getArray(event);
+            for (Resource file : files)
                 if (file instanceof Writable writable) writable.clear();
         }
     }
 
     private void writeString(Resource[] resources, Object[] delta) {
-        final String content = String.valueOf(delta[0]);
-        for (final Resource file : resources)
+        String content = String.valueOf(delta[0]);
+        for (Resource file : resources)
             if (file instanceof Writable writable) writable.write(content);
     }
 

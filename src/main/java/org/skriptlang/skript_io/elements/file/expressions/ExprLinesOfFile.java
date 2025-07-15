@@ -55,13 +55,13 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
     @Override
     protected String @NotNull [] get(@NotNull Event event, Readable @NotNull [] source) {
         if (source.length == 0 || source[0] == null) return new String[0];
-        final List<String> list = source[0].readAll().lines().toList();
+        List<String> list = source[0].readAll().lines().toList();
         return list.toArray(new String[0]);
     }
 
     @Override
     public Iterator<? extends String> iterator(@NotNull Event event) {
-        final Readable controller = this.getExpr().getSingle(event);
+        Readable controller = this.getExpr().getSingle(event);
         if (controller == null) return Collections.emptyIterator();
         try {
             return new LineIterator(controller.acquireReader());
@@ -82,7 +82,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
         public boolean hasNext() {
             if (nextLine.get() != null) return true;
             try {
-                final String string = reader.readLine();
+                String string = reader.readLine();
                 if (string == null) {
                     SkriptIO.queue().queue(new CloseTask(reader));
                     return false;
@@ -121,16 +121,16 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null || delta.length == 0) return;
-        final String[] strings = new String[delta.length];
+        String[] strings = new String[delta.length];
         for (int i = 0; i < strings.length; i++) {
             strings[i] = delta[i] != null ? String.valueOf(delta[i]) : "";
         }
-        final Readable[] files = this.getExpr().getArray(event);
-        final String text = String.join(System.lineSeparator(), strings);
+        Readable[] files = this.getExpr().getArray(event);
+        String text = String.join(System.lineSeparator(), strings);
         if (mode == Changer.ChangeMode.SET) {
-            for (final Readable readable : files) if (readable instanceof Writable file) file.write(text);
+            for (Readable readable : files) if (readable instanceof Writable file) file.write(text);
         } else if (mode == Changer.ChangeMode.ADD) {
-            for (final Readable readable : files) {
+            for (Readable readable : files) {
                 if (readable instanceof FileController file) file.append(System.lineSeparator() + text);
                 else if (readable instanceof Writable file) file.write(System.lineSeparator() + text);
             }

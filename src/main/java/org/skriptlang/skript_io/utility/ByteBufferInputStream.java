@@ -23,7 +23,7 @@ public class ByteBufferInputStream extends InputStream {
     }
 
     public synchronized int read(byte @NotNull [] bytes, int off, int length) {
-        final int amount = Math.min(length, this.limit - position);
+        int amount = Math.min(length, this.limit - position);
         this.buffer.get(position, bytes, off, amount);
         this.position += amount;
         return amount;

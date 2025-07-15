@@ -16,7 +16,6 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.web.Request;
 import org.skriptlang.skript_io.utility.web.Transaction;
 
 @Name("Header of Request")
@@ -55,7 +54,7 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
 
     @Override
     protected @Nullable String[] get(Event event) {
-        final Transaction request = requestExpression.getSingle(event);
+        Transaction request = requestExpression.getSingle(event);
         if (request == null) return new String[0];
         return new String[] {request.getHeader(headerExpression.getSingle(event))};
     }
@@ -69,9 +68,9 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null || delta.length < 1) return;
-        final String type = String.valueOf(delta[0]);
+        String type = String.valueOf(delta[0]);
         if (type == null) return;
-        final Transaction request = this.requestExpression.getSingle(event);
+        Transaction request = this.requestExpression.getSingle(event);
         if (request == null) return;
         request.setHeader(headerExpression.getSingle(event), type);
     }

@@ -12,7 +12,6 @@ import ch.njol.skript.registrations.EventValues;
 import ch.njol.skript.util.Getter;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
-import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.web.WebServer;
 
@@ -44,7 +43,7 @@ public class EvtVisitWebsite extends SkriptEvent {
                   .since(SINCE);
             EventValues.registerEventValue(VisitWebsiteEvent.class, WebServer.class, new Getter<>() {
                 @Override
-                public WebServer get(final VisitWebsiteEvent e) {
+                public WebServer get(VisitWebsiteEvent e) {
                     return e.getServer();
                 }
             }, 0);
@@ -55,17 +54,17 @@ public class EvtVisitWebsite extends SkriptEvent {
     }
 
     @Override
-    public boolean init(final Literal<?>[] args, final int matchedPattern, final SkriptParser.ParseResult parser) {
+    public boolean init(Literal<?>[] args, int matchedPattern, SkriptParser.ParseResult parser) {
         return true;
     }
 
     @Override
-    public boolean check(final Event e) {
+    public boolean check(Event e) {
         return true;
     }
 
     @Override
-    public @NotNull String toString(final Event e, final boolean debug) {
+    public @NotNull String toString(Event e, boolean debug) {
         return "website visit";
     }
 

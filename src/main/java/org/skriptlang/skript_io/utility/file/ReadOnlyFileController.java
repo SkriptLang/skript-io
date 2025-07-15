@@ -22,7 +22,7 @@ public class ReadOnlyFileController extends FileController implements Resource, 
     ReadOnlyFileController(File file, int size) {
         super(file);
         this.buffer = ByteBuffer.allocateDirect(size);
-        try (final ReadableByteChannel channel = Files.newByteChannel(file.toPath())) {
+        try (ReadableByteChannel channel = Files.newByteChannel(file.toPath())) {
             while (buffer.hasRemaining() && channel.read(buffer) != -1) ;
             this.buffer.flip();
         } catch (IOException e) {

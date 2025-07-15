@@ -63,10 +63,10 @@ public class EffMoveFile extends Effect {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event), result = targetExpression.getSingle(event);
+        URI uri = pathExpression.getSingle(event), result = targetExpression.getSingle(event);
         if (uri == null || result == null) return;
-        final File file = SkriptIO.file(uri);
-        final File target = SkriptIO.file(result);
+        File file = SkriptIO.file(uri);
+        File target = SkriptIO.file(result);
         if (file == null || target == null) return;
         if (!file.exists()) return;
         if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
@@ -75,7 +75,7 @@ public class EffMoveFile extends Effect {
             @Override
             public void execute() throws IOException {
                 try {
-                    final Path from = file.toPath(), to;
+                    Path from = file.toPath(), to;
                     if (into && !target.isDirectory()) {
                         SkriptIO.error("Tried to move file '" + file + "' into non-directory '" + target + "'");
                         return;
@@ -93,7 +93,7 @@ public class EffMoveFile extends Effect {
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        final String into = this.into ? " into " : " to ", type = folder ? "move folder " : "move file ";
+        String into = this.into ? " into " : " to ", type = folder ? "move folder " : "move file ";
         return type + pathExpression.toString(event, debug) + into + this.targetExpression.toString(event, debug);
     }
 

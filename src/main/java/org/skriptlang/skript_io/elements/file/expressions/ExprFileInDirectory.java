@@ -59,8 +59,8 @@ public class ExprFileInDirectory extends SimpleExpression<URI> {
 
     @Override
     protected URI @NotNull [] get(@NotNull Event event) {
-        final URI target = targetExpression.getSingle(event), source = sourceExpression.getSingle(event);
-        final File file = SkriptIO.fileNoError(target);
+        URI target = targetExpression.getSingle(event), source = sourceExpression.getSingle(event);
+        File file = SkriptIO.fileNoError(target);
         if (source == null) return new URI[0];
         if (source.getPath().isEmpty()) return new URI[0];
         return new URI[] {new File(file, source.getPath()).toURI()};

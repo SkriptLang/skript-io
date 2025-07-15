@@ -72,7 +72,7 @@ public class EffCloseServer extends Effect {
         if (current && event instanceof VisitWebsiteEvent visit) {
             visit.getServer().closeHandler(visit.getHandlerRoot());
         }
-        final boolean hasPath, hasPort;
+        boolean hasPath, hasPort;
         URI uri = null;
         int port = 0;
         path:
@@ -86,7 +86,7 @@ public class EffCloseServer extends Effect {
         } else hasPath = false;
         port:
         if (portExpression != null) {
-            final Number number = portExpression.getSingle(event);
+            Number number = portExpression.getSingle(event);
             if (number == null) {
                 hasPort = false;
                 break port;
@@ -94,7 +94,7 @@ public class EffCloseServer extends Effect {
             hasPort = true;
             port = number.intValue();
         } else hasPort = false;
-        final WebServer server;
+        WebServer server;
         if (hasPort) server = WebServer.get(port);
         else server = WebServer.get(WebServer.DEFAULT_PORT);
         if (server == null) return;

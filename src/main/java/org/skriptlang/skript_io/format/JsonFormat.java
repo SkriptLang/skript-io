@@ -21,14 +21,14 @@ public class JsonFormat extends Format<Map<String, Object>> {
 
     @Override
     protected @Nullable Map<String, Object>[] from(InputStream stream) throws IOException {
-        try (final Json json = new Json(stream)) {
+        try (Json json = new Json(stream)) {
             return new Map[] {json.toMap()};
         }
     }
 
     @Override
     protected void to(OutputStream stream, Map<String, Object> value) throws IOException {
-        try (final Json json = new Json(stream)) {
+        try (Json json = new Json(stream)) {
             json.write(value);
         }
     }

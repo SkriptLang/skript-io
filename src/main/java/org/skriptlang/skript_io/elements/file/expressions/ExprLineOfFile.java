@@ -56,11 +56,11 @@ public class ExprLineOfFile extends SimpleExpression<String> {
 
     @Override
     protected String @NotNull [] get(@NotNull Event event) {
-        final Number lineNumber = lineExpression.getSingle(event);
-        final int line = lineNumber != null ? Math.max(0, (lineNumber.intValue() - 1)) : 0;
-        final FileController file = fileExpression.getSingle(event);
+        Number lineNumber = lineExpression.getSingle(event);
+        int line = lineNumber != null ? Math.max(0, (lineNumber.intValue() - 1)) : 0;
+        FileController file = fileExpression.getSingle(event);
         if (file == null) return new String[0];
-        final String text = file.getLine(line);
+        String text = file.getLine(line);
         return new String[] {text};
     }
 

@@ -24,7 +24,7 @@ public record IncomingResponse(HttpURLConnection exchange,
         if (!wasRead.get() && exchange.getDoOutput()) SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws IOException {
-                try (final InputStream stream = acquireReader()) {
+                try (InputStream stream = acquireReader()) {
                     while (stream.skip(Long.MAX_VALUE) == Long.MAX_VALUE) ;
                 }
             }
@@ -45,12 +45,12 @@ public record IncomingResponse(HttpURLConnection exchange,
 
     @Override
     public String readAll() {
-        final AtomicReference<String> reference = new AtomicReference<>();
+        AtomicReference<String> reference = new AtomicReference<>();
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws IOException {
-                try (final InputStream stream = acquireReader()) {
-                    final byte[] bytes = stream.readAllBytes();
+                try (InputStream stream = acquireReader()) {
+                    byte[] bytes = stream.readAllBytes();
                     reference.set(new String(bytes, StandardCharsets.UTF_8));
                 }
             }

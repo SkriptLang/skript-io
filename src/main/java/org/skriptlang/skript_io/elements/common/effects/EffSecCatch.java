@@ -128,10 +128,10 @@ public class EffSecCatch extends EffectSection {
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         //<editor-fold desc="Find the last thrown error" defaultstate="collapsed">
-        final Throwable error;
+        Throwable error;
         if (source != null) error = source.thrown;
         else error = lastThrownError.get();
-        final boolean hasError = error != null;
+        boolean hasError = error != null;
         //</editor-fold>
         if (hasError && errorType.isInstance(error)) {
             //<editor-fold desc="Store the error, run the catch section" defaultstate="collapsed">

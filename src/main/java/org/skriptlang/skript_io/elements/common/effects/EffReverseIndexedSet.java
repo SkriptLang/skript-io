@@ -67,12 +67,12 @@ public class EffReverseIndexedSet extends EffEncode {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final Format<?> format = classInfo.getFormat();
-        final String name = StringUtils.substring(source.getName().toString(event), 0, -1);
-        final Object variable = Variables.getVariable(name + "*", event, source.isLocal());
+        Format<?> format = classInfo.getFormat();
+        String name = StringUtils.substring(source.getName().toString(event), 0, -1);
+        Object variable = Variables.getVariable(name + "*", event, source.isLocal());
         if (!(variable instanceof Map<?, ?> map)) return;
         this.convertLists(map);
-        for (final Resource file : targetExpression.getArray(event))
+        for (Resource file : targetExpression.getArray(event))
             if (file instanceof Writable writable)
                 SkriptIO.queue().queue(new FormatTask(format, writable, map)).await();
     }

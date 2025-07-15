@@ -41,9 +41,9 @@ public class SecReadFile extends SecAccessFile {
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
+        URI uri = pathExpression.getSingle(event);
         if (uri == null) return this.walk(event, false);
-        final File file = SkriptIO.file(uri);
+        File file = SkriptIO.file(uri);
         if (file == null) return this.walk(event, false);
         return this.read(file, event);
     }
@@ -51,7 +51,7 @@ public class SecReadFile extends SecAccessFile {
     protected @Nullable TriggerItem read(File file, Event event) {
         if (!file.exists() || !file.isFile()) return this.walk(event, false);
         assert first != null;
-        final FileController controller = FileController.getController(file, READ);
+        FileController controller = FileController.getController(file, READ);
         return this.walk(controller, event);
     }
 

@@ -14,7 +14,7 @@ public record SimpleHandler(WebServer server, URI path, Trigger trigger) impleme
     @Override
     public void handle(HttpExchange exchange) {
         try {
-            final VisitWebsiteEvent event = new VisitWebsiteEvent(server, exchange, path);
+            VisitWebsiteEvent event = new VisitWebsiteEvent(server, exchange, path);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) return; // this doesn't go to our handler
             this.trigger.execute(event);

@@ -53,9 +53,9 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transacti
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null || delta.length < 1) return;
-        final String type = String.valueOf(delta[0]);
+        String type = String.valueOf(delta[0]);
         if (type == null) return;
-        final Transaction request = this.getExpr().getSingle(event);
+        Transaction request = this.getExpr().getSingle(event);
         if (request == null) return;
         request.setContentType(type);
     }

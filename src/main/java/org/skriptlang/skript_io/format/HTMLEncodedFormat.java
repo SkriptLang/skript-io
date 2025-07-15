@@ -4,10 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 
 import java.io.*;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Map;
 
 public class HTMLEncodedFormat extends Format<String> {
 
@@ -17,14 +14,14 @@ public class HTMLEncodedFormat extends Format<String> {
 
     @Override
     protected @Nullable String[] from(InputStream stream) throws IOException {
-        final StringBuilder builder = new StringBuilder();
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+        StringBuilder builder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             int c;
             while ((c = reader.read()) > -1) {
                 //<editor-fold desc="Basic escaped characters." defaultstate="collapsed">
                 /*
                 This is the HTML3 set (it gets ridiculous from 4 onwards).
-                There isn't really any rhyme or reason to what is or isn't escaped
+                There isn't really any rhyme or reason to what is or isn't escaped,
                 and this lookup table is marginally quicker than a map.
                  */
                 builder.append(switch (c) {
@@ -141,8 +138,8 @@ public class HTMLEncodedFormat extends Format<String> {
 
     @Override
     protected void to(OutputStream stream, String... values) {
-        try (final Writer writer = new OutputStreamWriter(stream)) {
-            for (final String value : values) {
+        try (Writer writer = new OutputStreamWriter(stream)) {
+            for (String value : values) {
                 if (value == null) continue;
                 writer.write(unescape(value));
             }
@@ -156,7 +153,7 @@ public class HTMLEncodedFormat extends Format<String> {
         throw new IllegalStateException();
     }
 
-    protected String unescape(final String input) {
+    protected String unescape(String input) {
         return HTMLUtilities.unescapeHtml(input);
     }
 

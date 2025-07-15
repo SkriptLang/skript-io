@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.file.effects.SecAccessFile;
-import org.skriptlang.skript_io.utility.Resource;
 import org.skriptlang.skript_io.utility.file.FileController;
 
 @Name("Current File")
@@ -48,7 +47,7 @@ public class ExprCurrentFile extends SimpleExpression<FileController> {
 
     @Override
     protected FileController @NotNull [] get(@NotNull Event event) {
-        final FileController controller = FileController.currentSection(event);
+        FileController controller = FileController.currentSection(event);
         if (controller == null) return new FileController[0];
         return new FileController[] {controller};
     }
@@ -64,19 +63,19 @@ public class ExprCurrentFile extends SimpleExpression<FileController> {
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        final FileController controller = FileController.currentSection(event);
+        FileController controller = FileController.currentSection(event);
         if (controller == null) return;
         switch (mode) {
             case ADD:
                 if (delta == null) break;
-                for (final Object thing : delta) {
+                for (Object thing : delta) {
                     if (thing == null) continue;
                     controller.append(String.valueOf(thing));
                 }
                 break;
             case SET:
                 if (delta == null || delta.length < 1) break;
-                final Object thing = delta[0];
+                Object thing = delta[0];
                 if (thing == null) controller.clear();
                 else controller.write(String.valueOf(thing));
                 break;

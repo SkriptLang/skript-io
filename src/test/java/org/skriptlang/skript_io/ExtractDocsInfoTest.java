@@ -17,29 +17,29 @@ import java.util.Objects;
 public class ExtractDocsInfoTest {
     
     public static void main(String[] args) {
-        final List<Described> elements = extractElements();
-        for (final Described element : elements) element.print(System.out);
+        List<Described> elements = extractElements();
+        for (Described element : elements) element.print(System.out);
     }
     
     private static List<Described> extractElements() {
         SkriptIO.testMode = true;
         final String basePackage = "org.skriptlang.skript_io.elements", source = "src/main/java/org/skriptlang/skript_io/elements/";
-        final File root = new File(source);
+        File root = new File(source);
         assert root.exists() && root.isDirectory();
-        final List<Described> elements = new ArrayList<>();
-        for (final File file : Objects.requireNonNull(root.listFiles())) {
+        List<Described> elements = new ArrayList<>();
+        for (File file : Objects.requireNonNull(root.listFiles())) {
             if (!file.isDirectory()) continue;
-            final String folder = file.getName();
+            String folder = file.getName();
             elements.add(new CategoryHeader(folder));
-            for (final File sub : Objects.requireNonNull(file.listFiles())) {
+            for (File sub : Objects.requireNonNull(file.listFiles())) {
                 if (!sub.isDirectory()) continue;
-                final String type = sub.getName();
+                String type = sub.getName();
                 elements.add(new Header(type));
-                for (final File listFile : Objects.requireNonNull(sub.listFiles())) {
-                    final String name = listFile.getName();
-                    final String stub = name.substring(0, name.indexOf('.'));
+                for (File listFile : Objects.requireNonNull(sub.listFiles())) {
+                    String name = listFile.getName();
+                    String stub = name.substring(0, name.indexOf('.'));
                     elements.add(new Element(basePackage, folder, type, name.substring(0, name.indexOf('.'))));
-                    final File test = new File("src/test/resources/" + stub + ".sk");
+                    File test = new File("src/test/resources/" + stub + ".sk");
                     if (!test.exists()) {
                         try {
                             test.createNewFile();
@@ -55,11 +55,11 @@ public class ExtractDocsInfoTest {
     
     @Test
     public void extract() {
-        final List<Described> elements = extractElements();
+        List<Described> elements = extractElements();
         assert !elements.isEmpty();
-        for (final Described described : elements) {
+        for (Described described : elements) {
             if (!(described instanceof Element element)) continue;
-            final Class<?> type = element.toClass();
+            Class<?> type = element.toClass();
             assert type != null;
             if (Modifier.isAbstract(type.getModifiers())) continue;
             Doc.of(type);
@@ -104,18 +104,18 @@ public class ExtractDocsInfoTest {
         
         @Override
         public void print(PrintStream stream) {
-            final Class<?> type = this.toClass();
+            Class<?> type = this.toClass();
             if (type == null) return;
             if (Modifier.isAbstract(type.getModifiers())) return;
-            final Doc doc = Doc.of(type);
+            Doc doc = Doc.of(type);
             stream.println();
             stream.println("#### " + doc.name);
             stream.println("Since `" + doc.since + "`");
             stream.println();
-            for (final String s : doc.description) stream.println(s);
+            for (String s : doc.description) stream.println(s);
             stream.println();
             stream.println("```sk");
-            for (final String example : doc.examples) stream.println(example);
+            for (String example : doc.examples) stream.println(example);
             stream.println("```");
             stream.println();
         }

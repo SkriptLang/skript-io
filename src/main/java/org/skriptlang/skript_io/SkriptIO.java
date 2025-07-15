@@ -87,7 +87,7 @@ public class SkriptIO extends JavaPlugin {
 
     public void loadConfig() { // todo
         try {
-            final File file = new File(this.getDataFolder(), "config.sk");
+            File file = new File(this.getDataFolder(), "config.sk");
             if (!file.exists()) this.saveResource("config.sk", false);
             config = new IOConfig(file, false, false, ":");
         } catch (IOException ex) {
@@ -105,8 +105,8 @@ public class SkriptIO extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        final PluginManager manager = this.getServer().getPluginManager();
-        final Plugin skript = manager.getPlugin("Skript");
+        PluginManager manager = this.getServer().getPluginManager();
+        Plugin skript = manager.getPlugin("Skript");
         if (skript == null || !skript.isEnabled()) {
             this.getLogger().severe(
                 "[skript-io] Could not find Skript! Make sure you have it installed and that it properly loaded. " +
@@ -150,7 +150,7 @@ public class SkriptIO extends JavaPlugin {
         }
         queue = new IOQueue(50);
         remoteQueue = new IOQueue(100);
-        final DataTask markQueue = new DataTask() {
+        DataTask markQueue = new DataTask() {
             @Override
             public void execute() {
                 areWeInQueue.set(true);

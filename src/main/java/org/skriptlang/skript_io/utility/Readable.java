@@ -19,12 +19,12 @@ public interface Readable extends Resource {
     InputStream acquireReader() throws IOException;
 
     default String readAll() {
-        final AtomicReference<String> reference = new AtomicReference<>();
+        AtomicReference<String> reference = new AtomicReference<>();
         SkriptIO.queue().queue(new DataTask() {
             @Override
             public void execute() throws IOException {
-                try (final InputStream stream = acquireReader()) {
-                    final byte[] bytes = stream.readAllBytes();
+                try (InputStream stream = acquireReader()) {
+                    byte[] bytes = stream.readAllBytes();
                     reference.set(new String(bytes, StandardCharsets.UTF_8));
                 }
             }

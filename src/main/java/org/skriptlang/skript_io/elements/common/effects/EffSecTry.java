@@ -95,7 +95,7 @@ public class EffSecTry extends EffectSection {
                 Skript.error("'try to' cannot be used as a section.");
                 return false;
             }
-            final String effect = result.regexes.get(0).group();
+            String effect = result.regexes.get(0).group();
             this.effect = Effect.parse(effect, "Can't understand this effect: " + effect);
             if (this.effect == null) {
                 Skript.error("Couldn't parse 'try to' effect '" + effect + "'");
@@ -109,8 +109,8 @@ public class EffSecTry extends EffectSection {
                 return false;
             }
             assert sectionNode != null;
-            final ParserInstance parser = this.getParser();
-            final Kleenean wasDelayed = parser.getHasDelayBefore(), isDelayed;
+            ParserInstance parser = this.getParser();
+            Kleenean wasDelayed = parser.getHasDelayBefore(), isDelayed;
             parser.setHasDelayBefore(Kleenean.FALSE);
             this.loadOptionalCode(sectionNode);
             isDelayed = parser.getHasDelayBefore();
@@ -153,7 +153,7 @@ public class EffSecTry extends EffectSection {
         }
     }
 
-    void walkUnsafe(final TriggerItem start, final Event event)
+    void walkUnsafe(TriggerItem start, Event event)
         throws IllegalAccessException { // Skript loves to report the exception and continue
         //<editor-fold desc="Walk through trigger tree" defaultstate="collapsed">
         assert start != null && event != null; // Obviously, we can't do that

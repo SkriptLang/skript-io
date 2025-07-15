@@ -113,7 +113,7 @@ public enum ContentType {
     }
 
     public static String getMimeType(String extension) {
-        final ContentType type = byExtension(extension);
+        ContentType type = byExtension(extension);
         return type.mimeType();
     }
 

@@ -22,7 +22,7 @@ public class WriteTask extends DataTask {
     @Override
     public void execute() throws IOException {
         try {
-            final OutputStream stream = writable.acquireWriter();
+            OutputStream stream = writable.acquireWriter();
             stream.write(content);
         } catch (IOException ex) {
             this.exception.addSuppressed(ex);

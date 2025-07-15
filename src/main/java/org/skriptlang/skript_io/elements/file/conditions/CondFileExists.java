@@ -58,7 +58,7 @@ public class CondFileExists extends Condition {
     public boolean check(@NotNull Event event) {
         return uriExpression.check(event, uri -> {
             if (uri == null) return false;
-            final File file = SkriptIO.file(uri);
+            File file = SkriptIO.file(uri);
             if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
             if (file == null || !file.exists()) return false;
             return mode == 0 || mode == 1 && file.isFile() || mode == 2 && file.isDirectory();
@@ -68,7 +68,7 @@ public class CondFileExists extends Condition {
     @Override
     @NotNull
     public String toString(@Nullable Event e, boolean debug) {
-        final String ending = this.isNegated() ? " do not exist" : " exist";
+        String ending = this.isNegated() ? " do not exist" : " exist";
         return switch (mode) {
             case FILE -> "files ";
             case FOLDER -> "folders ";

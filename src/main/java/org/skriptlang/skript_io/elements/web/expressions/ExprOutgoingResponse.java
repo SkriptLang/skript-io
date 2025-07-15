@@ -76,14 +76,14 @@ public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (event instanceof VisitWebsiteEvent visit) {
-            final Writable writable = Writable.simple(visit.getExchange().getResponseBody());
+            Writable writable = Writable.simple(visit.getExchange().getResponseBody());
             if (mode == Changer.ChangeMode.ADD) {
                 if (!visit.isStatusCodeSet()) {
                     SkriptIO.error("Tried to send data before setting the status code.");
                     return;
                 }
                 if (delta == null) return;
-                for (final Object thing : delta) {
+                for (Object thing : delta) {
                     switch (thing) {
                         case String string ->
                             SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));

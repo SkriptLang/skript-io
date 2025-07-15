@@ -16,8 +16,8 @@ public class URLEncodedFormat extends Format<String> {
 
     @Override
     protected @Nullable String[] from(InputStream stream) throws IOException {
-        final StringBuilder builder = new StringBuilder();
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+        StringBuilder builder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String read;
             while ((read = reader.readLine()) != null) {
                 builder.append(read);
@@ -28,8 +28,8 @@ public class URLEncodedFormat extends Format<String> {
 
     @Override
     protected void to(OutputStream stream, String... values) {
-        try (final Writer writer = new OutputStreamWriter(stream)) {
-            for (final String value : values) {
+        try (Writer writer = new OutputStreamWriter(stream)) {
+            for (String value : values) {
                 if (value == null) continue;
                 writer.write(URLEncoder.encode(value, StandardCharsets.UTF_8));
             }

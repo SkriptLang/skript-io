@@ -11,7 +11,6 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.utility.web.Request;
 import org.skriptlang.skript_io.utility.web.Transaction;
 
 @Name("Method of Request")
@@ -54,9 +53,9 @@ public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, S
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null) return;
-        final String method = (String) delta[0];
+        String method = (String) delta[0];
         if (method == null) return;
-        final Transaction request = this.getExpr().getSingle(event);
+        Transaction request = this.getExpr().getSingle(event);
         if (request == null) return;
         request.setMethod(method);
     }

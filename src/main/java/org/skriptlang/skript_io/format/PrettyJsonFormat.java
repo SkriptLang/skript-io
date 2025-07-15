@@ -14,7 +14,7 @@ public class PrettyJsonFormat extends JsonFormat {
 
     @Override
     protected void to(OutputStream stream, Map<String, Object> value) throws IOException {
-        try (final Json json = new Json(stream)) {
+        try (Json json = new Json(stream)) {
             json.write(value, "\t");
         }
     }

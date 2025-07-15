@@ -58,12 +58,12 @@ public class ExprFilesInDirectory extends SimpleExpression<URI> {
 
     @Override
     protected URI @NotNull [] get(@NotNull Event event) {
-        final URI uri = pathExpression.getSingle(event);
-        final File file = SkriptIO.fileNoError(uri);
+        URI uri = pathExpression.getSingle(event);
+        File file = SkriptIO.fileNoError(uri);
         if (file == null || !file.isDirectory()) return new URI[0];
-        final File[] files = file.listFiles();
+        File[] files = file.listFiles();
         if (files == null || files.length == 0) return new URI[0];
-        final URI[] uris = new URI[files.length];
+        URI[] uris = new URI[files.length];
         for (int i = 0; i < files.length; i++) uris[i] = files[i].toURI();
         return uris;
     }

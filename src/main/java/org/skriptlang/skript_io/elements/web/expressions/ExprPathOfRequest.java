@@ -58,11 +58,11 @@ public class ExprPathOfRequest extends SimplePropertyExpression<Request, URI> {
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (delta == null) return;
-        final URI path;
+        URI path;
         if (delta[0] instanceof String string) path = URI.create(string);
         else if (delta[0] instanceof URI uri) path = uri;
         else return;
-        final Request request = this.getExpr().getSingle(event);
+        Request request = this.getExpr().getSingle(event);
         if (request == null) return;
         request.setPath(path);
     }

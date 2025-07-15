@@ -23,8 +23,8 @@ public class ReadLineTask extends DataTask {
 
     @Override
     public void execute() throws IOException {
-        try (final InputStream stream = controller.acquireReader();
-             final BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+        try (InputStream stream = controller.acquireReader();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             int counter = 0;
             String line;
             do line = reader.readLine(); while (counter++ < this.line);

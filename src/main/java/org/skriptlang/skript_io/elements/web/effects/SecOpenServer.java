@@ -101,13 +101,13 @@ public class SecOpenServer extends EffectSection {
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        final URI path;
-        final int port;
+        URI path;
+        int port;
         if (pathExpression != null) path = pathExpression.getSingle(event);
         else path = SkriptIO.ROOT;
         if (path == null) return this.walk(event, false);
         if (portExpression != null) {
-            final Number number = portExpression.getSingle(event);
+            Number number = portExpression.getSingle(event);
             if (number == null) port = WebServer.DEFAULT_PORT;
             else port = number.intValue();
         } else port = WebServer.DEFAULT_PORT;
@@ -116,7 +116,7 @@ public class SecOpenServer extends EffectSection {
             return this.walk(event, false);
         }
         if (!this.validatePath(path)) return this.walk(event, false);
-        final WebServer server = WebServer.getOrCreate(port);
+        WebServer server = WebServer.getOrCreate(port);
         server.registerHandler(path, this.createHandler(server, path));
         server.prepareIfNecessary();
         return this.walk(event, false);
@@ -136,7 +136,7 @@ public class SecOpenServer extends EffectSection {
 
     private boolean validatePath(URI path) {
         if (path == null) return false;
-        final String string = path.toString();
+        String string = path.toString();
         if (string.equals("/")) return true;
         if (string.isEmpty() || string.isBlank()) {
             SkriptIO.error("Webserver path must not be blank.");

@@ -67,15 +67,15 @@ public class EffAcceptResponse extends Effect {
     @Override
     protected TriggerItem walk(@NotNull Event event) {
         this.debug(event, true);
-        final long start = Skript.debug() ? System.currentTimeMillis() : 0;
-        final TriggerItem next = this.getNext();
+        long start = Skript.debug() ? System.currentTimeMillis() : 0;
+        TriggerItem next = this.getNext();
         if (next == null || !Skript.getInstance().isEnabled()) return null;
         Delay.addDelayedEvent(event);
-        final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
+        OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
         if (request == null) return null;
 
         // Back up local variables
-        final Object variables = Variables.removeLocals(event);
+        Object variables = Variables.removeLocals(event);
 
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
@@ -92,7 +92,7 @@ public class EffAcceptResponse extends Effect {
 
     protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next, long start)
         throws ExecutionException, InterruptedException {
-        final IncomingResponse response;
+        IncomingResponse response;
         try {
             request.exchange().connect();
         } catch (IOException ex) {
@@ -136,7 +136,7 @@ public class EffAcceptResponse extends Effect {
 
     public static Readable getCurrentResponse(Event event) {
         if (event == null) return null;
-        final Stack<IncomingResponse> stack = responseMap.get(event);
+        Stack<IncomingResponse> stack = responseMap.get(event);
         if (stack == null) return null;
         if (stack.isEmpty()) return null;
         return stack.peek();
@@ -144,7 +144,7 @@ public class EffAcceptResponse extends Effect {
 
     private static void push(Event event, IncomingResponse request) {
         if (event == null || request == null) return;
-        final Stack<IncomingResponse> stack;
+        Stack<IncomingResponse> stack;
         responseMap.putIfAbsent(event, new Stack<>());
         stack = responseMap.get(event);
         assert stack != null;
@@ -153,11 +153,11 @@ public class EffAcceptResponse extends Effect {
 
     static void pop(Event event) {
         if (event == null) return;
-        final Stack<IncomingResponse> stack = responseMap.get(event);
+        Stack<IncomingResponse> stack = responseMap.get(event);
         if (stack == null) return;
         if (stack.isEmpty()) responseMap.remove(event);
         else {
-            final IncomingResponse response = stack.pop();
+            IncomingResponse response = stack.pop();
             try {
                 response.close();
             } catch (IOException ignored) { // we can't actually catch an error from this

@@ -65,7 +65,7 @@ public class EffThrow extends Effect {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final Throwable throwable;
+        Throwable throwable;
         if (hasMessage) throwable = errorType.create(message.getSingle(event));
         else throwable = errorType.create(null);
         this.throwException(throwable);

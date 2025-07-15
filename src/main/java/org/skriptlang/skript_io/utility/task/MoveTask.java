@@ -23,7 +23,7 @@ public class MoveTask extends DataTask {
     public void execute() throws IOException, InterruptedException {
         try {
             if (file.isDirectory()) return;
-            final Path from = file.toPath();
+            Path from = file.toPath();
             Files.move(from, from.resolveSibling(name));
         } catch (IOException ex) {
             SkriptIO.error(ex);

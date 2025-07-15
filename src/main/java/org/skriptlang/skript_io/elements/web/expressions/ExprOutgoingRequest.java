@@ -49,7 +49,7 @@ public class ExprOutgoingRequest extends SimpleExpression<OutgoingRequest> {
 
     @Override
     protected OutgoingRequest @NotNull [] get(@NotNull Event event) {
-        final OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
+        OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
         if (request != null) return new OutgoingRequest[] {request};
         return new OutgoingRequest[0];
     }

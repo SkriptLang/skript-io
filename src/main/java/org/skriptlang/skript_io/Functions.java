@@ -22,7 +22,7 @@ public class Functions {
             new Parameter[] {new Parameter<>("path", DefaultClasses.OBJECT, true, null)}, PATH, true) {
             @Override
             public URI @NotNull [] executeSimple(Object @NotNull [] @NotNull [] params) {
-                final Object object = params[0][0];
+                Object object = params[0][0];
                 if (object == null) return new URI[0];
                 try {
                     return new URI[] {switch (object) {
@@ -53,7 +53,7 @@ public class Functions {
         }, PATH, true) {
             @Override
             public URI @NotNull [] executeSimple(Object @NotNull [] @NotNull [] params) {
-                final StringBuilder builder = new StringBuilder();
+                StringBuilder builder = new StringBuilder();
                 for (Object object : params[0]) {
                     String part;
                     if (object instanceof URI uri) part = uri.getPath();

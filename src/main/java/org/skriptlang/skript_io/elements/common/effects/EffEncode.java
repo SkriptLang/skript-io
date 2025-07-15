@@ -111,8 +111,8 @@ public class EffEncode extends Effect {
     @Override
     protected void execute(@NotNull Event event) {
         //<editor-fold desc="Converts the source to the target" defaultstate="collapsed">
-        final Object source, target;
-        final Object converted;
+        Object source, target;
+        Object converted;
         if (isEncoding) {
             source = sourceExpression.getSingle(event);
             if (isMap) {
@@ -127,14 +127,14 @@ public class EffEncode extends Effect {
             if (isMap) {
                 assert variable != null;
                 target = targetExpression.getSingle(event);
-                final String name = StringUtils.substring(variable.getName().toString(event), 0, -1);
+                String name = StringUtils.substring(variable.getName().toString(event), 0, -1);
                 converted = Variables.getVariable(name + "*", event, this.variable.isLocal());
                 if (converted instanceof Map<?, ?> map) this.convertLists(map);
             } else {
                 target = targetExpression.getSingle(event);
                 converted = sourceExpression.getSingle(event);
             }
-            final Format<?> format = classInfo.getFormat();
+            Format<?> format = classInfo.getFormat();
             if (target instanceof Writable writable) format.to(writable, converted);
             else targetExpression.change(event, new Object[] {Writable.format(format, converted)},
                                          Changer.ChangeMode.SET);
@@ -153,7 +153,7 @@ public class EffEncode extends Effect {
     protected void change(Variable<?> target, Object source, Event event) {
         //<editor-fold desc="Changes a variable value" defaultstate="collapsed">
         if (!(source instanceof Map<?, ?> map) || !target.isList()) {
-            final Object[] array;
+            Object[] array;
             if (source instanceof Object[] objects) array = objects;
             else array = new Object[] {source};
             target.change(event, array, Changer.ChangeMode.SET);
@@ -163,14 +163,14 @@ public class EffEncode extends Effect {
 
     protected Object mapFormat(String source) {
         //<editor-fold desc="Converts a text source for a map formatter" defaultstate="collapsed">
-        final Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+        Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
         return this.deserialise(readable);
         //</editor-fold>
     }
 
     protected Object mapFormatSingle(String source) {
         //<editor-fold desc="Converts a text source for a map formatter" defaultstate="collapsed">
-        final Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
+        Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
         return this.deserialise(readable);
         //</editor-fold>
     }
@@ -178,7 +178,7 @@ public class EffEncode extends Effect {
     protected Object deserialise(Resource resource) {
         //<editor-fold desc="Gets the formatted content of a resource" defaultstate="collapsed">
         if (!(resource instanceof Readable readable)) return new HashMap<>();
-        final Object[] things = classInfo.getFormat().from(readable);
+        Object[] things = classInfo.getFormat().from(readable);
         if (things.length == 0) return new HashMap<>();
         return things[0];
         //</editor-fold>
@@ -187,7 +187,7 @@ public class EffEncode extends Effect {
     protected Object deserialiseSingle(Resource resource) {
         //<editor-fold desc="Gets the single content of a resource" defaultstate="collapsed">
         if (!(resource instanceof Readable readable)) return null;
-        final Object[] things = classInfo.getFormat().from(readable);
+        Object[] things = classInfo.getFormat().from(readable);
         if (things.length == 0) return null;
         return things[0];
         //</editor-fold>
@@ -196,9 +196,9 @@ public class EffEncode extends Effect {
     protected void set(Event event, Variable<?> variable, Map<?, ?> map) {
         //<editor-fold desc="Sets a list variable to an indexed map" defaultstate="collapsed">
         this.set(event, variable, (Object) null);
-        for (final Map.Entry<?, ?> entry : map.entrySet()) {
-            final String key = String.valueOf(entry.getKey());
-            final Object value = entry.getValue();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            Object value = entry.getValue();
             this.set(event, variable, key, value);
         }
         //</editor-fold>
@@ -206,14 +206,14 @@ public class EffEncode extends Effect {
 
     protected void set(Event event, Variable<?> variable, String key, Object value) {
         //<editor-fold desc="Sets an individual index of a variable to a value" defaultstate="collapsed">
-        if (value instanceof Map<?, ?> map) for (final Map.Entry<?, ?> entry : map.entrySet()) {
-            final String key2 = String.valueOf(entry.getKey());
-            final Object value2 = entry.getValue();
+        if (value instanceof Map<?, ?> map) for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key2 = String.valueOf(entry.getKey());
+            Object value2 = entry.getValue();
             this.set(event, variable, key + SEPARATOR + key2, value2);
         }
         else if (value instanceof List<?> list) {
             int index = 0;
-            for (final Object object : list) this.set(event, variable, key + SEPARATOR + ++index, object);
+            for (Object object : list) this.set(event, variable, key + SEPARATOR + ++index, object);
         } else this.setIndex(event, variable, key, value);
         //</editor-fold>
     }
@@ -223,15 +223,15 @@ public class EffEncode extends Effect {
     }
 
     private void setIndex(Event event, Variable<?> target, String index, @Nullable Object value) {
-        final String name = target.getName().toString(event);
+        String name = target.getName().toString(event);
         Variables.setVariable(name.substring(0, name.length() - 1) + index, value, event, target.isLocal());
     }
 
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     protected void convertLists(Map<?, ?> map) {
         //<editor-fold desc="Checks whether entries in a map could be a list" defaultstate="collapsed">
-        for (final Map.Entry entry : map.entrySet()) {
-            final Object value = entry.getValue();
+        for (Map.Entry entry : map.entrySet()) {
+            Object value = entry.getValue();
             if (!(value instanceof Map<?, ?> child)) continue;
             if (this.couldBeList(child)) entry.setValue(this.convertToList(child));
             else this.convertLists(child);
@@ -241,10 +241,10 @@ public class EffEncode extends Effect {
 
     private List<?> convertToList(Map<?, ?> map) {
         //<editor-fold desc="Converts a map to an ordered list" defaultstate="collapsed">
-        final HashMap<Integer, Object> sorter = new HashMap<>(map.size());
-        for (final Map.Entry<?, ?> entry : map.entrySet()) {
-            final String key = String.valueOf(entry.getKey());
-            final int number = Integer.parseInt(key);
+        HashMap<Integer, Object> sorter = new HashMap<>(map.size());
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            int number = Integer.parseInt(key);
             sorter.put(number, entry.getValue());
         }
         return new ArrayList<>(sorter.values());
@@ -253,10 +253,10 @@ public class EffEncode extends Effect {
 
     private boolean couldBeList(Map<?, ?> map) {
         //<editor-fold desc="Checks whether a map could be a list" defaultstate="collapsed">
-        for (final Object object : map.keySet()) {
+        for (Object object : map.keySet()) {
             if (object == null) return false;
-            final String string = String.valueOf(object);
-            for (final char c : string.toCharArray()) {
+            String string = String.valueOf(object);
+            for (char c : string.toCharArray()) {
                 if (c < '0') return false;
                 if (c > '9') return false;
             }

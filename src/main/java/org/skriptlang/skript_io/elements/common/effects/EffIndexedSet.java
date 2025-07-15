@@ -62,7 +62,7 @@ public class EffIndexedSet extends EffEncode {
 
     @Override
     protected void execute(@NotNull Event event) {
-        final Object source = this.deserialise(sourceExpression.getSingle(event));
+        Object source = this.deserialise(sourceExpression.getSingle(event));
         this.change(this.target, source, event);
     }
 
