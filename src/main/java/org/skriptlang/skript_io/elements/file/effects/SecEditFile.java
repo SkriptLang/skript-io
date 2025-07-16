@@ -33,24 +33,24 @@ import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
 public class SecEditFile extends SecAccessFile {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(SecEditFile.class, "(edit|open) [(a|the)] file [at] %path%");
     }
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return this.walk(event, false);
+        if (uri == null) return walk(event, false);
         File file = SkriptIO.file(uri);
-        if (file == null) return this.walk(event, false);
-        return this.edit(file, event);
+        if (file == null) return walk(event, false);
+        return edit(file, event);
     }
 
     protected @Nullable TriggerItem edit(File file, Event event) {
-        if (!file.exists() || !file.isFile()) return this.walk(event, false);
+        if (!file.exists() || !file.isFile()) return walk(event, false);
         assert first != null;
         FileController controller = FileController.getController(file, READ | WRITE);
-        return this.walk(controller, event);
+        return walk(controller, event);
     }
 
     @Override

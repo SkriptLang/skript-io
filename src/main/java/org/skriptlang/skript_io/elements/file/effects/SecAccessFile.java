@@ -32,27 +32,27 @@ public abstract class SecAccessFile extends EffectSection {
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         @Nullable List<TriggerItem> list) {
-        this.pathExpression = (Expression<URI>) expressions[0];
-        if (this.hasSection()) {
+        pathExpression = (Expression<URI>) expressions[0];
+        if (hasSection()) {
             assert sectionNode != null;
             Kleenean isDelayed;
-            this.getParser().setHasDelayBefore(Kleenean.FALSE);
-            this.loadOptionalCode(sectionNode);
-            isDelayed = this.getParser().getHasDelayBefore();
-            this.async = !isDelayed.isFalse();
-            this.getParser().setHasDelayBefore(Kleenean.TRUE);
+            getParser().setHasDelayBefore(Kleenean.FALSE);
+            loadOptionalCode(sectionNode);
+            isDelayed = getParser().getHasDelayBefore();
+            async = !isDelayed.isFalse();
+            getParser().setHasDelayBefore(Kleenean.TRUE);
         }
         return true;
     }
 
     protected TriggerItem walk(FileController controller, Event event) {
-        if (first == null) return this.walk(event, false);
+        if (first == null) return walk(event, false);
         if (async) {
-            if (last == null) return this.walk(event, false);
+            if (last == null) return walk(event, false);
             FileController.push(event, controller);
             Delay.addDelayedEvent(event);
             Object variables = Variables.removeLocals(event);
-            TriggerItem next = this.walk(event, false);
+            TriggerItem next = walk(event, false);
             SkriptIO.queue().queue(new AccessTask(variables, next, event, controller));
             return null;
         } else {
@@ -67,7 +67,7 @@ public abstract class SecAccessFile extends EffectSection {
                 SkriptIO.queue().queue(new CloseTask(controller)).await();
             }
         }
-        return this.walk(event, false);
+        return walk(event, false);
     }
 
     @Override

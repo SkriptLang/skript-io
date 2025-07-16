@@ -17,7 +17,7 @@ public class DummyCloseTrigger extends TriggerItem {
 
     public DummyCloseTrigger(Closeable closeable, @Nullable TriggerItem walk, IOQueue queue) {
         this.closeable = closeable;
-        this.next = walk;
+        next = walk;
         this.queue = queue;
     }
 
@@ -27,13 +27,13 @@ public class DummyCloseTrigger extends TriggerItem {
 
     @Override
     protected @Nullable TriggerItem walk(Event e) {
-        this.run(e);
+        run(e);
         return next;
     }
 
     @Override
     protected boolean run(Event e) {
-        this.queue.queue(new CloseTask(closeable));
+        queue.queue(new CloseTask(closeable));
         return true;
     }
 

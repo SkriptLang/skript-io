@@ -32,7 +32,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
 
     FileController(File file) {
         this.file = file;
-        this.open = true;
+        open = true;
     }
 
     public static @Nullable FileController currentSection(Event event) {
@@ -107,17 +107,17 @@ public class FileController implements Closeable, Resource, Readable, Writable {
 
     @Override
     public void close() throws IOException {
-        this.closed = true;
+        closed = true;
         try {
-            this.appending = false;
+            appending = false;
             if (output != null) try {
-                this.output.flush();
-                this.output.close();
+                output.flush();
+                output.close();
             } finally {
                 if (input != null) input.close();
             }
         } finally {
-            this.open = false;
+            open = false;
             FileController.close(this);
         }
     }
@@ -131,7 +131,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o instanceof File file) return this.file.equals(file);
-        else if (o instanceof URI uri) return this.file.toURI().equals(uri);
+        else if (o instanceof URI uri) return file.toURI().equals(uri);
         if (!(o instanceof FileController that)) return false;
         return open == that.open && Objects.equals(file, that.file);
     }
@@ -147,53 +147,53 @@ public class FileController implements Closeable, Resource, Readable, Writable {
 
     @Override
     public @NotNull InputStream acquireReader() throws IOException {
-        return this.acquireReader(true);
+        return acquireReader(true);
     }
 
     public void closeOutput() {
-        this.appending = false;
+        appending = false;
         if (output != null) try {
-            this.output.flush();
-            this.output.close();
+            output.flush();
+            output.close();
         } catch (IOException ignore) {
         } finally {
-            this.output = null;
+            output = null;
         }
     }
 
     public void closeInput() {
         if (input != null) try {
-            this.input.close();
+            input.close();
         } catch (IOException ignore) {
         } finally {
-            this.input = null;
+            input = null;
         }
     }
 
     public synchronized @NotNull InputStream acquireReader(boolean restart) throws IOException {
-        if (this.closed) {
+        if (closed) {
             SkriptIO.error("Tried to read a closed file (outside its file section).");
             throw new IOException("File closed.");
         }
-        this.closeOutput();
-        if (restart) this.closeInput();
+        closeOutput();
+        if (restart) closeInput();
         if (input == null) return input = new FileInputStream(file);
         else return input;
     }
 
     @Override
     public @NotNull OutputStream acquireWriter() throws IOException {
-        return this.acquireWriter(false);
+        return acquireWriter(false);
     }
 
     public synchronized @NotNull OutputStream acquireWriter(boolean append) throws IOException {
-        if (this.closed) {
+        if (closed) {
             SkriptIO.error("Tried to write to a closed file (outside its file section).");
             throw new IOException("File closed.");
         }
-        this.closeInput();
+        closeInput();
         if (append && output != null) return output;
-        this.closeOutput();
+        closeOutput();
         return output = new FileOutputStream(file, append);
     }
 
@@ -210,7 +210,7 @@ public class FileController implements Closeable, Resource, Readable, Writable {
     }
 
     public String getLine(int line) {
-        if (!this.canRead()) return null;
+        if (!canRead()) return null;
         AtomicReference<String> reference = new AtomicReference<>();
         SkriptIO.queue().queue(new ReadLineTask(this, line, reference)).await();
         return reference.get();

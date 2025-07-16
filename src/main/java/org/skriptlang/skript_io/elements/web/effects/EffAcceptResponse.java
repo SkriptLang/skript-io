@@ -50,7 +50,7 @@ public class EffAcceptResponse extends Effect {
     private static final Map<Event, Stack<IncomingResponse>> responseMap = new WeakHashMap<>();
 
     static {
-        if (!SkriptIO.isTest()) Skript.registerEffect(EffAcceptResponse.class,
+        if (!SkriptIO.isTestMode()) Skript.registerEffect(EffAcceptResponse.class,
             "accept [the|a] response",
             "expect [the|a] response",
             "await [the|a] response",
@@ -60,15 +60,15 @@ public class EffAcceptResponse extends Effect {
     @Override
     public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean delayed,
                         SkriptParser.ParseResult result) {
-        this.getParser().setHasDelayBefore(Kleenean.TRUE);
+        getParser().setHasDelayBefore(Kleenean.TRUE);
         return true;
     }
 
     @Override
     protected TriggerItem walk(@NotNull Event event) {
-        this.debug(event, true);
+        debug(event, true);
         long start = Skript.debug() ? System.currentTimeMillis() : 0;
-        TriggerItem next = this.getNext();
+        TriggerItem next = getNext();
         if (next == null || !Skript.getInstance().isEnabled()) return null;
         Delay.addDelayedEvent(event);
         OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);

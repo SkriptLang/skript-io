@@ -30,7 +30,7 @@ import java.net.URI;
 public class SecCreateFile extends SecEditFile {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(SecCreateFile.class,
                                    "(create|make) [a] [new] file [at] %path%"
                                   );
@@ -39,17 +39,17 @@ public class SecCreateFile extends SecEditFile {
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return this.walk(event, false);
+        if (uri == null) return walk(event, false);
         File file = SkriptIO.file(uri);
-        if (file == null) return this.walk(event, false);
-        if (file.isDirectory()) return this.walk(event, false);
+        if (file == null) return walk(event, false);
+        if (file.isDirectory()) return walk(event, false);
         else if (!file.exists()) try {
             if (file.getParentFile() != null) file.getParentFile().mkdirs();
             file.createNewFile();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-        return this.edit(file, event);
+        return edit(file, event);
     }
 
     @Override

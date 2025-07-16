@@ -28,7 +28,7 @@ public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.H
 
     @Override
     public void setContentType(String type) {
-        this.exchange.getResponseHeaders().set("Content-Type", String.valueOf(type));
+        exchange.getResponseHeaders().set("Content-Type", String.valueOf(type));
     }
 
     @Override
@@ -41,7 +41,7 @@ public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.H
     @Override
     public void setHeader(String header, String type) {
         if (header == null) return;
-        this.exchange.getResponseHeaders().set(header, String.valueOf(type));
+        exchange.getResponseHeaders().set(header, String.valueOf(type));
     }
 
     @Override
@@ -62,7 +62,7 @@ public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.H
     @Override
     public @NotNull OutputStream acquireWriter() throws IOException {
         if (event != null && !event.isStatusCodeSet())
-            this.setStatusCode(200);
+            setStatusCode(200);
         return exchange.getResponseBody();
     }
 
@@ -75,7 +75,7 @@ public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.H
     @Override
     public void setStatusCode(int status) {
         try {
-            this.exchange.sendResponseHeaders(status, 0);
+            exchange.sendResponseHeaders(status, 0);
         } catch (IOException ex) {
             SkriptIO.error(ex);
         }

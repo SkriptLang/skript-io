@@ -65,7 +65,7 @@ public class EffEncode extends Effect {
     private static final String SEPARATOR = Variable.SEPARATOR;
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffEncode.class,
                                   "encode %object% as %*classinfo% (in|[in]to) %~objects%",
                                   "decode %~objects% from %*classinfo% (in|[in]to) %object%"
@@ -87,10 +87,10 @@ public class EffEncode extends Effect {
             Skript.error("The encoding must be a registered format.");
             return false;
         }
-        this.sourceExpression = (Expression<Object>) expressions[0];
-        this.targetExpression = (Expression<Object>) expressions[2];
-        this.isEncoding = matchedPattern == 0;
-        this.isMap = Map.class.isAssignableFrom(info.getFormat().getType());
+        sourceExpression = (Expression<Object>) expressions[0];
+        targetExpression = (Expression<Object>) expressions[2];
+        isEncoding = matchedPattern == 0;
+        isMap = Map.class.isAssignableFrom(info.getFormat().getType());
         if (isEncoding) {
             if (!(targetExpression instanceof Variable<Object> variable) || (isMap && !variable.isList())) {
                 Skript.error("The encoding target must be a " + (isMap ? "list " : "") + "variable.");
@@ -98,7 +98,7 @@ public class EffEncode extends Effect {
             }
             this.variable = variable;
         } else if (isMap ||
-            (!this.sourceExpression.isSingle() && !(sourceExpression instanceof Variable<?>))) {
+            (!sourceExpression.isSingle() && !(sourceExpression instanceof Variable<?>))) {
             if (!(sourceExpression instanceof Variable<Object> variable) || (isMap && !variable.isList())) {
                 Skript.error("The decoding source must be a " + (isMap ? "list " : "") + "variable.");
                 return false;
@@ -116,20 +116,20 @@ public class EffEncode extends Effect {
         if (isEncoding) {
             source = sourceExpression.getSingle(event);
             if (isMap) {
-                if (source instanceof Resource resource) converted = this.deserialise(resource);
-                else converted = this.mapFormat(String.valueOf(source));
+                if (source instanceof Resource resource) converted = deserialise(resource);
+                else converted = mapFormat(String.valueOf(source));
             } else {
-                if (source instanceof Resource resource) converted = this.deserialiseSingle(resource);
-                else converted = this.mapFormatSingle(String.valueOf(source));
+                if (source instanceof Resource resource) converted = deserialiseSingle(resource);
+                else converted = mapFormatSingle(String.valueOf(source));
             }
-            this.change(variable, converted, event);
+            change(variable, converted, event);
         } else {
             if (isMap) {
                 assert variable != null;
                 target = targetExpression.getSingle(event);
                 String name = StringUtils.substring(variable.getName().toString(event), 0, -1);
-                converted = Variables.getVariable(name + "*", event, this.variable.isLocal());
-                if (converted instanceof Map<?, ?> map) this.convertLists(map);
+                converted = Variables.getVariable(name + "*", event, variable.isLocal());
+                if (converted instanceof Map<?, ?> map) convertLists(map);
             } else {
                 target = targetExpression.getSingle(event);
                 converted = sourceExpression.getSingle(event);
@@ -145,9 +145,9 @@ public class EffEncode extends Effect {
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         if (isEncoding) return "encode " + sourceExpression.toString(event, debug) + " as " +
-            this.classInfo.toString(event, debug) + " into " + targetExpression.toString(event, debug);
+            classInfo.toString(event, debug) + " into " + targetExpression.toString(event, debug);
         else return "decode " + sourceExpression.toString(event, debug) + " from " +
-            this.classInfo.toString(event, debug) + " into " + targetExpression.toString(event, debug);
+            classInfo.toString(event, debug) + " into " + targetExpression.toString(event, debug);
     }
 
     protected void change(Variable<?> target, Object source, Event event) {
@@ -157,21 +157,21 @@ public class EffEncode extends Effect {
             if (source instanceof Object[] objects) array = objects;
             else array = new Object[] {source};
             target.change(event, array, Changer.ChangeMode.SET);
-        } else this.set(event, target, map);
+        } else set(event, target, map);
         //</editor-fold>
     }
 
     protected Object mapFormat(String source) {
         //<editor-fold desc="Converts a text source for a map formatter" defaultstate="collapsed">
         Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
-        return this.deserialise(readable);
+        return deserialise(readable);
         //</editor-fold>
     }
 
     protected Object mapFormatSingle(String source) {
         //<editor-fold desc="Converts a text source for a map formatter" defaultstate="collapsed">
         Readable readable = Readable.simple(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
-        return this.deserialise(readable);
+        return deserialise(readable);
         //</editor-fold>
     }
 
@@ -195,11 +195,11 @@ public class EffEncode extends Effect {
 
     protected void set(Event event, Variable<?> variable, Map<?, ?> map) {
         //<editor-fold desc="Sets a list variable to an indexed map" defaultstate="collapsed">
-        this.set(event, variable, (Object) null);
+        set(event, variable, (Object) null);
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = String.valueOf(entry.getKey());
             Object value = entry.getValue();
-            this.set(event, variable, key, value);
+            set(event, variable, key, value);
         }
         //</editor-fold>
     }
@@ -209,12 +209,12 @@ public class EffEncode extends Effect {
         if (value instanceof Map<?, ?> map) for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key2 = String.valueOf(entry.getKey());
             Object value2 = entry.getValue();
-            this.set(event, variable, key + SEPARATOR + key2, value2);
+            set(event, variable, key + SEPARATOR + key2, value2);
         }
         else if (value instanceof List<?> list) {
             int index = 0;
-            for (Object object : list) this.set(event, variable, key + SEPARATOR + ++index, object);
-        } else this.setIndex(event, variable, key, value);
+            for (Object object : list) set(event, variable, key + SEPARATOR + ++index, object);
+        } else setIndex(event, variable, key, value);
         //</editor-fold>
     }
 
@@ -233,8 +233,8 @@ public class EffEncode extends Effect {
         for (Map.Entry entry : map.entrySet()) {
             Object value = entry.getValue();
             if (!(value instanceof Map<?, ?> child)) continue;
-            if (this.couldBeList(child)) entry.setValue(this.convertToList(child));
-            else this.convertLists(child);
+            if (couldBeList(child)) entry.setValue(convertToList(child));
+            else convertLists(child);
         }
         //</editor-fold>
     }

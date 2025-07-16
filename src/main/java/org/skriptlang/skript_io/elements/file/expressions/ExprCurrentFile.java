@@ -29,7 +29,7 @@ import org.skriptlang.skript_io.utility.file.FileController;
 public class ExprCurrentFile extends SimpleExpression<FileController> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprCurrentFile.class, FileController.class, ExpressionType.SIMPLE,
                                       "[the] [(current|open)] file"
                                      );
@@ -38,7 +38,7 @@ public class ExprCurrentFile extends SimpleExpression<FileController> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, Kleenean isDelayed,
                         SkriptParser.ParseResult parseResult) {
-        if (!this.getParser().isCurrentSection(SecAccessFile.class)) {
+        if (!getParser().isCurrentSection(SecAccessFile.class)) {
             Skript.error("You can't use '" + parseResult.expr + "' outside a file access section.");
             return false;
         }

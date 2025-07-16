@@ -73,7 +73,7 @@ public class EffSecTry extends EffectSection {
             // if we don't have TriggerItem#walk we are in an irreparable situation
         }
         //</editor-fold>
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(EffSecTry.class, "try", "try to <.+>");
     }
 
@@ -91,7 +91,7 @@ public class EffSecTry extends EffectSection {
                         @Nullable List<TriggerItem> list) {
         if (matchedPattern == 1) {
             //<editor-fold desc="Set up try inline effect" defaultstate="collapsed">
-            if (this.hasSection()) {
+            if (hasSection()) {
                 Skript.error("'try to' cannot be used as a section.");
                 return false;
             }
@@ -104,15 +104,15 @@ public class EffSecTry extends EffectSection {
             //</editor-fold>
         } else {
             //<editor-fold desc="Set up try section" defaultstate="collapsed">
-            if (!this.hasSection()) {
+            if (!hasSection()) {
                 Skript.error("'try' can be used only as a section.");
                 return false;
             }
             assert sectionNode != null;
-            ParserInstance parser = this.getParser();
+            ParserInstance parser = getParser();
             Kleenean wasDelayed = parser.getHasDelayBefore(), isDelayed;
             parser.setHasDelayBefore(Kleenean.FALSE);
-            this.loadOptionalCode(sectionNode);
+            loadOptionalCode(sectionNode);
             isDelayed = parser.getHasDelayBefore();
             if (!isDelayed.isFalse()) {
                 Skript.error("'try' sections cannot contain delays or delayed effects.");
@@ -126,29 +126,29 @@ public class EffSecTry extends EffectSection {
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        this.thrown = null;
+        thrown = null;
         if (effect != null) {
             //<editor-fold desc="Attempt inline try" defaultstate="collapsed">
             try {
-                this.effect.run(event);
+                effect.run(event);
             } catch (Exception | IOError ex) {
-                this.thrown = ex;
+                thrown = ex;
                 EffSecCatch.lastThrownError.set(ex);
             }
-            return this.getNext();
+            return getNext();
             //</editor-fold>
         } else {
             //<editor-fold desc="Attempt try-section" defaultstate="collapsed">
-            if (first == null) return this.walk(event, false);
+            if (first == null) return walk(event, false);
             if (last != null) //noinspection DataFlowIssue
-                this.last.setNext(null);
+                last.setNext(null);
             try {
-                this.walkUnsafe(first, event);
+                walkUnsafe(first, event);
             } catch (Exception | IOError ex) {
-                this.thrown = ex;
+                thrown = ex;
                 EffSecCatch.lastThrownError.set(ex);
             }
-            return this.walk(event, false);
+            return walk(event, false);
             //</editor-fold>
         }
     }

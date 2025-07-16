@@ -29,7 +29,7 @@ import org.skriptlang.skript_io.utility.web.WebServer;
 public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprCurrentWebsite.class, WebServer.class, ExpressionType.SIMPLE,
                                       "[the] [current] web[ ]site",
                                       "[the] [current] web[ ]server",
@@ -40,7 +40,7 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
+        if (!getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
             Skript.error("You can't use '" + result.expr + "' outside a website section.");
             return false;
         }

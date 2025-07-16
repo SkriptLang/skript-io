@@ -35,7 +35,7 @@ No code after this error will be run, unless it was previously scheduled in the 
 public class EffThrow extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffThrow.class, "throw a[n] %*classinfo%",
                 "throw a[n] %*classinfo% with message %string%");
     }
@@ -52,9 +52,9 @@ public class EffThrow extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.hasMessage = matchedPattern == 1;
+        hasMessage = matchedPattern == 1;
         if (expressions[0] instanceof Literal<?> literal
-            && literal.getSingle() instanceof ErrorInfo<?> info) this.errorType = info;
+            && literal.getSingle() instanceof ErrorInfo<?> info) errorType = info;
         else {
             Skript.error("Only error types may be thrown.");
             return false;
@@ -68,7 +68,7 @@ public class EffThrow extends Effect {
         Throwable throwable;
         if (hasMessage) throwable = errorType.create(message.getSingle(event));
         else throwable = errorType.create(null);
-        this.throwException(throwable);
+        throwException(throwable);
     }
 
     private void throwException(Throwable exception) {

@@ -17,7 +17,7 @@ public record SimpleHandler(WebServer server, URI path, Trigger trigger) impleme
             VisitWebsiteEvent event = new VisitWebsiteEvent(server, exchange, path);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) return; // this doesn't go to our handler
-            this.trigger.execute(event);
+            trigger.execute(event);
         } finally {
             SkriptIO.queue().queue(new CloseTask(exchange)).await();
         }

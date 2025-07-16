@@ -5,8 +5,6 @@ import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.util.Version;
 import mx.kenzie.clockwork.io.DataTask;
 import mx.kenzie.clockwork.io.IOQueue;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -21,17 +19,22 @@ import java.util.logging.Level;
 
 public class SkriptIO extends JavaPlugin {
 
+    private static SkriptIO instance;
+    public static final Version MINIMUM_SUPPORTED_SK_VERSION = new Version(2, 11, 2);
     public static final URI ROOT = URI.create("/");
-    public static IOConfig config;
     public static boolean testMode;
-    private static IOQueue queue, remoteQueue;
+    private static IOQueue queue;
+    private static IOQueue remoteQueue;
     private static final ThreadLocal<Boolean> areWeInQueue = ThreadLocal.withInitial(() -> false);
     private SkriptAddon addon;
     private Types types;
 
     public static DataTask queue(DataTask task) {
-        if (areWeInQueue.get()) task.run();
-        else return queue().queue(task);
+        if (areWeInQueue.get()) {
+            task.run();
+        } else {
+            return queue().queue(task);
+        }
         return task;
     }
 
@@ -43,17 +46,46 @@ public class SkriptIO extends JavaPlugin {
         return remoteQueue;
     }
 
+    /**
+     * Returns a new File by its URI path.
+     * @param path The file path
+     * @return a new File object, or null if the path is null or empty
+     */
     public static File file(URI path) {
         try {
-            if (path == null) return null;
-            else if (path.getPath().isEmpty()) return null;
-            else return new File(path.getPath());
+            if (path == null || path.getPath().isEmpty()) {
+                return null;
+            } else {
+                return new File(path.getPath());
+            }
         } catch (IllegalArgumentException ex) {
             SkriptIO.error(ex);
             return null;
         }
     }
 
+    /**
+     * Returns a new File by its URI path without logging potential errors
+     * @param path The file path
+     * @return a new File object, or null if the path is null or empty
+     */
+    public static File fileNoError(URI path) {
+        try {
+            if (path == null || path.getPath().isEmpty()) {
+                return null;
+            } else {
+                return new File(path.getPath());
+            }
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+    }
+
+    /**
+     * Creates a new URI
+     * @param path The path
+     * @return a new URI object, or null if the URI is invalid
+     */
     public static URI uri(String path) {
         try {
             return new URI(path);
@@ -62,91 +94,75 @@ public class SkriptIO extends JavaPlugin {
         }
     }
 
-    public static File fileNoError(URI path) {
-        try {
-            if (path == null) return null;
-            else if (path.getPath().isEmpty()) return null;
-            else return new File(path.getPath());
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
-    }
-
+    /**
+     * Logs an error message
+     * @param message The message
+     */
     public static void error(String message) {
-        Bukkit.getLogger().log(Level.SEVERE, message); // todo
+        instance.getLogger().log(Level.SEVERE, message);
     }
 
+    /**
+     * Logs an exception
+     * @param throwable The exception
+     */
     public static void error(Throwable throwable) {
         throwSafe(throwable);
 //        Bukkit.getLogger().log(Level.SEVERE, throwable.getMessage(), throwable); // todo ???
     }
 
-    public static boolean isTest() {
+    public static boolean isTestMode() {
         return testMode;
-    }
-
-    public void loadConfig() { // todo
-        try {
-            File file = new File(this.getDataFolder(), "config.sk");
-            if (!file.exists()) this.saveResource("config.sk", false);
-            config = new IOConfig(file, false, false, ":");
-        } catch (IOException ex) {
-            this.getLogger().severe("[skript-io] Unable to load config.");
-        }
     }
 
     @Override
     public void onDisable() {
         queue.shutdown(1000);
         remoteQueue.shutdown(1000);
-        this.addon = null;
-        this.types = null;
+        addon = null;
+        types = null;
     }
 
     @Override
     public void onEnable() {
-        PluginManager manager = this.getServer().getPluginManager();
-        Plugin skript = manager.getPlugin("Skript");
-        if (skript == null || !skript.isEnabled()) {
-            this.getLogger().severe(
-                "[skript-io] Could not find Skript! Make sure you have it installed and that it properly loaded. " +
-                    "Disabling...");
-            manager.disablePlugin(this);
-            return;
-        } else if (!Skript.getVersion()
-            .isLargerThan(new Version(2, 8, 0))) { // Skript is not any version after 2.5.3 (aka 2.6)
-            this.getLogger().severe(
-                "[skript-io] You are running an unsupported version of Skript. " +
-                    "Please update to at least Skript 2.7.0. Disabling...");
-            manager.disablePlugin(this);
+        instance = this;
+        PluginManager manager = getServer().getPluginManager();
+
+        if (!Skript.getVersion().isLargerThan(MINIMUM_SUPPORTED_SK_VERSION)) {
+            getLogger().severe("You are running an unsupported version of Skript." +
+                    "Please update to at least Skript " + MINIMUM_SUPPORTED_SK_VERSION + " or else you might run into issues!");
             return;
         }
-        this.types = new Types();
-        this.types.removeEffChange();
+
+        types = new Types();
+        types.removeEffChange(); // why???????
         try {
-            this.addon = Skript.registerAddon(this);
-            this.addon.loadClasses("org.skriptlang.skript_io.elements");
-            this.types.registerTypes();
-            this.types.registerFileFormats();
-            this.types.registerComparators();
-            this.types.registerConverters();
-            this.types.registerPathArithmetic();
-            this.types.registerErrorTypes(addon);
-            this.types.loadFormat(new GZipFormat(), addon);
-            this.types.loadFormat(new YamlFormat(), addon);
-            this.types.loadFormat(new JsonFormat(), addon);
-            this.types.loadFormat(new PrettyJsonFormat(), addon);
-            this.types.loadFormat(new URLEncodedFormat(), addon);
-            this.types.loadFormat(new Base64EncodedFormat(), addon);
-            this.types.loadFormat(new HTMLEncodedFormat(), addon);
+            addon = Skript.registerAddon(this);
+            addon.loadClasses("org.skriptlang.skript_io.elements");
+            types.registerTypes();
+            types.registerFileFormats();
+            types.registerComparators();
+            types.registerConverters();
+            types.registerPathArithmetic();
+            types.registerErrorTypes(addon);
+            types.loadFormats(addon,
+                    new GZipFormat(),
+                    new YamlFormat(),
+                    new JsonFormat(),
+                    new PrettyJsonFormat(),
+                    new URLEncodedFormat(),
+                    new Base64EncodedFormat(),
+                    new HTMLEncodedFormat()
+            );
+
             Functions.registerFunctions();
         } catch (IOException e) {
-            this.getLogger().severe("An error occurred while trying to enable this addon.");
+            getLogger().severe("An error occurred while trying to enable this addon.");
             SkriptIO.error(e);
             manager.disablePlugin(this);
             return;
         } finally {
-            this.types.reAddEffChange();
+            types.reAddEffChange();
         }
         queue = new IOQueue(50);
         remoteQueue = new IOQueue(100);
@@ -158,13 +174,13 @@ public class SkriptIO extends JavaPlugin {
         }; // Tell things we're inside a queue right now
         queue.queue(markQueue);
         remoteQueue.queue(markQueue);
-        this.loadConfig();
     }
 
     public static void throwSafe(Throwable throwable) {
-        if (throwable == null) throw new RuntimeException();
-        if (throwable instanceof IOError
-            || throwable instanceof Exception) {
+        if (throwable == null) {
+            throw new RuntimeException();
+        }
+        if (throwable instanceof IOError || throwable instanceof Exception) {
             throwUncheckedException(throwable);
         } else {
             throw new RuntimeException(throwable);

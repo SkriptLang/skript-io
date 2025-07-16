@@ -13,8 +13,8 @@ public class WriteTask extends DataTask {
     private final IOException exception;
 
     public WriteTask(Writable writable, byte[] content) {
-        this.exception = new IOException("Error in queued task");
-        this.exception.fillInStackTrace();
+        exception = new IOException("Error in queued task");
+        exception.fillInStackTrace();
         this.writable = writable;
         this.content = content;
     }
@@ -25,7 +25,7 @@ public class WriteTask extends DataTask {
             OutputStream stream = writable.acquireWriter();
             stream.write(content);
         } catch (IOException ex) {
-            this.exception.addSuppressed(ex);
+            exception.addSuppressed(ex);
             throw exception;
         }
     }

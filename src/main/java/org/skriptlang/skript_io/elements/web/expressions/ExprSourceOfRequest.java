@@ -24,7 +24,7 @@ import org.skriptlang.skript_io.utility.web.Request;
 public class ExprSourceOfRequest extends SimplePropertyExpression<Request, String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprSourceOfRequest.class, String.class, "source", "request");
     }
 

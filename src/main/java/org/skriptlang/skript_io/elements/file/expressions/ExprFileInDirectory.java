@@ -30,7 +30,7 @@ import java.net.URI;
 public class ExprFileInDirectory extends SimpleExpression<URI> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprFileInDirectory.class, URI.class, ExpressionType.SIMPLE,
                 "[[the] file] %path% in [(directory|folder)] %path%"
             );
@@ -42,8 +42,8 @@ public class ExprFileInDirectory extends SimpleExpression<URI> {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        this.sourceExpression = (Expression<URI>) expressions[0];
-        this.targetExpression = (Expression<URI>) expressions[1];
+        sourceExpression = (Expression<URI>) expressions[0];
+        targetExpression = (Expression<URI>) expressions[1];
         return true;
     }
 

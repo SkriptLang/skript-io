@@ -29,13 +29,13 @@ public record IncomingResponse(HttpURLConnection exchange,
                 }
             }
         }).await();
-        this.exchange.disconnect();
+        exchange.disconnect();
     }
 
     @Override
     public @NotNull InputStream acquireReader() throws IOException {
         try {
-            this.wasRead.set(true);
+            wasRead.set(true);
             return exchange.getInputStream();
         } catch (FileNotFoundException ex) {
             SkriptIO.error("Unable to connect to website '" + ex.getMessage() + "'");

@@ -30,7 +30,7 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprMethodOfRequest.class, String.class, "method", "transaction");
     }
 
@@ -55,7 +55,7 @@ public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, S
         if (delta == null) return;
         String method = (String) delta[0];
         if (method == null) return;
-        Transaction request = this.getExpr().getSingle(event);
+        Transaction request = getExpr().getSingle(event);
         if (request == null) return;
         request.setMethod(method);
     }

@@ -61,7 +61,7 @@ public class EffSecCatch extends EffectSection {
     static ThreadLocal<Throwable> lastThrownError = new ThreadLocal<>();
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(EffSecCatch.class, "catch %~object%", "catch [the|a[n]] %*classinfo% in %~object%");
     }
 
@@ -90,7 +90,7 @@ public class EffSecCatch extends EffectSection {
                         List<TriggerItem> list) {
         //<editor-fold desc="Look for our preceding EffSecTry" defaultstate="collapsed">
         if (list != null) {
-            this.source = getTrySection(list);
+            source = getTrySection(list);
             if (source == null) {
                 Skript.error("The 'catch' effect must immediately follow either a 'try' or another 'catch' section.");
                 return false;
@@ -98,9 +98,9 @@ public class EffSecCatch extends EffectSection {
         }
         //</editor-fold>
         //<editor-fold desc="Load our section code (if present)" defaultstate="collapsed">
-        if (this.hasSection()) {
+        if (hasSection()) {
             assert sectionNode != null;
-            this.loadOptionalCode(sectionNode);
+            loadOptionalCode(sectionNode);
         }
         //</editor-fold>
         //<editor-fold desc="Get our error storage variable" defaultstate="collapsed">
@@ -115,7 +115,7 @@ public class EffSecCatch extends EffectSection {
         if (matchedPattern == 1 && expressions[0] instanceof Literal<?> literal
             && literal.getSingle() instanceof ClassInfo<?> info) {
             this.info = info;
-            this.errorType = info.getC();
+            errorType = info.getC();
             if (!Throwable.class.isAssignableFrom(errorType)) {
                 Skript.error("Errors may only be caught by error-type, but found '" + info.getCodeName() + "'");
                 return false;
@@ -136,13 +136,13 @@ public class EffSecCatch extends EffectSection {
         if (hasError && errorType.isInstance(error)) {
             //<editor-fold desc="Store the error, run the catch section" defaultstate="collapsed">
             EffSecCatch.lastThrownError.remove(); // we consumed it here
-            this.catcher.change(event, new Object[] {error}, Changer.ChangeMode.SET);
-            if (first == null) return this.walk(event, false);
-            else return this.first;
+            catcher.change(event, new Object[] {error}, Changer.ChangeMode.SET);
+            if (first == null) return walk(event, false);
+            else return first;
             //</editor-fold>
         } else if (!hasError) catcher.change(event, new Object[0], Changer.ChangeMode.DELETE);
-        if (first == null) return this.walk(event, false);
-        return this.getNext();
+        if (first == null) return walk(event, false);
+        return getNext();
     }
 
     @Override

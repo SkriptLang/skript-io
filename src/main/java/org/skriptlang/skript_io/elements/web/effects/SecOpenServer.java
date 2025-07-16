@@ -60,7 +60,7 @@ import java.util.List;
 public class SecOpenServer extends EffectSection {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(SecOpenServer.class,
                                    "open ([a] web[ ]|[an] http )server [for %-path%] [(on|with) port %-number%]",
                                    "open [a] web[ ]site [for %-path%] [(on|with) port %-number%]"
@@ -77,25 +77,25 @@ public class SecOpenServer extends EffectSection {
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         @Nullable List<TriggerItem> list) {
-        if (this.getParser().isCurrentSection(SecOpenServer.class)
-            || this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
+        if (getParser().isCurrentSection(SecOpenServer.class)
+            || getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
             Skript.error("You can't open a webserver inside a webserver response.");
             return false;
         }
-        if (!this.hasSection()) {
+        if (!hasSection()) {
             Skript.error("A webserver requires a response section.");
             return false;
         }
-        this.pathExpression = (Expression<URI>) expressions[0];
-        this.portExpression = (Expression<Number>) expressions[1];
+        pathExpression = (Expression<URI>) expressions[0];
+        portExpression = (Expression<Number>) expressions[1];
         if (portExpression != null
             && portExpression instanceof Literal<Number> literal
-            && !this.validatePort(literal.getSingle().intValue())) {
+            && !validatePort(literal.getSingle().intValue())) {
             Skript.error("Valid webserver ports are between 1 and 65535.");
             return false;
         }
         assert sectionNode != null;
-        this.trigger = this.loadCode(sectionNode, "website visit event", VisitWebsiteEvent.class);
+        trigger = loadCode(sectionNode, "website visit event", VisitWebsiteEvent.class);
         return true;
     }
 
@@ -105,21 +105,21 @@ public class SecOpenServer extends EffectSection {
         int port;
         if (pathExpression != null) path = pathExpression.getSingle(event);
         else path = SkriptIO.ROOT;
-        if (path == null) return this.walk(event, false);
+        if (path == null) return walk(event, false);
         if (portExpression != null) {
             Number number = portExpression.getSingle(event);
             if (number == null) port = WebServer.DEFAULT_PORT;
             else port = number.intValue();
         } else port = WebServer.DEFAULT_PORT;
-        if (!this.validatePort(port)) {
+        if (!validatePort(port)) {
             SkriptIO.error("Invalid webserver port provided, port must be between 1 and 65535.");
-            return this.walk(event, false);
+            return walk(event, false);
         }
-        if (!this.validatePath(path)) return this.walk(event, false);
+        if (!validatePath(path)) return walk(event, false);
         WebServer server = WebServer.getOrCreate(port);
-        server.registerHandler(path, this.createHandler(server, path));
+        server.registerHandler(path, createHandler(server, path));
         server.prepareIfNecessary();
-        return this.walk(event, false);
+        return walk(event, false);
     }
 
     protected PostHandler createHandler(WebServer server, URI path) {

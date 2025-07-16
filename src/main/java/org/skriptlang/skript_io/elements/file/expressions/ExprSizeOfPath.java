@@ -22,7 +22,7 @@ import java.net.URI;
 public class ExprSizeOfPath extends SimplePropertyExpression<URI, Number> {
 
     static {
-        if (!SkriptIO.isTest()) register(ExprSizeOfPath.class, Number.class, "[file] size", "path");
+        if (!SkriptIO.isTestMode()) register(ExprSizeOfPath.class, Number.class, "[file] size", "path");
     }
 
     @Override

@@ -33,7 +33,7 @@ import java.net.URI;
 public class EffDeleteFile extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffDeleteFile.class, "[recursive:recursive[ly]] delete [the] folder [at] %path%",
                                   "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file " +
                                       "[at] %path%");
@@ -82,9 +82,9 @@ public class EffDeleteFile extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.pathExpression = (Expression<URI>) expressions[0];
-        this.recursive = result.hasTag("recursive");
-        this.folder = matchedPattern < 2;
+        pathExpression = (Expression<URI>) expressions[0];
+        recursive = result.hasTag("recursive");
+        folder = matchedPattern < 2;
         return true;
     }
 
@@ -98,7 +98,7 @@ public class EffDeleteFile extends Effect {
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return (recursive ? "recursively " : "") + "delete " + (folder ? "folder " : "file ") + this.pathExpression.toString(
+        return (recursive ? "recursively " : "") + "delete " + (folder ? "folder " : "file ") + pathExpression.toString(
             event, debug);
     }
 

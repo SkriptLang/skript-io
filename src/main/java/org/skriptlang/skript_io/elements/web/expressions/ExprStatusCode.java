@@ -41,7 +41,7 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 public class ExprStatusCode extends SimpleExpression<Number> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprStatusCode.class, Number.class, ExpressionType.SIMPLE,
                 "[the] status code",
                 "([the] status code of %-response%|%-response%'[s] status code)"
@@ -54,15 +54,15 @@ public class ExprStatusCode extends SimpleExpression<Number> {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        if (this.getParser().isCurrentEvent(VisitWebsiteEvent.class)
-            || this.getParser().isCurrentSection(SecAcceptResponse.class)) {
+        if (getParser().isCurrentEvent(VisitWebsiteEvent.class)
+            || getParser().isCurrentSection(SecAcceptResponse.class)) {
             return true;
         }
         if (matchedPattern == 0) {
             Skript.error("You can't use '" + result.expr + "' outside a website section.");
             return false;
         } else {
-            this.response = (Expression<Transaction>) expressions[0];
+            response = (Expression<Transaction>) expressions[0];
             return true;
         }
     }

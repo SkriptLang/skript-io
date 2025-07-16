@@ -35,7 +35,7 @@ import java.net.URI;
 public class ExprPathOfRequest extends SimplePropertyExpression<Request, URI> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprPathOfRequest.class, URI.class, "path", "request");
     }
 
@@ -62,7 +62,7 @@ public class ExprPathOfRequest extends SimplePropertyExpression<Request, URI> {
         if (delta[0] instanceof String string) path = URI.create(string);
         else if (delta[0] instanceof URI uri) path = uri;
         else return;
-        Request request = this.getExpr().getSingle(event);
+        Request request = getExpr().getSingle(event);
         if (request == null) return;
         request.setPath(path);
     }

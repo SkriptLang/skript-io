@@ -90,26 +90,26 @@ public class SecAcceptResponse extends EffectSection {
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         @Nullable List<TriggerItem> list) {
-        if (!this.getParser().isCurrentSection(SecOpenRequest.class)) {
+        if (!getParser().isCurrentSection(SecOpenRequest.class)) {
             Skript.error("You can't use '" + result.expr + "' outside a request section.");
             return false;
         }
-        if (this.hasSection()) {
+        if (hasSection()) {
             assert sectionNode != null;
-            this.loadOptionalCode(sectionNode);
+            loadOptionalCode(sectionNode);
             if (last != null) last.setNext(null);
-            this.getParser().setHasDelayBefore(Kleenean.TRUE);
+            getParser().setHasDelayBefore(Kleenean.TRUE);
         }
         return true;
     }
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
+        if (!Skript.getInstance().isEnabled()) return walk(event, false);
         Delay.addDelayedEvent(event);
         OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
         Object variables = Variables.copyLocalVariables(event);
-        TriggerItem next = this.walk(event, false);
+        TriggerItem next = walk(event, false);
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws IOException, InterruptedException {

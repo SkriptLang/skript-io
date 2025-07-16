@@ -51,7 +51,7 @@ public class LitContentType extends SimpleLiteral<String> {
         """;
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(LitContentType.class, String.class, ExpressionType.SIMPLE, typeNames);
     }
 
@@ -68,8 +68,8 @@ public class LitContentType extends SimpleLiteral<String> {
 
     @Override
     public boolean init(Expression<?>[] expressions, int pattern, Kleenean delayed, SkriptParser.ParseResult result) {
-        this.type = typeNames[pattern];
-        this.data = new String[] {contentTypes[pattern].mimeType()};
+        type = typeNames[pattern];
+        data = new String[] {contentTypes[pattern].mimeType()};
         return true;
     }
 

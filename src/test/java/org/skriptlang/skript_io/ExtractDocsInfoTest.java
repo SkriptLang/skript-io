@@ -104,7 +104,7 @@ public class ExtractDocsInfoTest {
         
         @Override
         public void print(PrintStream stream) {
-            Class<?> type = this.toClass();
+            Class<?> type = toClass();
             if (type == null) return;
             if (Modifier.isAbstract(type.getModifiers())) return;
             Doc doc = Doc.of(type);

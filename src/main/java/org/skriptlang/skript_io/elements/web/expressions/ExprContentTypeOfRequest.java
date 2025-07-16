@@ -30,7 +30,7 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transaction, String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprContentTypeOfRequest.class, String.class, "content(-| )type", "transaction");
     }
 
@@ -55,7 +55,7 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transacti
         if (delta == null || delta.length < 1) return;
         String type = String.valueOf(delta[0]);
         if (type == null) return;
-        Transaction request = this.getExpr().getSingle(event);
+        Transaction request = getExpr().getSingle(event);
         if (request == null) return;
         request.setContentType(type);
     }

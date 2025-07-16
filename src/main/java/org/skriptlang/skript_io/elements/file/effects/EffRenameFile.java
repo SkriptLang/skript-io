@@ -29,7 +29,7 @@ import java.net.URI;
 public class EffRenameFile extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffRenameFile.class,
                                   "rename [the] file [at] %path% to %string%",
                                   "rename %*path% to %string%");
@@ -42,8 +42,8 @@ public class EffRenameFile extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.pathExpression = (Expression<URI>) expressions[0];
-        this.stringExpression = (Expression<String>) expressions[1];
+        pathExpression = (Expression<URI>) expressions[0];
+        stringExpression = (Expression<String>) expressions[1];
         return true;
     }
 
@@ -61,7 +61,7 @@ public class EffRenameFile extends Effect {
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "rename file " + pathExpression.toString(event, debug) + " to " + this.stringExpression.toString(event,
+        return "rename file " + pathExpression.toString(event, debug) + " to " + stringExpression.toString(event,
                                                                                                                 debug);
     }
 

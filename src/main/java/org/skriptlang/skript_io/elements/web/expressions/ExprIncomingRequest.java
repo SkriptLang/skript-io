@@ -40,7 +40,7 @@ import org.skriptlang.skript_io.utility.web.IncomingRequest;
 public class ExprIncomingRequest extends SimpleExpression<IncomingRequest> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprIncomingRequest.class, IncomingRequest.class, ExpressionType.SIMPLE,
                 "[the] [incoming] request");
     }
@@ -50,7 +50,7 @@ public class ExprIncomingRequest extends SimpleExpression<IncomingRequest> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        return this.getParser().isCurrentEvent(VisitWebsiteEvent.class);
+        return getParser().isCurrentEvent(VisitWebsiteEvent.class);
     }
 
     @Override

@@ -60,7 +60,7 @@ public record IncomingRequest(HttpExchange exchange) implements Readable, Closea
 
     @Override
     public void setHeader(String header, String type) {
-        this.exchange.getRequestHeaders().set(header, type);
+        exchange.getRequestHeaders().set(header, type);
     }
 
     @Override

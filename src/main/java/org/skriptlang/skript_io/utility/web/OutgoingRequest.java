@@ -41,7 +41,7 @@ public record OutgoingRequest(HttpURLConnection exchange,
     @Override
     public void setMethod(String mode) {
         try {
-            this.exchange.setRequestMethod(mode);
+            exchange.setRequestMethod(mode);
         } catch (ProtocolException e) {
             SkriptIO.error(e);
         }
@@ -54,7 +54,7 @@ public record OutgoingRequest(HttpURLConnection exchange,
 
     @Override
     public void setContentType(String type) {
-        this.exchange.setRequestProperty("Content-Type", String.valueOf(type));
+        exchange.setRequestProperty("Content-Type", String.valueOf(type));
     }
 
     @Override
@@ -64,13 +64,13 @@ public record OutgoingRequest(HttpURLConnection exchange,
 
     @Override
     public void setHeader(String header, String type) {
-        this.exchange.setRequestProperty(header, type);
+        exchange.setRequestProperty(header, type);
     }
 
     @Override
     public void close() throws IOException {
-        this.exchange.disconnect();
-        this.complete.set(true);
+        exchange.disconnect();
+        complete.set(true);
     }
 
     @Override

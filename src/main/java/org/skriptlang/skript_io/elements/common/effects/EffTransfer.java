@@ -37,7 +37,7 @@ import java.net.URI;
 public class EffTransfer extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffTransfer.class, "transfer %readable% [in]to %writable%",
                                   "transfer %path% [in]to %writable%");
     }
@@ -53,8 +53,8 @@ public class EffTransfer extends Effect {
                         SkriptParser.@NotNull ParseResult result) {
         if (matchedPattern == 0) sourceExpression = (Expression<Readable>) expressions[0];
         else pathExpression = (Expression<URI>) expressions[0];
-        this.targetExpression = (Expression<Writable>) expressions[1];
-        this.path = matchedPattern == 1;
+        targetExpression = (Expression<Writable>) expressions[1];
+        path = matchedPattern == 1;
         return true;
     }
 

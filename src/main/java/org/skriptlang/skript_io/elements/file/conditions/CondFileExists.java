@@ -32,7 +32,7 @@ public class CondFileExists extends Condition {
     private static final int ALL = 0, FILE = 1, FOLDER = 2;
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerCondition(CondFileExists.class,
                                      "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
                                      "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
@@ -48,9 +48,9 @@ public class CondFileExists extends Condition {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.uriExpression = (Expression<URI>) expressions[0];
-        this.mode = Math.min(matchedPattern, 2);
-        this.setNegated(result.hasTag("negated"));
+        uriExpression = (Expression<URI>) expressions[0];
+        mode = Math.min(matchedPattern, 2);
+        setNegated(result.hasTag("negated"));
         return true;
     }
 
@@ -62,13 +62,13 @@ public class CondFileExists extends Condition {
             if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
             if (file == null || !file.exists()) return false;
             return mode == 0 || mode == 1 && file.isFile() || mode == 2 && file.isDirectory();
-        }, this.isNegated());
+        }, isNegated());
     }
 
     @Override
     @NotNull
     public String toString(@Nullable Event e, boolean debug) {
-        String ending = this.isNegated() ? " do not exist" : " exist";
+        String ending = isNegated() ? " do not exist" : " exist";
         return switch (mode) {
             case FILE -> "files ";
             case FOLDER -> "folders ";

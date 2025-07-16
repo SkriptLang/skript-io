@@ -27,7 +27,7 @@ import java.net.URI;
 public class EffCreateDirectory extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffCreateDirectory.class,
                                   "(create|make) [a] [new] folder [at] %path%",
                                   "(create|make) [a] [new] directory [at] %path%"
@@ -40,7 +40,7 @@ public class EffCreateDirectory extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.pathExpression = (Expression<URI>) expressions[0];
+        pathExpression = (Expression<URI>) expressions[0];
         return true;
     }
 

@@ -25,7 +25,7 @@ import org.skriptlang.skript_io.SkriptIO;
 public class ExprErrorMessage extends SimplePropertyExpression<Throwable, String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprErrorMessage.class, String.class, "message", "error");
     }
 

@@ -42,7 +42,7 @@ Used for converting resources from list variables to encoded formats (e.g. json,
 public class EffReverseIndexedSet extends EffEncode {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffReverseIndexedSet.class,
                 "set [the] %*classinfo% content[s] of %resource% to %objects%",
                 "set %resource%'[s] %*classinfo% content[s] to %objects%");
@@ -55,9 +55,9 @@ public class EffReverseIndexedSet extends EffEncode {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.targetExpression = (Expression<Resource>) expressions[1 - matchedPattern];
+        targetExpression = (Expression<Resource>) expressions[1 - matchedPattern];
         if (((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
-            this.classInfo = info;
+            classInfo = info;
             if (!Map.class.isAssignableFrom(info.getFormat().getType())) return false;
         } else return false;
         if (expressions[2] instanceof Variable<?> variable) source = variable;
@@ -71,7 +71,7 @@ public class EffReverseIndexedSet extends EffEncode {
         String name = StringUtils.substring(source.getName().toString(event), 0, -1);
         Object variable = Variables.getVariable(name + "*", event, source.isLocal());
         if (!(variable instanceof Map<?, ?> map)) return;
-        this.convertLists(map);
+        convertLists(map);
         for (Resource file : targetExpression.getArray(event))
             if (file instanceof Writable writable)
                 SkriptIO.queue().queue(new FormatTask(format, writable, map)).await();
@@ -80,7 +80,7 @@ public class EffReverseIndexedSet extends EffEncode {
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "set the " + classInfo.getCodeName() + " contents of " +
-            this.targetExpression.toString(event, debug) + " to " + source.toString(event, debug);
+            targetExpression.toString(event, debug) + " to " + source.toString(event, debug);
     }
 
 }

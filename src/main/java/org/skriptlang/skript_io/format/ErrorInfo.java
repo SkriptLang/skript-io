@@ -23,7 +23,9 @@ public class ErrorInfo<Type extends Throwable> extends ClassInfo<Type> {
     }
 
     public Type create(@Nullable String message) {
-        if (message != null) return withMessage.apply(message);
+        if (message != null) {
+            return withMessage.apply(message);
+        }
         else return creator.get();
     }
 

@@ -30,9 +30,10 @@ public abstract class Format<Type> {
 
     public @Nullable Type[] from(Readable readable) {
         try (InputStream stream = readable.acquireReader()) {
-            return this.from(stream);
+            return from(stream);
         } catch (IOException ex) {
             SkriptIO.error(ex);
+            // noinspection unchecked
             return (Type[]) Array.newInstance(type, 0);
         }
     }
@@ -43,7 +44,7 @@ public abstract class Format<Type> {
     public void to(Writable writable, @Nullable Object... values) {
         Type[] types = Arrays.copyOf(values, values.length, (Class<Type[]>) type.arrayType());
         try (OutputStream stream = Stream.keepalive(writable.acquireWriter())) {
-            this.to(stream, types);
+            to(stream, types);
         } catch (IOException ex) {
             SkriptIO.error(ex);
         }
@@ -51,7 +52,9 @@ public abstract class Format<Type> {
 
     protected void to(OutputStream stream, Type... values) {
         try (OutputStream output = Stream.keepalive(stream)) {
-            for (Type value : values) this.to(output, value);
+            for (Type value : values) {
+                to(output, value);
+            }
         } catch (IOException ex) {
             SkriptIO.error(ex);
         }
@@ -61,7 +64,7 @@ public abstract class Format<Type> {
 
     @SuppressWarnings("unchecked")
     public FormatInfo<Type> getInfo() {
-        return (FormatInfo<Type>) new FormatInfo<>((Class<Format<Type>>) this.getClass(), name.toLowerCase(), this)
+        return (FormatInfo<Type>) new FormatInfo<>((Class<Format<Type>>) getClass(), name.toLowerCase(), this)
             .user(pattern);
     }
 

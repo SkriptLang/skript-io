@@ -16,7 +16,7 @@ public class CloseTask extends DataTask {
     @Override
     public void execute() throws IOException, InterruptedException {
         try {
-            this.closeable.close();
+            closeable.close();
         } catch (IOException | InterruptedException ex) {
             throw ex;
         } catch (Exception ex) {

@@ -58,8 +58,8 @@ public class VisitWebsiteEvent extends Event implements Cancellable {
     }
 
     public void setStatusCode(int code) {
-        if (this.isStatusCodeSet()) return;
-        this.statusCode = code;
+        if (isStatusCodeSet()) return;
+        statusCode = code;
         SkriptIO.queue().queue(new DataTask() {
             @Override
             public void execute() throws IOException {
@@ -75,7 +75,7 @@ public class VisitWebsiteEvent extends Event implements Cancellable {
 
     @Override
     public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
+        cancelled = cancel;
     }
 
 }

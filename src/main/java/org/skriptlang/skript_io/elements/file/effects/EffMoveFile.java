@@ -41,7 +41,7 @@ import java.nio.file.StandardCopyOption;
 public class EffMoveFile extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffMoveFile.class, "move [the] file [at] %path% [into:in]to %path%",
                                   "move [the] (folder|directory) [at] %path% [into:in]to %path%");
     }
@@ -54,10 +54,10 @@ public class EffMoveFile extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.pathExpression = (Expression<URI>) expressions[0];
-        this.targetExpression = (Expression<URI>) expressions[1];
-        this.folder = matchedPattern > 0;
-        this.into = result.hasTag("into");
+        pathExpression = (Expression<URI>) expressions[0];
+        targetExpression = (Expression<URI>) expressions[1];
+        folder = matchedPattern > 0;
+        into = result.hasTag("into");
         return true;
     }
 
@@ -94,7 +94,7 @@ public class EffMoveFile extends Effect {
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         String into = this.into ? " into " : " to ", type = folder ? "move folder " : "move file ";
-        return type + pathExpression.toString(event, debug) + into + this.targetExpression.toString(event, debug);
+        return type + pathExpression.toString(event, debug) + into + targetExpression.toString(event, debug);
     }
 
 }

@@ -35,7 +35,7 @@ import org.skriptlang.skript_io.utility.web.IncomingResponse;
 public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprIncomingResponse.class, IncomingResponse.class, ExpressionType.SIMPLE,
                 "[the] [incoming] response");
     }
@@ -45,7 +45,7 @@ public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        return this.getParser().isCurrentSection(SecOpenRequest.class);
+        return getParser().isCurrentSection(SecOpenRequest.class);
     }
 
     @Override

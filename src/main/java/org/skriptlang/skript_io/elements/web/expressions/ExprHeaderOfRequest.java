@@ -34,7 +34,7 @@ import org.skriptlang.skript_io.utility.web.Transaction;
 public class ExprHeaderOfRequest extends SimpleExpression<String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprHeaderOfRequest.class, String.class, ExpressionType.PROPERTY,
                 "[the] %string% header of %transaction%",
                 "%transaction%'[s] %string% header");
@@ -47,8 +47,8 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.ParseResult result) {
-        this.requestExpression = ((Expression<Transaction>) expressions[1 - matchedPattern]);
-        this.headerExpression = ((Expression<String>) expressions[matchedPattern]);
+        requestExpression = ((Expression<Transaction>) expressions[1 - matchedPattern]);
+        headerExpression = ((Expression<String>) expressions[matchedPattern]);
         return true;
     }
 
@@ -70,7 +70,7 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
         if (delta == null || delta.length < 1) return;
         String type = String.valueOf(delta[0]);
         if (type == null) return;
-        Transaction request = this.requestExpression.getSingle(event);
+        Transaction request = requestExpression.getSingle(event);
         if (request == null) return;
         request.setHeader(headerExpression.getSingle(event), type);
     }

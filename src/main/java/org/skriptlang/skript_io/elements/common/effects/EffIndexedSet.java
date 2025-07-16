@@ -37,7 +37,7 @@ Used for converting resources from encoded formats (e.g. json, yaml) to indexed 
 public class EffIndexedSet extends EffEncode {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffIndexedSet.class,
                                   "set %~objects% to [the] %*classinfo% content[s] of %resource%",
                                   "set %~objects% to %resource%'[s] %*classinfo% content[s]");
@@ -50,9 +50,9 @@ public class EffIndexedSet extends EffEncode {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        this.sourceExpression = (Expression<Resource>) expressions[2 - matchedPattern];
+        sourceExpression = (Expression<Resource>) expressions[2 - matchedPattern];
         if (((Literal<ClassInfo<?>>) expressions[1 + matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
-            this.classInfo = info;
+            classInfo = info;
             if (!Map.class.isAssignableFrom(info.getFormat().getType())) return false;
         } else return false;
         if (expressions[0] instanceof Variable<?> variable) target = variable;
@@ -62,14 +62,14 @@ public class EffIndexedSet extends EffEncode {
 
     @Override
     protected void execute(@NotNull Event event) {
-        Object source = this.deserialise(sourceExpression.getSingle(event));
-        this.change(this.target, source, event);
+        Object source = deserialise(sourceExpression.getSingle(event));
+        change(target, source, event);
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
         return "set " + target.toString(event, debug) + " to the " +
-            this.classInfo.getCodeName() + " contents of " + sourceExpression.toString(event, debug);
+            classInfo.getCodeName() + " contents of " + sourceExpression.toString(event, debug);
     }
 
 }

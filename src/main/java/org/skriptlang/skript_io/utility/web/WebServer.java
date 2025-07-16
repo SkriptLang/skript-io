@@ -23,7 +23,7 @@ public class WebServer {
 
     public WebServer(int port) {
         this.port = port;
-        this.handlers = new HashMap<>();
+        handlers = new HashMap<>();
     }
 
     public static @Nullable WebServer get(int port) {
@@ -39,34 +39,34 @@ public class WebServer {
     }
 
     public void prepareIfNecessary() {
-        if (server == null) this.prepare();
+        if (server == null) prepare();
     }
 
     public void registerHandler(URI uri, PostHandler handler) {
         if (handlers.containsKey(uri) && server != null) server.removeContext(uri.toString());
-        this.handlers.put(uri, handler);
+        handlers.put(uri, handler);
         if (server == null) return;
-        this.server.createContext(uri.toString(), handler);
+        server.createContext(uri.toString(), handler);
     }
 
     public void closeHandler(URI uri) {
         if (!handlers.containsKey(uri)) return;
-        this.handlers.remove(uri);
+        handlers.remove(uri);
         if (server == null) return;
-        this.server.removeContext(uri.toString());
+        server.removeContext(uri.toString());
     }
 
     public void prepare() {
         if (server != null) server.stop(0);
         try {
-            this.server = HttpServer.create(new InetSocketAddress(port), DEFAULT_BACKLOG);
+            server = HttpServer.create(new InetSocketAddress(port), DEFAULT_BACKLOG);
             for (Map.Entry<URI, PostHandler> entry : handlers.entrySet()) {
                 URI uri = entry.getKey();
                 PostHandler handler = entry.getValue();
-                this.server.createContext(uri.toString(), handler);
+                server.createContext(uri.toString(), handler);
             }
-            this.server.setExecutor(null);
-            this.server.start();
+            server.setExecutor(null);
+            server.start();
         } catch (IOException ex) {
             SkriptIO.error(ex);
         }

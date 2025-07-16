@@ -26,7 +26,7 @@ import org.skriptlang.skript_io.utility.file.FileController;
 public class ExprLineOfFile extends SimpleExpression<String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprLineOfFile.class, String.class, ExpressionType.SIMPLE,
                                       "line %number% of %file%"
                                      );
@@ -39,8 +39,8 @@ public class ExprLineOfFile extends SimpleExpression<String> {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        this.lineExpression = (Expression<Number>) expressions[0];
-        this.fileExpression = (Expression<FileController>) expressions[1];
+        lineExpression = (Expression<Number>) expressions[0];
+        fileExpression = (Expression<FileController>) expressions[1];
         return true;
     }
 

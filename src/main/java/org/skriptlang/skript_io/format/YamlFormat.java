@@ -20,7 +20,7 @@ public class YamlFormat extends Format<Map<String, Object>> {
         Map<String, Object> map = new LinkedHashMap<>();
         try (Reader reader = new InputStreamReader(stream)) {
             YamlConfiguration file = YamlConfiguration.loadConfiguration(reader);
-            this.read(file, map);
+            read(file, map);
         }
         return new Map[] {map};
     }
@@ -29,7 +29,7 @@ public class YamlFormat extends Format<Map<String, Object>> {
     protected void to(OutputStream stream, Map<String, Object> value) throws IOException {
         if (value == null) return;
         YamlConfiguration file = new YamlConfiguration();
-        this.write(file, value);
+        write(file, value);
         String data = file.saveToString();
         try (Writer writer = new OutputStreamWriter(stream)) {
             writer.write(data);
@@ -42,7 +42,7 @@ public class YamlFormat extends Format<Map<String, Object>> {
             Object found = section.get(key), value;
             if (found instanceof ConfigurationSection child) {
                 value = new LinkedHashMap<>();
-                this.read(child, (Map<String, Object>) value);
+                read(child, (Map<String, Object>) value);
             } else value = found;
             map.put(key, value);
         }
@@ -55,7 +55,7 @@ public class YamlFormat extends Format<Map<String, Object>> {
             Object value = entry.getValue();
             if (value instanceof Map<?, ?> child) {
                 ConfigurationSection inner = section.createSection(key);
-                this.write(inner, (Map<String, Object>) child);
+                write(inner, (Map<String, Object>) child);
             } else section.set(key, value);
         }
     }

@@ -39,7 +39,7 @@ import java.net.URI;
 public class EffCloseServer extends Effect {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffCloseServer.class,
                                   "close [the] (web[ ]|http )server [at %-path%] [(on|with) port %-number%]",
                                   "close [the] web[ ]site [at %-path%] [(on|with) port %-number%]",
@@ -55,14 +55,14 @@ public class EffCloseServer extends Effect {
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
         if (matchedPattern == 2) {
-            if (!this.getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
+            if (!getParser().isCurrentEvent(VisitWebsiteEvent.class)) {
                 Skript.error("You can't use '" + result.expr + "' outside a website section.");
                 return false;
             }
-            this.current = true;
+            current = true;
         } else {
-            this.pathExpression = (Expression<URI>) expressions[0];
-            this.portExpression = (Expression<Number>) expressions[1];
+            pathExpression = (Expression<URI>) expressions[0];
+            portExpression = (Expression<Number>) expressions[1];
         }
         return true;
     }

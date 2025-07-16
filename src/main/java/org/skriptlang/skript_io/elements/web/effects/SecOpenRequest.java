@@ -51,7 +51,7 @@ public class SecOpenRequest extends EffectSection {
     private static final Map<Event, Stack<OutgoingRequest>> requestMap = new WeakHashMap<>();
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(SecOpenRequest.class,
                                    "(open|send) ([a] web|[an] http) request [to] %path%"
                                   );
@@ -89,24 +89,24 @@ public class SecOpenRequest extends EffectSection {
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         @Nullable List<TriggerItem> list) {
-        if (!this.hasSection()) return false;
-        this.pathExpression = (Expression<URI>) expressions[0];
+        if (!hasSection()) return false;
+        pathExpression = (Expression<URI>) expressions[0];
         assert sectionNode != null;
-        this.loadOptionalCode(sectionNode);
+        loadOptionalCode(sectionNode);
         if (last != null) last.setNext(null);
-        this.getParser().setHasDelayBefore(Kleenean.TRUE);
+        getParser().setHasDelayBefore(Kleenean.TRUE);
         return true;
     }
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return this.walk(event, false);
-        if (!Skript.getInstance().isEnabled()) return this.walk(event, false);
-        OutgoingRequest request = this.createRequest(uri);
-        if (request == null || first == null) return this.walk(event, false);
+        if (uri == null) return walk(event, false);
+        if (!Skript.getInstance().isEnabled()) return walk(event, false);
+        OutgoingRequest request = createRequest(uri);
+        if (request == null || first == null) return walk(event, false);
         if (last != null) {
-            this.last.setNext(new DummyCloseTrigger(request, this.walk(event, false)) {
+            last.setNext(new DummyCloseTrigger(request, walk(event, false)) {
                 @Override
                 protected boolean run(Event e) {
                     EffAcceptResponse.pop(e);
@@ -126,7 +126,7 @@ public class SecOpenRequest extends EffectSection {
                 pop(event);
                 SkriptIO.queue(new CloseTask(request));
             }
-            return this.walk(event, false);
+            return walk(event, false);
         }
     }
 

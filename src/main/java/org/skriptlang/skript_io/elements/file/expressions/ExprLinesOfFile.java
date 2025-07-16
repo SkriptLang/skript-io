@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprLinesOfFile.class, String.class, "lines", "readable");
     }
 
@@ -61,7 +61,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
 
     @Override
     public Iterator<? extends String> iterator(@NotNull Event event) {
-        Readable controller = this.getExpr().getSingle(event);
+        Readable controller = getExpr().getSingle(event);
         if (controller == null) return Collections.emptyIterator();
         try {
             return new LineIterator(controller.acquireReader());
@@ -87,7 +87,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
                     SkriptIO.queue().queue(new CloseTask(reader));
                     return false;
                 }
-                this.nextLine.set(string);
+                nextLine.set(string);
                 return true;
             } catch (IOException ex) {
                 SkriptIO.throwSafe(ex);
@@ -111,7 +111,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
     @Override
     public Class<?> @Nullable [] acceptChange(Changer.@NotNull ChangeMode mode) {
         return switch (mode) {
-            case SET, ADD -> Writable.class.isAssignableFrom(this.getExpr().getReturnType())
+            case SET, ADD -> Writable.class.isAssignableFrom(getExpr().getReturnType())
                 ? CollectionUtils.array(String.class)
                 : null;
             default -> null;
@@ -125,7 +125,7 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
         for (int i = 0; i < strings.length; i++) {
             strings[i] = delta[i] != null ? String.valueOf(delta[i]) : "";
         }
-        Readable[] files = this.getExpr().getArray(event);
+        Readable[] files = getExpr().getArray(event);
         String text = String.join(System.lineSeparator(), strings);
         if (mode == Changer.ChangeMode.SET) {
             for (Readable readable : files) if (readable instanceof Writable file) file.write(text);

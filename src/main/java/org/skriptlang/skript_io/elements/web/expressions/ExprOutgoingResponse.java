@@ -43,7 +43,7 @@ import java.nio.charset.StandardCharsets;
 public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprOutgoingResponse.class, OutgoingResponse.class, ExpressionType.SIMPLE,
                 "[the] [outgoing] response");
     }
@@ -51,7 +51,7 @@ public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        return this.getParser().isCurrentEvent(VisitWebsiteEvent.class);
+        return getParser().isCurrentEvent(VisitWebsiteEvent.class);
     }
 
     @Override

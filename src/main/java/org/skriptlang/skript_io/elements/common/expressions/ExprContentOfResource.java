@@ -48,7 +48,7 @@ import java.util.Map;
 public class ExprContentOfResource extends SimplePropertyExpression<Resource, Object> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprContentOfResource.class, Object.class, "%*classinfo% content[s]", "resource");
     }
 
@@ -60,12 +60,12 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?>[] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        this.setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
-        this.classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
-        this.returnType = classInfo.getC();
+        setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
+        classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
+        returnType = classInfo.getC();
         if (returnType == Map.class) return false; // this needs indexed set
         if (returnType == String.class) return isString = true;
-        if (classInfo instanceof FormatInfo<?>) this.isFormat = true;
+        if (classInfo instanceof FormatInfo<?>) isFormat = true;
         else {
             Parser<?> parser = classInfo.getParser();
             if (parser == null) { // TODO special parse context?
@@ -83,7 +83,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
 
     @Override
     public @Nullable Object convert(Resource resource) {
-        Object[] objects = this.get(resource);
+        Object[] objects = get(resource);
         if (objects.length == 0) return null;
         return objects[0];
     }
@@ -91,7 +91,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @Override
     protected Object @NotNull [] get(@NotNull Event event, Resource[] source) {
         Resource resource = source[0];
-        return this.get(resource);
+        return get(resource);
     }
 
     protected Object @NotNull [] get(Resource resource) {
@@ -123,9 +123,9 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         if (mode == Changer.ChangeMode.SET && delta != null && delta.length != 0 && delta[0] != null) {
-            Resource[] files = this.getExpr().getArray(event);
+            Resource[] files = getExpr().getArray(event);
             if (isString) {
-                this.writeString(files, delta);
+                writeString(files, delta);
             } else if (isFormat && classInfo instanceof FormatInfo<?> info) {
                 Format<?> format = info.getFormat();
                 Object[] array = new Object[delta.length];
@@ -142,7 +142,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
                     if (file instanceof Writable writable) writable.write(content);
             }
         } else {
-            Resource[] files = this.getExpr().getArray(event);
+            Resource[] files = getExpr().getArray(event);
             for (Resource file : files)
                 if (file instanceof Writable writable) writable.clear();
         }

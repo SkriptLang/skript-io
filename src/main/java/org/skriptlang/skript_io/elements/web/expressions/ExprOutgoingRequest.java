@@ -30,7 +30,7 @@ import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 public class ExprOutgoingRequest extends SimpleExpression<OutgoingRequest> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprOutgoingRequest.class, OutgoingRequest.class, ExpressionType.SIMPLE,
                 "[the] [outgoing] request");
     }
@@ -40,8 +40,8 @@ public class ExprOutgoingRequest extends SimpleExpression<OutgoingRequest> {
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        if (this.getParser().isCurrentSection(SecOpenRequest.class)) {
-            this.outgoing = true;
+        if (getParser().isCurrentSection(SecOpenRequest.class)) {
+            outgoing = true;
             return true;
         }
         return false;

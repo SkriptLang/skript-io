@@ -35,24 +35,24 @@ import static org.skriptlang.skript_io.utility.file.FileController.READ;
 public class SecReadFile extends SecAccessFile {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             Skript.registerSection(SecReadFile.class, "read [(a|the)] file [at] %path%");
     }
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return this.walk(event, false);
+        if (uri == null) return walk(event, false);
         File file = SkriptIO.file(uri);
-        if (file == null) return this.walk(event, false);
-        return this.read(file, event);
+        if (file == null) return walk(event, false);
+        return read(file, event);
     }
 
     protected @Nullable TriggerItem read(File file, Event event) {
-        if (!file.exists() || !file.isFile()) return this.walk(event, false);
+        if (!file.exists() || !file.isFile()) return walk(event, false);
         assert first != null;
         FileController controller = FileController.getController(file, READ);
-        return this.walk(controller, event);
+        return walk(controller, event);
     }
 
     @Override

@@ -23,7 +23,7 @@ import org.skriptlang.skript_io.utility.file.FileController;
 public class ExprSizeOfFile extends SimplePropertyExpression<FileController, Number> {
 
     static {
-        if (!SkriptIO.isTest())
+        if (!SkriptIO.isTestMode())
             register(ExprSizeOfFile.class, Number.class, "size", "file");
     }
 
