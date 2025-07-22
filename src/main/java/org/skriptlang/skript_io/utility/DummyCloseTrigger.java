@@ -26,19 +26,19 @@ public class DummyCloseTrigger extends TriggerItem {
     }
 
     @Override
-    protected @Nullable TriggerItem walk(Event e) {
-        run(e);
+    protected @Nullable TriggerItem walk(Event event) {
+        run(event);
         return next;
     }
 
     @Override
-    protected boolean run(Event e) {
+    protected boolean run(Event event) {
         queue.queue(new CloseTask(closeable));
         return true;
     }
 
     @Override
-    public String toString(@Nullable Event e, boolean debug) {
+    public String toString(@Nullable Event event, boolean debug) {
         return "kenzie's illegal closing task";
     }
 

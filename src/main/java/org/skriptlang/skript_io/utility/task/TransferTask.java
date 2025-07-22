@@ -41,7 +41,7 @@ class TransferFileTask extends DataTask {
     }
 
     @Override
-    public void execute() throws IOException, InterruptedException {
+    public void execute() throws IOException {
         if (source == null || target == null) return;
         if (!source.isFile()) return;
         try (FileInputStream stream = new FileInputStream(source);

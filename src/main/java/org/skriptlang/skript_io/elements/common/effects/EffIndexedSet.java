@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.common.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.ClassInfo;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser;
@@ -25,22 +22,23 @@ import java.util.Map;
 A special edition of the set changer that can maintain the indices of source data.
 Used for converting resources from encoded formats (e.g. json, yaml) to indexed list variables.
 """)
-@Examples({
-    "set {_options::*} to yaml contents of file",
-    "set {_json::*} to json contents of the response",
-    """
-    open a web request to https://localhost:3000/mysite:
-        await the response:
-          set {_result::*} to the response's json content"""
-})
+@Example("set {_options::*} to yaml contents of file")
+@Example("set {_json::*} to json contents of the response")
+@Example("""
+        open a web request to https://localhost:3000/mysite:
+            await the response:
+                set {_result::*} to the response's json content
+        """)
 @Since("1.0.0")
 public class EffIndexedSet extends EffEncode {
 
     static {
-        if (!SkriptIO.isTestMode())
+        if (!SkriptIO.isTestMode()) {
             Skript.registerEffect(EffIndexedSet.class,
-                                  "set %~objects% to [the] %*classinfo% content[s] of %resource%",
-                                  "set %~objects% to %resource%'[s] %*classinfo% content[s]");
+                    "set %~objects% to [the] %*classinfo% content[s] of %resource%",
+                    "set %~objects% to %resource%'[s] %*classinfo% content[s]"
+            );
+        }
     }
 
     private Expression<Resource> sourceExpression;
@@ -53,16 +51,23 @@ public class EffIndexedSet extends EffEncode {
         sourceExpression = (Expression<Resource>) expressions[2 - matchedPattern];
         if (((Literal<ClassInfo<?>>) expressions[1 + matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
             classInfo = info;
-            if (!Map.class.isAssignableFrom(info.getFormat().getType())) return false;
-        } else return false;
-        if (expressions[0] instanceof Variable<?> variable) target = variable;
-        else return false;
+            if (!Map.class.isAssignableFrom(info.getFormat().getType())) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        if (expressions[0] instanceof Variable<?> variable){
+            target = variable;
+        } else {
+            return false;
+        }
         return true;
     }
 
     @Override
     protected void execute(@NotNull Event event) {
-        Object source = deserialise(sourceExpression.getSingle(event));
+        Object source = deserialize(sourceExpression.getSingle(event));
         change(target, source, event);
     }
 

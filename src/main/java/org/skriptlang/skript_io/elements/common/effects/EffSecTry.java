@@ -64,7 +64,7 @@ public class EffSecTry extends EffectSection {
     private static final Method walkMethod;
 
     static {
-        //<editor-fold desc="Find the TriggerItem walk method" defaultstate="collapsed">
+        // Find the TriggerItem walk method
         try {
             walkMethod = TriggerItem.class.getDeclaredMethod("walk", Event.class);
             walkMethod.setAccessible(true);
@@ -72,7 +72,6 @@ public class EffSecTry extends EffectSection {
             throw new Error("This version of Skript is not compatible.", e);
             // if we don't have TriggerItem#walk we are in an irreparable situation
         }
-        //</editor-fold>
         if (!SkriptIO.isTestMode())
             Skript.registerSection(EffSecTry.class, "try", "try to <.+>");
     }
@@ -90,20 +89,19 @@ public class EffSecTry extends EffectSection {
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         @Nullable List<TriggerItem> list) {
         if (matchedPattern == 1) {
-            //<editor-fold desc="Set up try inline effect" defaultstate="collapsed">
+            // Set up try inline effect
             if (hasSection()) {
                 Skript.error("'try to' cannot be used as a section.");
                 return false;
             }
-            String effect = result.regexes.get(0).group();
+            String effect = result.regexes.getFirst().group();
             this.effect = Effect.parse(effect, "Can't understand this effect: " + effect);
             if (this.effect == null) {
                 Skript.error("Couldn't parse 'try to' effect '" + effect + "'");
                 return false;
             }
-            //</editor-fold>
         } else {
-            //<editor-fold desc="Set up try section" defaultstate="collapsed">
+            // Set up try section
             if (!hasSection()) {
                 Skript.error("'try' can be used only as a section.");
                 return false;
@@ -119,7 +117,6 @@ public class EffSecTry extends EffectSection {
                 return false;
             }
             parser.setHasDelayBefore(isDelayed.or(wasDelayed));
-            //</editor-fold>
         }
         return true;
     }
@@ -128,7 +125,7 @@ public class EffSecTry extends EffectSection {
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         thrown = null;
         if (effect != null) {
-            //<editor-fold desc="Attempt inline try" defaultstate="collapsed">
+            // Attempt inline try
             try {
                 effect.run(event);
             } catch (Exception | IOError ex) {
@@ -136,11 +133,10 @@ public class EffSecTry extends EffectSection {
                 EffSecCatch.lastThrownError.set(ex);
             }
             return getNext();
-            //</editor-fold>
         } else {
-            //<editor-fold desc="Attempt try-section" defaultstate="collapsed">
+            // Attempt try-section
             if (first == null) return walk(event, false);
-            if (last != null) //noinspection DataFlowIssue
+            if (last != null)
                 last.setNext(null);
             try {
                 walkUnsafe(first, event);
@@ -149,13 +145,12 @@ public class EffSecTry extends EffectSection {
                 EffSecCatch.lastThrownError.set(ex);
             }
             return walk(event, false);
-            //</editor-fold>
         }
     }
 
     void walkUnsafe(TriggerItem start, Event event)
         throws IllegalAccessException { // Skript loves to report the exception and continue
-        //<editor-fold desc="Walk through trigger tree" defaultstate="collapsed">
+        // Walk through trigger tree
         assert start != null && event != null; // Obviously, we can't do that
         TriggerItem item = start;
         try {
@@ -165,7 +160,6 @@ public class EffSecTry extends EffectSection {
         } catch (InvocationTargetException ex) {
             EffThrow.throwUncheckedException(ex.getCause());
         }
-        //</editor-fold>
     }
 
     @Override

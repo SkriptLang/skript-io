@@ -63,9 +63,15 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
         setExpr((Expression<Resource>) expressions[1 - matchedPattern]);
         classInfo = ((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle();
         returnType = classInfo.getC();
-        if (returnType == Map.class) return false; // this needs indexed set
-        if (returnType == String.class) return isString = true;
-        if (classInfo instanceof FormatInfo<?>) isFormat = true;
+        if (returnType == Map.class) {
+            return false; // this needs indexed set
+        }
+        if (returnType == String.class) {
+            return isString = true;
+        }
+        if (classInfo instanceof FormatInfo<?>) {
+            isFormat = true;
+        }
         else {
             Parser<?> parser = classInfo.getParser();
             if (parser == null) { // TODO special parse context?
@@ -84,7 +90,9 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @Override
     public @Nullable Object convert(Resource resource) {
         Object[] objects = get(resource);
-        if (objects.length == 0) return null;
+        if (objects.length == 0) {
+            return null;
+        }
         return objects[0];
     }
 
@@ -95,13 +103,25 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     }
 
     protected Object @NotNull [] get(Resource resource) {
-        if (!(resource instanceof Readable readable)) return new Object[0];
-        if (isString) return new String[] {readable.readAll()};
-        else if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().from(readable);
+        if (!(resource instanceof Readable readable)) {
+            return new Object[0];
+        }
+        if (isString) {
+            return new String[] {readable.readAll()};
+        } else if (isFormat && classInfo instanceof FormatInfo<?> info) {
+            return info.getFormat().from(readable);
+        }
+
         Parser<?> parser = classInfo.getParser();
-        if (parser == null) return new Object[0];
+        if (parser == null) {
+            return new Object[0];
+        }
+
         String string = readable.readAll();
-        if (string == null) return new Object[0];
+        if (string == null) {
+            return new Object[0];
+        }
+
         return new Object[] {parser.parse(string, ParseContext.DEFAULT)};
     }
 
@@ -122,27 +142,37 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @Override
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
+        Resource[] files = getExpr().getArray(event);
         if (mode == Changer.ChangeMode.SET && delta != null && delta.length != 0 && delta[0] != null) {
-            Resource[] files = getExpr().getArray(event);
             if (isString) {
                 writeString(files, delta);
             } else if (isFormat && classInfo instanceof FormatInfo<?> info) {
                 Format<?> format = info.getFormat();
                 Object[] array = new Object[delta.length];
-                for (int i = 0; i < array.length; i++) array[i] = Converters.convert(delta[i], returnType);
-                for (Resource file : files)
-                    if (file instanceof Writable writable) format.to(writable, array);
+                for (int i = 0; i < array.length; i++) {
+                    array[i] = Converters.convert(delta[i], returnType);
+                }
+                for (Resource file : files) {
+                    if (file instanceof Writable writable) {
+                        format.to(writable, array);
+                    }
+                }
             } else {
                 Parser parser = classInfo.getParser();
                 Object object = Converters.convert(delta[0], returnType);
                 String content;
-                if (parser == null) content = String.valueOf(object);
-                else content = parser.toString(object, StringMode.COMMAND);
-                for (Resource file : files)
-                    if (file instanceof Writable writable) writable.write(content);
+                if (parser == null) {
+                    content = String.valueOf(object);
+                } else {
+                    content = parser.toString(object, StringMode.COMMAND);
+                }
+                for (Resource file : files) {
+                    if (file instanceof Writable writable) {
+                        writable.write(content);
+                    }
+                }
             }
         } else {
-            Resource[] files = getExpr().getArray(event);
             for (Resource file : files)
                 if (file instanceof Writable writable) writable.clear();
         }
@@ -150,13 +180,18 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
 
     private void writeString(Resource[] resources, Object[] delta) {
         String content = String.valueOf(delta[0]);
-        for (Resource file : resources)
-            if (file instanceof Writable writable) writable.write(content);
+        for (Resource file : resources) {
+            if (file instanceof Writable writable) {
+                writable.write(content);
+            }
+        }
     }
 
     @Override
     public boolean isSingle() {
-        if (isFormat && classInfo instanceof FormatInfo<?> info) return info.getFormat().isSingular();
+        if (isFormat && classInfo instanceof FormatInfo<?> info) {
+            return info.getFormat().isSingular();
+        }
         return true;
     }
 

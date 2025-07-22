@@ -68,7 +68,7 @@ public record OutgoingRequest(HttpURLConnection exchange,
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         exchange.disconnect();
         complete.set(true);
     }

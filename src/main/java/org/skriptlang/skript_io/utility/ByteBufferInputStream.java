@@ -18,7 +18,9 @@ public class ByteBufferInputStream extends InputStream {
     }
 
     public synchronized int read() {
-        if (position < limit) return buffer.get(position++) & 0xFF;
+        if (position < limit) {
+            return buffer.get(position++) & 0xFF;
+        }
         else return -1;
     }
 

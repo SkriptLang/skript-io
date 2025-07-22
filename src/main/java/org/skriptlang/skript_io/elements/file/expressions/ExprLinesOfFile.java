@@ -72,15 +72,16 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
     }
 
     private record LineIterator(BufferedReader reader, AtomicReference<String> nextLine) implements Iterator<String> {
-
-        //<editor-fold desc="Iterate lines directly from reader." defaultstate="collapsed">
+        // Iterate lines directly from the reader.
         public LineIterator(InputStream stream) {
             this(new BufferedReader(new InputStreamReader(stream)), new AtomicReference<>());
         }
 
         @Override
         public boolean hasNext() {
-            if (nextLine.get() != null) return true;
+            if (nextLine.get() != null) {
+                return true;
+            }
             try {
                 String string = reader.readLine();
                 if (string == null) {
@@ -99,7 +100,6 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
         public String next() {
             return nextLine.getAndSet(null);
         }
-        //</editor-fold>
 
     }
 

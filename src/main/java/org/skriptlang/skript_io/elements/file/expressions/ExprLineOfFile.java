@@ -27,9 +27,7 @@ public class ExprLineOfFile extends SimpleExpression<String> {
 
     static {
         if (!SkriptIO.isTestMode())
-            Skript.registerExpression(ExprLineOfFile.class, String.class, ExpressionType.SIMPLE,
-                                      "line %number% of %file%"
-                                     );
+            Skript.registerExpression(ExprLineOfFile.class, String.class, ExpressionType.SIMPLE, "line %number% of %file%");
     }
 
     private Expression<Number> lineExpression;
@@ -57,9 +55,13 @@ public class ExprLineOfFile extends SimpleExpression<String> {
     @Override
     protected String @NotNull [] get(@NotNull Event event) {
         Number lineNumber = lineExpression.getSingle(event);
-        int line = lineNumber != null ? Math.max(0, (lineNumber.intValue() - 1)) : 0;
+        int line = lineNumber != null
+                ? Math.max(0, (lineNumber.intValue() - 1))
+                : 0;
         FileController file = fileExpression.getSingle(event);
-        if (file == null) return new String[0];
+        if (file == null) {
+            return new String[0];
+        }
         String text = file.getLine(line);
         return new String[] {text};
     }

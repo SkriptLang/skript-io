@@ -20,7 +20,7 @@ public class FormatTask extends DataTask {
     }
 
     @Override
-    public void execute() throws IOException, InterruptedException {
+    public void execute() {
         format.to(writable, map);
     }
 

@@ -69,10 +69,14 @@ public class EffAcceptResponse extends Effect {
         debug(event, true);
         long start = Skript.debug() ? System.currentTimeMillis() : 0;
         TriggerItem next = getNext();
-        if (next == null || !Skript.getInstance().isEnabled()) return null;
+        if (next == null || !Skript.getInstance().isEnabled()) {
+            return null;
+        }
         Delay.addDelayedEvent(event);
         OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-        if (request == null) return null;
+        if (request == null) {
+            return null;
+        }
 
         // Back up local variables
         Object variables = Variables.removeLocals(event);
@@ -80,18 +84,13 @@ public class EffAcceptResponse extends Effect {
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws InterruptedException {
-                try {
-                    EffAcceptResponse.this.execute(event, request, variables, next, start);
-                } catch (ExecutionException ex) {
-                    SkriptIO.error(ex);
-                }
+                EffAcceptResponse.this.execute(event, request, variables, next, start);
             }
         });
         return null;
     }
 
-    protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next, long start)
-        throws ExecutionException, InterruptedException {
+    protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next, long start) {
         IncomingResponse response;
         try {
             request.exchange().connect();
@@ -102,7 +101,7 @@ public class EffAcceptResponse extends Effect {
         response = new IncomingResponse(request.exchange());
         push(event, response);
 
-        Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+        Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
             Skript.debug(getIndentation() + "... continuing after " + (System.currentTimeMillis() - start) + "ms");
 
             // Re-set local variables
@@ -121,7 +120,7 @@ public class EffAcceptResponse extends Effect {
             Variables.removeLocals(event); // Clean up local vars, we may be exiting now
 
             SkriptTimings.stop(timing); // Stop timing if it was even started
-        }); // Minimum delay is one tick, less than it is useless!
+        }); // The Minimum delay is one tick, less than it is useless!
     }
 
     @Override
@@ -137,13 +136,16 @@ public class EffAcceptResponse extends Effect {
     public static Readable getCurrentResponse(Event event) {
         if (event == null) return null;
         Stack<IncomingResponse> stack = responseMap.get(event);
-        if (stack == null) return null;
-        if (stack.isEmpty()) return null;
+        if (stack == null || stack.isEmpty()) {
+            return null;
+        }
         return stack.peek();
     }
 
     private static void push(Event event, IncomingResponse request) {
-        if (event == null || request == null) return;
+        if (event == null || request == null) {
+            return;
+        }
         Stack<IncomingResponse> stack;
         responseMap.putIfAbsent(event, new Stack<>());
         stack = responseMap.get(event);
@@ -152,16 +154,19 @@ public class EffAcceptResponse extends Effect {
     }
 
     static void pop(Event event) {
-        if (event == null) return;
+        if (event == null) {
+            return;
+        }
         Stack<IncomingResponse> stack = responseMap.get(event);
-        if (stack == null) return;
-        if (stack.isEmpty()) responseMap.remove(event);
-        else {
+        if (stack == null) {
+            return;
+        }
+        if (stack.isEmpty()) {
+            responseMap.remove(event);
+        } else {
             IncomingResponse response = stack.pop();
-            try {
-                response.close();
-            } catch (IOException ignored) { // we can't actually catch an error from this
-            }
+            response.close();
+
         }
     }
 

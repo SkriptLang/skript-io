@@ -130,7 +130,7 @@ public class ExtractDocsInfoTest {
                 type.getAnnotation(Name.class).value(),
                 type.getAnnotation(Description.class).value(),
                 type.getAnnotation(Examples.class).value(),
-                type.getAnnotation(Since.class).value()
+                type.getAnnotation(Since.class).value()[0]
             );
         }
         

@@ -112,19 +112,14 @@ public class SecAcceptResponse extends EffectSection {
         TriggerItem next = walk(event, false);
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
-            public void execute() throws IOException, InterruptedException {
-                try {
-                    SecAcceptResponse.this.execute(event, request, variables, next);
-                } catch (ExecutionException ex) {
-                    SkriptIO.error(ex);
-                }
+            public void execute() throws InterruptedException {
+                SecAcceptResponse.this.execute(event, request, variables, next);
             }
         });
         return null;
     }
 
-    protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next)
-        throws ExecutionException, InterruptedException {
+    protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next) {
         IncomingResponse response;
         if (request == null) return;
         try {
@@ -136,28 +131,20 @@ public class SecAcceptResponse extends EffectSection {
         response = new IncomingResponse(request.exchange());
         push(event, response);
         if (first == null) { // we skip straight on
-            Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+            Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
                 if (variables != null)
                     Variables.setLocalVariables(event, variables);
-                try {
-                    response.close();
-                } catch (IOException ex) {
-                    SkriptIO.error(ex);
-                }
+                response.close();
                 TriggerItem.walk(next, event);
             });
         } else {
-            Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+            Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
                 if (variables != null)
                     Variables.setLocalVariables(event, variables);
                 if (last != null) last.setNext(new DummyCloseTrigger(request, next) {
                     @Override
                     protected boolean run(Event e) {
-                        try {
-                            response.close();
-                        } catch (IOException ex) {
-                            SkriptIO.error(ex);
-                        }
+                        response.close();
                         pop(e);
                         return super.run(e);
                     }

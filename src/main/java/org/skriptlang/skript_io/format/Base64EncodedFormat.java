@@ -28,7 +28,9 @@ public class Base64EncodedFormat extends Format<String> {
     protected void to(OutputStream stream, String... values) {
         try (Writer writer = new OutputStreamWriter(Base64.getEncoder().wrap(stream))) {
             for (String value : values) {
-                if (value == null) continue;
+                if (value == null) {
+                    continue;
+                }
                 writer.write(value);
             }
         } catch (IOException ex) {
@@ -37,7 +39,7 @@ public class Base64EncodedFormat extends Format<String> {
     }
 
     @Override
-    protected void to(OutputStream stream, @Nullable String value) throws IOException {
+    protected void to(OutputStream stream, @Nullable String value) {
         throw new IllegalStateException();
     }
 

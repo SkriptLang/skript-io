@@ -115,6 +115,10 @@ public class SkriptIO extends JavaPlugin {
         return testMode;
     }
 
+    public static SkriptIO getInstance() {
+        return instance;
+    }
+
     @Override
     public void onDisable() {
         queue.shutdown(1000);
@@ -135,7 +139,7 @@ public class SkriptIO extends JavaPlugin {
         }
 
         types = new Types();
-        types.removeEffChange(); // why???????
+        //types.removeEffChange(); // why???????
         try {
             addon = Skript.registerAddon(this);
             addon.loadClasses("org.skriptlang.skript_io.elements");
@@ -162,7 +166,7 @@ public class SkriptIO extends JavaPlugin {
             manager.disablePlugin(this);
             return;
         } finally {
-            types.reAddEffChange();
+            //types.reAddEffChange();
         }
         queue = new IOQueue(50);
         remoteQueue = new IOQueue(100);

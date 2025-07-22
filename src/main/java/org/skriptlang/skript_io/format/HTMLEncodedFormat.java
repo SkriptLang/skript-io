@@ -18,7 +18,6 @@ public class HTMLEncodedFormat extends Format<String> {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             int c;
             while ((c = reader.read()) > -1) {
-                //<editor-fold desc="Basic escaped characters." defaultstate="collapsed">
                 /*
                 This is the HTML3 set (it gets ridiculous from 4 onwards).
                 There isn't really any rhyme or reason to what is or isn't escaped,
@@ -130,7 +129,6 @@ public class HTMLEncodedFormat extends Format<String> {
                         yield String.format("&#x%x;", c);
                     }
                 });
-                //</editor-fold>
             }
         }
         return new String[] {builder.toString()};
@@ -149,7 +147,7 @@ public class HTMLEncodedFormat extends Format<String> {
     }
 
     @Override
-    protected void to(OutputStream stream, @Nullable String value) throws IOException {
+    protected void to(OutputStream stream, @Nullable String value) {
         throw new IllegalStateException();
     }
 

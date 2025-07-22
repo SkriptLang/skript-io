@@ -45,22 +45,12 @@ public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.H
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         SkriptIO.queue(new CloseTask(exchange));
     }
 
     @Override
-    public void write(String text) {
-        SkriptIO.queue().queue(new WriteTask(this, text.getBytes(StandardCharsets.UTF_8)));
-    }
-
-    @Override
-    public void clear() {
-        SkriptIO.queue().queue(new WriteTask(this, new byte[0]));
-    }
-
-    @Override
-    public @NotNull OutputStream acquireWriter() throws IOException {
+    public @NotNull OutputStream acquireWriter() {
         if (event != null && !event.isStatusCodeSet())
             setStatusCode(200);
         return exchange.getResponseBody();

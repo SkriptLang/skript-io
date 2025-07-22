@@ -20,7 +20,7 @@ public record IncomingResponse(HttpURLConnection exchange,
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (!wasRead.get() && exchange.getDoOutput()) SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
             public void execute() throws IOException {

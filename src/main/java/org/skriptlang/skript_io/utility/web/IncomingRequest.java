@@ -14,7 +14,7 @@ import java.net.URI;
 public record IncomingRequest(HttpExchange exchange) implements Readable, Closeable, Request {
 
     @Override
-    public @NotNull InputStream acquireReader() throws IOException {
+    public @NotNull InputStream acquireReader() {
         return exchange.getRequestBody();
     }
 
@@ -64,7 +64,7 @@ public record IncomingRequest(HttpExchange exchange) implements Readable, Closea
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         SkriptIO.remoteQueue().queue(new CloseTask(exchange));
     }
 

@@ -39,7 +39,7 @@ public class URLEncodedFormat extends Format<String> {
     }
 
     @Override
-    protected void to(OutputStream stream, @Nullable String value) throws IOException {
+    protected void to(OutputStream stream, @Nullable String value) {
         throw new IllegalStateException();
     }
 

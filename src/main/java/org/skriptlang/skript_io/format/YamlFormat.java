@@ -22,12 +22,15 @@ public class YamlFormat extends Format<Map<String, Object>> {
             YamlConfiguration file = YamlConfiguration.loadConfiguration(reader);
             read(file, map);
         }
-        return new Map[] {map};
+        // noinspection unchecked
+        return new Map[]{ map };
     }
 
     @Override
     protected void to(OutputStream stream, Map<String, Object> value) throws IOException {
-        if (value == null) return;
+        if (value == null) {
+            return;
+        }
         YamlConfiguration file = new YamlConfiguration();
         write(file, value);
         String data = file.saveToString();
@@ -43,7 +46,9 @@ public class YamlFormat extends Format<Map<String, Object>> {
             if (found instanceof ConfigurationSection child) {
                 value = new LinkedHashMap<>();
                 read(child, (Map<String, Object>) value);
-            } else value = found;
+            } else {
+                value = found;
+            }
             map.put(key, value);
         }
     }
@@ -56,7 +61,9 @@ public class YamlFormat extends Format<Map<String, Object>> {
             if (value instanceof Map<?, ?> child) {
                 ConfigurationSection inner = section.createSection(key);
                 write(inner, (Map<String, Object>) child);
-            } else section.set(key, value);
+            } else {
+                section.set(key, value);
+            }
         }
     }
 

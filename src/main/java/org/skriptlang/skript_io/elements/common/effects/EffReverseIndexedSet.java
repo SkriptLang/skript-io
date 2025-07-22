@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.common.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.ClassInfo;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser;
@@ -30,22 +27,23 @@ import java.util.Map;
 A special edition of the set changer that can maintain the indices of target data.
 Used for converting resources from list variables to encoded formats (e.g. json, yaml).
 """)
-@Examples({
-    "set yaml contents of file to {_options::*}",
-    """
+@Example("set yaml contents of file to {_options::*}")
+@Example("""
     set {_json::key} to "something"
     set {_json::array::*} to "a", "b" and "c"
     open a web request to https://localhost:3000/mysite:
         set the request's method to "POST"
-        set the json content of request to {_json::*}"""})
+        set the json content of request to {_json::*}
+    """)
 @Since("1.0.0")
 public class EffReverseIndexedSet extends EffEncode {
 
     static {
         if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffReverseIndexedSet.class,
-                "set [the] %*classinfo% content[s] of %resource% to %objects%",
-                "set %resource%'[s] %*classinfo% content[s] to %objects%");
+                    "set [the] %*classinfo% content[s] of %resource% to %objects%",
+                    "set %resource%'[s] %*classinfo% content[s] to %objects%"
+            );
     }
 
     private Expression<Resource> targetExpression;
@@ -58,10 +56,17 @@ public class EffReverseIndexedSet extends EffEncode {
         targetExpression = (Expression<Resource>) expressions[1 - matchedPattern];
         if (((Literal<ClassInfo<?>>) expressions[matchedPattern]).getSingle() instanceof FormatInfo<?> info) {
             classInfo = info;
-            if (!Map.class.isAssignableFrom(info.getFormat().getType())) return false;
-        } else return false;
-        if (expressions[2] instanceof Variable<?> variable) source = variable;
-        else return false;
+            if (!Map.class.isAssignableFrom(info.getFormat().getType())) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        if (expressions[2] instanceof Variable<?> variable) {
+            source = variable;
+        } else {
+            return false;
+        }
         return true;
     }
 
@@ -70,11 +75,14 @@ public class EffReverseIndexedSet extends EffEncode {
         Format<?> format = classInfo.getFormat();
         String name = StringUtils.substring(source.getName().toString(event), 0, -1);
         Object variable = Variables.getVariable(name + "*", event, source.isLocal());
-        if (!(variable instanceof Map<?, ?> map)) return;
+        if (!(variable instanceof Map<?, ?> map)) {
+            return;
+        }
         convertLists(map);
         for (Resource file : targetExpression.getArray(event))
-            if (file instanceof Writable writable)
+            if (file instanceof Writable writable) {
                 SkriptIO.queue().queue(new FormatTask(format, writable, map)).await();
+            }
     }
 
     @Override

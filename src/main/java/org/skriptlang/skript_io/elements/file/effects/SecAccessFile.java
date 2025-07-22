@@ -39,16 +39,20 @@ public abstract class SecAccessFile extends EffectSection {
             getParser().setHasDelayBefore(Kleenean.FALSE);
             loadOptionalCode(sectionNode);
             isDelayed = getParser().getHasDelayBefore();
-            async = !isDelayed.isFalse();
+            async = isDelayed.isTrue();
             getParser().setHasDelayBefore(Kleenean.TRUE);
         }
         return true;
     }
 
     protected TriggerItem walk(FileController controller, Event event) {
-        if (first == null) return walk(event, false);
+        if (first == null) {
+            return walk(event, false);
+        }
         if (async) {
-            if (last == null) return walk(event, false);
+            if (last == null) {
+                return walk(event, false);
+            }
             FileController.push(event, controller);
             Delay.addDelayedEvent(event);
             Object variables = Variables.removeLocals(event);
@@ -56,7 +60,9 @@ public abstract class SecAccessFile extends EffectSection {
             SkriptIO.queue().queue(new AccessTask(variables, next, event, controller));
             return null;
         } else {
-            if (last != null) last.setNext(null);
+            if (last != null) {
+                last.setNext(null);
+            }
             FileController.push(event, controller);
             try {
                 TriggerItem.walk(first, event); // execute the section now
@@ -90,25 +96,29 @@ public abstract class SecAccessFile extends EffectSection {
         }
 
         @Override
-        public void execute() throws IOException, InterruptedException {
+        public void execute() {
             if (first == null) { // we skip straight on
-                Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
+                Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
                     FileController.pop(event);
-                    if (variables != null)
+                    if (variables != null) {
                         Variables.setLocalVariables(event, variables);
+                    }
                     TriggerItem.walk(next, event);
                 });
             } else {
-                Bukkit.getScheduler().runTask(SkriptIO.getProvidingPlugin(SkriptIO.class), () -> {
-                    if (variables != null)
+                Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
+                    if (variables != null) {
                         Variables.setLocalVariables(event, variables);
-                    if (last != null) last.setNext(new DummyCloseTrigger(controller, next) {
-                        @Override
-                        protected boolean run(Event e) {
-                            FileController.pop(event);
-                            return super.run(e);
-                        }
-                    });
+                    }
+                    if (last != null) {
+                        last.setNext(new DummyCloseTrigger(controller, next) {
+                            @Override
+                            protected boolean run(Event e) {
+                                FileController.pop(event);
+                                return super.run(e);
+                            }
+                        });
+                    }
                     TriggerItem.walk(first, event);
                 });
             }

@@ -75,7 +75,7 @@ public class WebServer {
     public void closeAll() {
         SkriptIO.queue().queue(new DataTask() {
             @Override
-            public void execute() throws IOException, InterruptedException {
+            public void execute() {
                 server.stop(10);
                 handlers.clear();
             }

@@ -10,7 +10,7 @@ import java.io.IOException;
 public class TidyTask extends DataTask {
 
     @Override
-    public void execute() throws IOException, InterruptedException {
+    public void execute() {
     }
 
 }

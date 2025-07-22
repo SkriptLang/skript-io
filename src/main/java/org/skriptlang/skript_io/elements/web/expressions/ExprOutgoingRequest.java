@@ -35,16 +35,10 @@ public class ExprOutgoingRequest extends SimpleExpression<OutgoingRequest> {
                 "[the] [outgoing] request");
     }
 
-    private boolean outgoing;
-
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
-        if (getParser().isCurrentSection(SecOpenRequest.class)) {
-            outgoing = true;
-            return true;
-        }
-        return false;
+        return getParser().isCurrentSection(SecOpenRequest.class);
     }
 
     @Override

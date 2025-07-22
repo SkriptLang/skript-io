@@ -58,7 +58,7 @@ public class EffSecCatch extends EffectSection {
 
     Ideally, this will be fixed by Skript, eventually.
      */
-    static ThreadLocal<Throwable> lastThrownError = new ThreadLocal<>();
+    static final ThreadLocal<Throwable> lastThrownError = new ThreadLocal<>();
 
     static {
         if (!SkriptIO.isTestMode())
@@ -72,23 +72,27 @@ public class EffSecCatch extends EffectSection {
 
     @Nullable
     private static EffSecTry getTrySection(List<TriggerItem> triggerItems) {
-        //<editor-fold desc="Find the EffSecTry right before this EffSecCatch" defaultstate="collapsed">
-        TriggerItem triggerItem = triggerItems.get(triggerItems.size() - 1);
-        if (triggerItem instanceof EffSecCatch secCatch) // there was already a catch section
+        // Find the EffSecTry right before this EffSecCatch
+        TriggerItem triggerItem = triggerItems.isEmpty()
+                ? null
+                : triggerItems.getLast();
+
+        if (triggerItem instanceof EffSecCatch secCatch) { // there was already a catch section
             return secCatch.source;
+        }
+
         if (triggerItem instanceof EffSecTry secTry) {
             return secTry;
-        } else {
-            return null;
         }
-        //</editor-fold>
+
+        return null;
     }
 
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         List<TriggerItem> list) {
-        //<editor-fold desc="Look for our preceding EffSecTry" defaultstate="collapsed">
+        // Look for our preceding EffSecTry
         if (list != null) {
             source = getTrySection(list);
             if (source == null) {
@@ -96,24 +100,23 @@ public class EffSecCatch extends EffectSection {
                 return false;
             }
         }
-        //</editor-fold>
-        //<editor-fold desc="Load our section code (if present)" defaultstate="collapsed">
+        // Load our section code (if present)
         if (hasSection()) {
             assert sectionNode != null;
             loadOptionalCode(sectionNode);
         }
-        //</editor-fold>
-        //<editor-fold desc="Get our error storage variable" defaultstate="collapsed">
-        if (expressions[matchedPattern] instanceof Variable<?> variable) catcher = variable;
-        else {
+
+        // Get our error storage variable
+        if (expressions[matchedPattern] instanceof Variable<?> variable) {
+            catcher = variable;
+        } else {
             Skript.error("The input for the 'catch' effect must be a variable to store the error.");
             return false;
         }
-        //</editor-fold>
-        //<editor-fold desc="Make sure ClassInfo is an error type" defaultstate="collapsed">
-        //noinspection PatternVariableHidesField
+        // Make sure ClassInfo is an error type
+        // noinspection PatternVariableHidesField
         if (matchedPattern == 1 && expressions[0] instanceof Literal<?> literal
-            && literal.getSingle() instanceof ClassInfo<?> info) {
+                && literal.getSingle() instanceof ClassInfo<?> info) {
             this.info = info;
             errorType = info.getC();
             if (!Throwable.class.isAssignableFrom(errorType)) {
@@ -121,33 +124,42 @@ public class EffSecCatch extends EffectSection {
                 return false;
             }
         }
-        //</editor-fold>
         return true;
     }
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        //<editor-fold desc="Find the last thrown error" defaultstate="collapsed">
+        // Find the last thrown error
         Throwable error;
-        if (source != null) error = source.thrown;
-        else error = lastThrownError.get();
+        if (source != null) {
+            error = source.thrown;
+        } else {
+            error = lastThrownError.get();
+        }
         boolean hasError = error != null;
-        //</editor-fold>
         if (hasError && errorType.isInstance(error)) {
-            //<editor-fold desc="Store the error, run the catch section" defaultstate="collapsed">
+            // Store the error, run the catch section
             EffSecCatch.lastThrownError.remove(); // we consumed it here
             catcher.change(event, new Object[] {error}, Changer.ChangeMode.SET);
-            if (first == null) return walk(event, false);
-            else return first;
-            //</editor-fold>
-        } else if (!hasError) catcher.change(event, new Object[0], Changer.ChangeMode.DELETE);
-        if (first == null) return walk(event, false);
+            if (first == null) {
+                return walk(event, false);
+            } else {
+                return first;
+            }
+        } else if (!hasError) {
+            catcher.change(event, new Object[0], Changer.ChangeMode.DELETE);
+        }
+        if (first == null) {
+            return walk(event, false);
+        }
         return getNext();
     }
 
     @Override
     public @NotNull String toString(Event event, boolean debug) {
-        if (info != null) return "catch " + info.toString(event, debug) + " in " + catcher.toString(event, debug);
+        if (info != null) {
+            return "catch " + info.toString(event, debug) + " in " + catcher.toString(event, debug);
+        }
         return "catch " + catcher.toString(event, debug);
     }
 

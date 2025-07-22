@@ -20,7 +20,7 @@ public class MoveTask extends DataTask {
     }
 
     @Override
-    public void execute() throws IOException, InterruptedException {
+    public void execute() {
         try {
             if (file.isDirectory()) return;
             Path from = file.toPath();
