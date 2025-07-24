@@ -1,7 +1,7 @@
 main: 'org.skriptlang.skript_io.SkriptIO'
 name: 'skript-io'
 version: '1.0.0'
-authors: [ "Moderocky", "Burbulinis", "karakulak" ]
+authors: [ "SkriptLang" ]
 depend: [ 'Skript' ]
 description: "Basic I/O support for Skript."
 api-version: '1.20'
