@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.file.effects;
+package org.skriptlang.skript_io.elements.file.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.*;
@@ -13,27 +13,24 @@ import java.io.File;
 import java.net.URI;
 
 import static org.skriptlang.skript_io.utility.file.FileController.READ;
+import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
 
-@Name("Read File")
+@Name("Edit File")
 @Description("""
-    Opens a file at a path only for reading.
-    The file **cannot** be written to.
-    If the file does not exist or is unreadable, the section will not be run.""")
+    Opens a file at a path for reading and writing.
+    If the file does not exist or is inaccessible, the section will not be run.
+    """)
 @Example("""
-        read file ./test.txt:
-            loop the lines of the file:
-                broadcast loop-value
-        """)
-@Example("""
-        read file ./test.txt:
-            broadcast the text contents of the file
+    edit file ./test.txt:
+        set the text contents of the file to "line 1"
+        add "line 2" to the lines of the file
     """)
 @Since("1.0.0")
-public class SecReadFile extends SecAccessFile {
+public class SecEditFile extends SecAccessFile {
 
     static {
         if (!SkriptIO.isTestMode())
-            Skript.registerSection(SecReadFile.class, "read [(a|the)] file [at] %path%");
+            Skript.registerSection(SecEditFile.class, "(edit|open) [(a|the)] file [at] %path%");
     }
 
     @Override
@@ -46,21 +43,21 @@ public class SecReadFile extends SecAccessFile {
         if (file == null) {
             return walk(event, false);
         }
-        return read(file, event);
+        return edit(file, event);
     }
 
-    protected @Nullable TriggerItem read(File file, Event event) {
+    protected @Nullable TriggerItem edit(File file, Event event) {
         if (!file.exists() || !file.isFile()) {
             return walk(event, false);
         }
         assert first != null;
-        FileController controller = FileController.getController(file, READ);
+        FileController controller = FileController.getController(file, READ | WRITE);
         return walk(controller, event);
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "read file " + pathExpression.toString(event, debug);
+        return "edit file " + pathExpression.toString(event, debug);
     }
 
 }

@@ -12,7 +12,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
-import org.skriptlang.skript_io.elements.web.effects.SecOpenRequest;
+import org.skriptlang.skript_io.elements.web.sections.SecOpenRequest;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 
 @Name("Outgoing Request")

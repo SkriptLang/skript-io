@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.web.effects;
+package org.skriptlang.skript_io.elements.web.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;

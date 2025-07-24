@@ -36,7 +36,7 @@ public class EffThrow extends Effect {
     private ErrorInfo<?> errorType;
     private Expression<String> message;
 
-    static void throwUncheckedException(Throwable exception) {
+    public static void throwUncheckedException(Throwable exception) {
         SkriptIO.throwSafe(exception);
     }
 

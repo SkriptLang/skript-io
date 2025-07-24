@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.web.effects;
+package org.skriptlang.skript_io.elements.web.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
@@ -12,6 +12,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.elements.web.effects.EffAcceptResponse;
 import org.skriptlang.skript_io.utility.DummyCloseTrigger;
 import org.skriptlang.skript_io.utility.task.CloseTask;
 import org.skriptlang.skript_io.utility.web.OutgoingRequest;

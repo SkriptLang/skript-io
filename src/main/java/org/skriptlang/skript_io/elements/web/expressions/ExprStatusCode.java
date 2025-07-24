@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.elements.web.effects.EffAcceptResponse;
-import org.skriptlang.skript_io.elements.web.effects.SecAcceptResponse;
+import org.skriptlang.skript_io.elements.web.sections.SecAcceptResponse;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.web.Response;
 import org.skriptlang.skript_io.utility.web.Transaction;

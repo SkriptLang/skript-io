@@ -30,7 +30,7 @@ public class Functions {
                         case URL url -> url.toURI();
                         case File file -> file.toURI();
                         case Path path -> path.toUri();
-                        default -> SkriptIO.uri(String.valueOf(object));
+                        default -> SkriptIO.uri(Classes.toString(object));
                     }};
                 } catch (URISyntaxException | IllegalArgumentException ex) {
                     return new URI[0];
@@ -56,11 +56,17 @@ public class Functions {
                 StringBuilder builder = new StringBuilder();
                 for (Object object : params[0]) {
                     String part;
-                    if (object instanceof URI uri) part = uri.getPath();
-                    else part = String.valueOf(object);
-                    if (part.startsWith("/") && builder.charAt(builder.length() - 1) == '/')
+                    if (object instanceof URI uri) {
+                        part = uri.getPath();
+                    } else {
+                        part = Classes.toString(object);
+                    }
+
+                    if (part.startsWith("/") && builder.charAt(builder.length() - 1) == '/') {
                         builder.append(part.substring(1));
-                    else builder.append(part);
+                    } else {
+                        builder.append(part);
+                    }
                 }
                 return new URI[] {SkriptIO.uri(builder.toString())};
             }

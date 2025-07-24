@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.common.effects;
+package org.skriptlang.skript_io.elements.common.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
@@ -13,6 +13,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript_io.SkriptIO;
+import org.skriptlang.skript_io.elements.common.effects.EffThrow;
 
 import java.io.IOError;
 import java.lang.reflect.InvocationTargetException;

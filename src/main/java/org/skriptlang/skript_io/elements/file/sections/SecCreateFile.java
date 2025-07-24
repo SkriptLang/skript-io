@@ -1,4 +1,4 @@
-package org.skriptlang.skript_io.elements.file.effects;
+package org.skriptlang.skript_io.elements.file.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.*;
