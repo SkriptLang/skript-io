@@ -140,8 +140,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         Resource[] files = getExpr().getArray(event);
-        // TODO - i dont think delta is ever null here but i am lazy to test it now
-        if (mode == Changer.ChangeMode.SET && delta != null && delta.length != 0 && delta[0] != null) {
+        if (mode == Changer.ChangeMode.SET && delta.length != 0 && delta[0] != null) {
             if (isString) {
                 writeString(files, delta);
             } else if (isFormat && classInfo instanceof FormatInfo<?> info) {
