@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -19,9 +16,7 @@ import org.skriptlang.skript_io.utility.file.FileController;
 @Name("Line of File")
 @Description("Reads an individual line of a file. Line indexing begins at 1. The value will be empty if the file " +
     "ended or could not be read.")
-@Examples({
-    "broadcast line 1 of the current file"
-})
+@Example("broadcast line 1 of the current file")
 @Since("1.0.0")
 public class ExprLineOfFile extends SimpleExpression<String> {
 

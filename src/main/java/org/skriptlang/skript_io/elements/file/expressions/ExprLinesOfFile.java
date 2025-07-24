@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
@@ -27,13 +24,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Name("Lines of Resource")
 @Description("The lines of a currently-open resource as a list of texts.")
-@Examples({
-    "open file ./test.txt:",
-    "\tloop the lines of file:",
-    "\t\tbroadcast loop-value",
-    "edit file ./something.txt:",
-    "\tset the lines of file to {lines::*}"
-})
+@Example("""
+        open file ./test.txt:
+            loop the lines of file:
+                broadcast loop-value
+        """)
+@Example("""
+        edit file ./something.txt:
+            set the lines of file to {lines::*}
+        """)
 @Since("1.0.0")
 public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> {
 
@@ -54,7 +53,9 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
 
     @Override
     protected String @NotNull [] get(@NotNull Event event, Readable @NotNull [] source) {
-        if (source.length == 0 || source[0] == null) return new String[0];
+        if (source.length == 0 || source[0] == null) {
+            return new String[0];
+        }
         List<String> list = source[0].readAll().lines().toList();
         return list.toArray(new String[0]);
     }
@@ -62,7 +63,9 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
     @Override
     public Iterator<? extends String> iterator(@NotNull Event event) {
         Readable controller = getExpr().getSingle(event);
-        if (controller == null) return Collections.emptyIterator();
+        if (controller == null) {
+            return Collections.emptyIterator();
+        }
         try {
             return new LineIterator(controller.acquireReader());
         } catch (IOException e) {
@@ -131,8 +134,11 @@ public class ExprLinesOfFile extends SimplePropertyExpression<Readable, String> 
             for (Readable readable : files) if (readable instanceof Writable file) file.write(text);
         } else if (mode == Changer.ChangeMode.ADD) {
             for (Readable readable : files) {
-                if (readable instanceof FileController file) file.append(System.lineSeparator() + text);
-                else if (readable instanceof Writable file) file.write(System.lineSeparator() + text);
+                if (readable instanceof FileController file) {
+                    file.append(System.lineSeparator() + text);
+                } else if (readable instanceof Writable file) {
+                    file.write(System.lineSeparator() + text);
+                }
             }
         }
 

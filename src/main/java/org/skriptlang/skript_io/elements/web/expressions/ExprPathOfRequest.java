@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
@@ -26,11 +23,10 @@ import java.net.URI;
     > If you do not filter requests (e.g. prohibiting `../`) then the requester may be able to
     access system files outside the server directory.
     """)
-@Examples({
-    """
+@Example("""
     open a website:
-        broadcast the request's path"""
-})
+        broadcast the request's path
+    """)
 @Since("1.0.0")
 public class ExprPathOfRequest extends SimplePropertyExpression<Request, URI> {
 
@@ -52,18 +48,28 @@ public class ExprPathOfRequest extends SimplePropertyExpression<Request, URI> {
     @Override
     @Nullable
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
-        return mode == Changer.ChangeMode.SET ? CollectionUtils.array(URI.class, String.class) : null;
+        return mode == Changer.ChangeMode.SET
+                ? CollectionUtils.array(URI.class, String.class)
+                : null;
     }
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (delta == null) return;
+        if (delta == null) {
+            return;
+        }
         URI path;
-        if (delta[0] instanceof String string) path = URI.create(string);
-        else if (delta[0] instanceof URI uri) path = uri;
-        else return;
+        if (delta[0] instanceof String string) {
+            path = URI.create(string);
+        } else if (delta[0] instanceof URI uri) {
+            path = uri;
+        } else {
+            return;
+        }
         Request request = getExpr().getSingle(event);
-        if (request == null) return;
+        if (request == null) {
+            return;
+        }
         request.setPath(path);
     }
 

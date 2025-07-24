@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -30,13 +27,11 @@ import java.nio.file.StandardCopyOption;
     The source file or folder will replace whatever is at the destination path.
     If the 'into' version is used, the source will be moved inside the target directory, rather than replacing it.
     """)
-@Examples({
-    "move file ./example/test.txt to ./config/test.txt",
-    "move file ./test.txt to ./blob.txt",
-    "move file ./test.txt into ./config/",
-    "move folder ./example/ to ./config/",
-    "move folder ./example/ into ./config/"
-})
+@Example("move file ./example/test.txt to ./config/test.txt")
+@Example("move file ./test.txt to ./blob.txt")
+@Example("move file ./test.txt into ./config/")
+@Example("move folder ./example/ to ./config/")
+@Example("move folder ./example/ into ./config/")
 @Since("1.0.0")
 public class EffMoveFile extends Effect {
 
@@ -64,12 +59,20 @@ public class EffMoveFile extends Effect {
     @Override
     protected void execute(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event), result = targetExpression.getSingle(event);
-        if (uri == null || result == null) return;
+        if (uri == null || result == null) {
+            return;
+        }
         File file = SkriptIO.file(uri);
         File target = SkriptIO.file(result);
-        if (file == null || target == null) return;
-        if (!file.exists()) return;
-        if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
+        if (file == null || target == null) {
+            return;
+        }
+        if (!file.exists()) {
+            return;
+        }
+        if (FileController.isDirty(file)) {
+            SkriptIO.queue().queue(new TidyTask()).await();
+        }
         FileController.flagDirty(file);
         SkriptIO.queue().queue(new DataTask() {
             @Override
@@ -79,10 +82,15 @@ public class EffMoveFile extends Effect {
                     if (into && !target.isDirectory()) {
                         SkriptIO.error("Tried to move file '" + file + "' into non-directory '" + target + "'");
                         return;
-                    } else if (into) to = target.toPath().resolve(from.getFileName());
-                    else if (file.isFile() && target.isFile()) to = target.toPath();
-                    else if (file.isFile() && target.isDirectory()) to = target.toPath().resolve(from.getFileName());
-                    else to = target.toPath();
+                    } else if (into) {
+                        to = target.toPath().resolve(from.getFileName());
+                    } else if (file.isFile() && target.isFile()) {
+                        to = target.toPath();
+                    } else if (file.isFile() && target.isDirectory()) {
+                        to = target.toPath().resolve(from.getFileName());
+                    } else {
+                        to = target.toPath();
+                    }
                     Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
                 } finally {
                     FileController.flagClean(file);
@@ -93,7 +101,8 @@ public class EffMoveFile extends Effect {
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        String into = this.into ? " into " : " to ", type = folder ? "move folder " : "move file ";
+        String into = this.into ? " into " : " to ";
+        String type = folder ? "move folder " : "move file ";
         return type + pathExpression.toString(event, debug) + into + targetExpression.toString(event, debug);
     }
 

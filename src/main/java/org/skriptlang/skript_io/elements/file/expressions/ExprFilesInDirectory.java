@@ -32,8 +32,7 @@ public class ExprFilesInDirectory extends SimpleExpression<URI> {
         if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprFilesInDirectory.class, URI.class, ExpressionType.SIMPLE,
                                       "[the] files in [(directory|folder)] %path%",
-                                      "[the] contents of [(directory|folder)] %path%"
-                                     );
+                                      "[the] contents of [(directory|folder)] %path%");
     }
 
     private Expression<URI> pathExpression;
@@ -60,11 +59,17 @@ public class ExprFilesInDirectory extends SimpleExpression<URI> {
     protected URI @NotNull [] get(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
         File file = SkriptIO.fileNoError(uri);
-        if (file == null || !file.isDirectory()) return new URI[0];
+        if (file == null || !file.isDirectory()) {
+            return new URI[0];
+        }
         File[] files = file.listFiles();
-        if (files == null || files.length == 0) return new URI[0];
+        if (files == null || files.length == 0) {
+            return new URI[0];
+        }
         URI[] uris = new URI[files.length];
-        for (int i = 0; i < files.length; i++) uris[i] = files[i].toURI();
+        for (int i = 0; i < files.length; i++) {
+            uris[i] = files[i].toURI();
+        }
         return uris;
     }
 

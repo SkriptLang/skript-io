@@ -1,9 +1,6 @@
 package org.skriptlang.skript_io.elements.file.expressions;
 
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -15,10 +12,10 @@ import org.skriptlang.skript_io.utility.file.FileController;
 
 @Name("Size of File")
 @Description("The size (in bytes) of the currently-open file.")
-@Examples({
-    "open file ./test.txt:",
-    "\tbroadcast \"the file-size is %size of file%\""
-})
+@Example("""
+        open file ./test.txt:
+            broadcast "the file-size is %size of file%"
+        """)
 @Since("1.0.0")
 public class ExprSizeOfFile extends SimplePropertyExpression<FileController, Number> {
 
@@ -30,7 +27,9 @@ public class ExprSizeOfFile extends SimplePropertyExpression<FileController, Num
     @Override
     public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed,
                         SkriptParser.ParseResult parseResult) {
-        if (!(exprs[0] instanceof ExprCurrentFile)) return false;
+        if (!(exprs[0] instanceof ExprCurrentFile)) {
+            return false;
+        }
         return super.init(exprs, matchedPattern, isDelayed, parseResult);
     }
 

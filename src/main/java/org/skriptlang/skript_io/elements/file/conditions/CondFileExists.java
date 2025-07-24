@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.conditions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -21,11 +18,10 @@ import java.net.URI;
 
 @Name("File/Directory Exists")
 @Description("Checks whether the given path is a file that exists.")
-@Examples({
-    """
+@Example("""
     if file ./test.txt exists:
-        delete file ./test.txt"""
-})
+        delete file ./test.txt
+    """)
 @Since("1.0.0")
 public class CondFileExists extends Condition {
 
@@ -57,10 +53,16 @@ public class CondFileExists extends Condition {
     @Override
     public boolean check(@NotNull Event event) {
         return uriExpression.check(event, uri -> {
-            if (uri == null) return false;
+            if (uri == null) {
+                return false;
+            }
             File file = SkriptIO.file(uri);
-            if (FileController.isDirty(file)) SkriptIO.queue().queue(new TidyTask()).await();
-            if (file == null || !file.exists()) return false;
+            if (FileController.isDirty(file)) {
+                SkriptIO.queue().queue(new TidyTask()).await();
+            }
+            if (file == null || !file.exists()) {
+                return false;
+            }
             return mode == 0 || mode == 1 && file.isFile() || mode == 2 && file.isDirectory();
         }, isNegated());
     }

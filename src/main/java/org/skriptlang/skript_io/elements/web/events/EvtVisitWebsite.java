@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.events;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser;
@@ -19,10 +16,10 @@ import static org.skriptlang.skript_io.elements.web.events.EvtVisitWebsite.*;
 
 @Name(NAME)
 @Description(DESCRIPTION)
-@Examples({
-    """
+@Example("""
     on website visit:
-        set the status code to 200"""})
+        set the status code to 200
+    """)
 @Since(SINCE)
 public class EvtVisitWebsite extends SkriptEvent {
 
@@ -41,12 +38,7 @@ public class EvtVisitWebsite extends SkriptEvent {
                   .examples("on website visit:",
                             "\tset the status code to 200")
                   .since(SINCE);
-            EventValues.registerEventValue(VisitWebsiteEvent.class, WebServer.class, new Getter<>() {
-                @Override
-                public WebServer get(VisitWebsiteEvent e) {
-                    return e.getServer();
-                }
-            }, 0);
+            EventValues.registerEventValue(VisitWebsiteEvent.class, WebServer.class, VisitWebsiteEvent::getServer, 0);
         }
     }
 

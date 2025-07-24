@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.file.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -21,18 +18,17 @@ import org.skriptlang.skript_io.utility.file.FileController;
 
 @Name("Current File")
 @Description("The currently-open file inside a file reading/editing section.")
-@Examples({
-    "create a new file ./test.txt:",
-    "\tadd \"hello\" to the file"
-})
+@Example("""
+        create a new file ./test.txt:
+            add "hello" to the file
+        """)
 @Since("1.0.0")
 public class ExprCurrentFile extends SimpleExpression<FileController> {
 
     static {
         if (!SkriptIO.isTestMode())
             Skript.registerExpression(ExprCurrentFile.class, FileController.class, ExpressionType.SIMPLE,
-                                      "[the] [(current|open)] file"
-                                     );
+                                        "[the] [(current|open)] file");
     }
 
     @Override
@@ -48,7 +44,9 @@ public class ExprCurrentFile extends SimpleExpression<FileController> {
     @Override
     protected FileController @NotNull [] get(@NotNull Event event) {
         FileController controller = FileController.currentSection(event);
-        if (controller == null) return new FileController[0];
+        if (controller == null) {
+            return new FileController[0];
+        }
         return new FileController[] {controller};
     }
 
@@ -64,20 +62,31 @@ public class ExprCurrentFile extends SimpleExpression<FileController> {
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         FileController controller = FileController.currentSection(event);
-        if (controller == null) return;
+        if (controller == null) {
+            return;
+        }
         switch (mode) {
             case ADD:
-                if (delta == null) break;
+                if (delta == null) {
+                    break;
+                }
                 for (Object thing : delta) {
-                    if (thing == null) continue;
+                    if (thing == null) {
+                        continue;
+                    }
                     controller.append(String.valueOf(thing));
                 }
                 break;
             case SET:
-                if (delta == null || delta.length < 1) break;
+                if (delta == null || delta.length < 1) {
+                    break;
+                }
                 Object thing = delta[0];
-                if (thing == null) controller.clear();
-                else controller.write(String.valueOf(thing));
+                if (thing == null) {
+                    controller.clear();
+                } else {
+                    controller.write(String.valueOf(thing));
+                }
                 break;
             case RESET, DELETE:
                 controller.clear();

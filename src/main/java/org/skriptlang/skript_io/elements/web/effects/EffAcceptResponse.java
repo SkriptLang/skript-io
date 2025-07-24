@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.effects.Delay;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.timings.SkriptTimings;
@@ -23,7 +20,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
-import java.util.concurrent.ExecutionException;
 
 @Name("Expect Response")
 @Description("""
@@ -32,18 +28,18 @@ import java.util.concurrent.ExecutionException;
     Accepting a response marks the outgoing connection as complete
     (e.g. you cannot send more data in the request) and anything waiting to be sent will be dispatched.
     """)
-@Examples({
-    """
+@Example("""
     open a request to https://skriptlang.org:
         expect the response
-        broadcast the response's content""",
-    """
+        broadcast the response's content
+    """)
+@Example("""
     open a request to http://my-api-here:
         set the request's json content to {_data::*}
         accept the response
         set {_result::*} to the response's json content
-    # {_result::*} is available here"""
-})
+    # {_result::*} is available here
+    """)
 @Since("1.0.0")
 public class EffAcceptResponse extends Effect {
 
@@ -83,7 +79,7 @@ public class EffAcceptResponse extends Effect {
 
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
-            public void execute() throws InterruptedException {
+            public void execute() {
                 EffAcceptResponse.this.execute(event, request, variables, next, start);
             }
         });
@@ -105,15 +101,17 @@ public class EffAcceptResponse extends Effect {
             Skript.debug(getIndentation() + "... continuing after " + (System.currentTimeMillis() - start) + "ms");
 
             // Re-set local variables
-            if (variables != null)
+            if (variables != null) {
                 Variables.setLocalVariables(event, variables);
+            }
 
             Object timing = null; // Timings reference must be kept so that it can be stopped after TriggerItem
             // execution
             if (SkriptTimings.enabled()) { // getTrigger call is not free, do it only if we must
                 Trigger trigger = getTrigger();
-                if (trigger != null)
+                if (trigger != null) {
                     timing = SkriptTimings.start(trigger.getDebugLabel());
+                }
             }
 
             TriggerItem.walk(next, event);
@@ -134,7 +132,9 @@ public class EffAcceptResponse extends Effect {
     }
 
     public static Readable getCurrentResponse(Event event) {
-        if (event == null) return null;
+        if (event == null) {
+            return null;
+        }
         Stack<IncomingResponse> stack = responseMap.get(event);
         if (stack == null || stack.isEmpty()) {
             return null;

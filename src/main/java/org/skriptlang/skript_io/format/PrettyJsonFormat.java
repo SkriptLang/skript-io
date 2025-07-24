@@ -2,7 +2,6 @@ package org.skriptlang.skript_io.format;
 
 import mx.kenzie.argo.Json;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 

@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
@@ -20,12 +17,11 @@ import org.skriptlang.skript_io.utility.web.Transaction;
     Requests for data (e.g. asking for a webpage) typically use "GET".
     Sending data (e.g. submitting a form, searching) typically uses "POST".
     """)
-@Examples({
-    """
+@Example("""
     open a website:
         if method of request is "GET":
-            # ..."""
-})
+            # ...
+    """)
 @Since("1.0.0")
 public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, String> {
 
@@ -47,16 +43,24 @@ public class ExprMethodOfRequest extends SimplePropertyExpression<Transaction, S
     @Override
     @Nullable
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
-        return mode == Changer.ChangeMode.SET ? CollectionUtils.array(String.class) : null;
+        return mode == Changer.ChangeMode.SET
+                ? CollectionUtils.array(String.class)
+                : null;
     }
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (delta == null) return;
+        if (delta == null) {
+            return;
+        }
         String method = (String) delta[0];
-        if (method == null) return;
+        if (method == null) {
+            return;
+        }
         Transaction request = getExpr().getSingle(event);
-        if (request == null) return;
+        if (request == null) {
+            return;
+        }
         request.setMethod(method);
     }
 

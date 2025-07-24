@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -23,12 +20,11 @@ import static org.skriptlang.skript_io.utility.file.FileController.WRITE;
     Opens a file at a path for reading and writing.
     If the file does not exist or is inaccessible, the section will not be run.
     """)
-@Examples({
-    """
+@Example("""
     edit file ./test.txt:
         set the text contents of the file to "line 1"
-        add "line 2" to the lines of the file"""
-})
+        add "line 2" to the lines of the file
+    """)
 @Since("1.0.0")
 public class SecEditFile extends SecAccessFile {
 
@@ -40,14 +36,20 @@ public class SecEditFile extends SecAccessFile {
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return walk(event, false);
+        if (uri == null) {
+            return walk(event, false);
+        }
         File file = SkriptIO.file(uri);
-        if (file == null) return walk(event, false);
+        if (file == null) {
+            return walk(event, false);
+        }
         return edit(file, event);
     }
 
     protected @Nullable TriggerItem edit(File file, Event event) {
-        if (!file.exists() || !file.isFile()) return walk(event, false);
+        if (!file.exists() || !file.isFile()) {
+            return walk(event, false);
+        }
         assert first != null;
         FileController controller = FileController.getController(file, READ | WRITE);
         return walk(controller, event);

@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -21,11 +18,10 @@ import java.net.URI;
     If the file already exists or was successfully created, opens an editing section.
     If creation fails and the file does not exist, the editing section will be skipped.
     """)
-@Examples({
-    """
+@Example("""
     create file ./test.txt:
-        add "hello" to the file"""
-})
+        add "hello" to the file
+    """)
 @Since("1.0.0")
 public class SecCreateFile extends SecEditFile {
 

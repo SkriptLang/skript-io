@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -23,8 +20,7 @@ import org.skriptlang.skript_io.utility.web.IncomingRequest;
     The current request being made of your website.
     This is typically a browser asking for a page.
     """)
-@Examples({
-    """
+@Example("""
     open a website:
         set {_file} to path of request
         if file {_file} exists:
@@ -34,8 +30,8 @@ import org.skriptlang.skript_io.utility.web.IncomingRequest;
             # This example doesn't restrict access to any files
         else:
             set the status code to 404
-            add "Page not found." to the response""",
-})
+            add "Page not found." to the response
+    """)
 @Since("1.0.0")
 public class ExprIncomingRequest extends SimpleExpression<IncomingRequest> {
 
@@ -45,8 +41,6 @@ public class ExprIncomingRequest extends SimpleExpression<IncomingRequest> {
                 "[the] [incoming] request");
     }
 
-    private boolean outgoing;
-
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
                         SkriptParser.@NotNull ParseResult result) {
@@ -55,8 +49,9 @@ public class ExprIncomingRequest extends SimpleExpression<IncomingRequest> {
 
     @Override
     protected IncomingRequest @NotNull [] get(@NotNull Event event) {
-        if (event instanceof VisitWebsiteEvent visit)
+        if (event instanceof VisitWebsiteEvent visit) {
             return new IncomingRequest[] {new IncomingRequest(visit.getExchange())};
+        }
         return new IncomingRequest[0];
     }
 

@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -35,16 +32,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
     Prepares an HTTP request to be sent to a website URL. This may have content written to it.
     
     Once the request has been dispatched, the response can be read using the `accept the response` section.""")
-@Examples({
-    """
-    open a web request to https://skriptlang.org:
-        set the request's method to "GET"
-        await the response
-        broadcast the response's text content""",
-    """
-    open an http request to http://my-api-here:
-        set the request's json content to {_data::*}"""
-})
+@Example("""
+        open a web request to https://skriptlang.org:
+            set the request's method to "GET"
+            await the response
+            broadcast the response's text content
+        """)
+@Example("""
+        open an http request to http://my-api-here:
+            set the request's json content to {_data::*}
+        """)
 @Since("1.0.0")
 public class SecOpenRequest extends EffectSection {
 
@@ -52,23 +49,29 @@ public class SecOpenRequest extends EffectSection {
 
     static {
         if (!SkriptIO.isTestMode())
-            Skript.registerSection(SecOpenRequest.class,
-                                   "(open|send) ([a] web|[an] http) request [to] %path%"
-                                  );
+            Skript.registerSection(SecOpenRequest.class, "(open|send) ([a] web|[an] http) request [to] %path%");
     }
 
     protected Expression<URI> pathExpression;
 
     public static OutgoingRequest getCurrentRequest(Event event) {
-        if (event == null) return null;
+        if (event == null) {
+            return null;
+        }
         Stack<OutgoingRequest> stack = requestMap.get(event);
-        if (stack == null) return null;
-        if (stack.isEmpty()) return null;
+        if (stack == null) {
+            return null;
+        }
+        if (stack.isEmpty()) {
+            return null;
+        }
         return stack.peek();
     }
 
     private static void push(Event event, OutgoingRequest request) {
-        if (event == null || request == null) return;
+        if (event == null || request == null) {
+            return;
+        }
         Stack<OutgoingRequest> stack;
         requestMap.putIfAbsent(event, new Stack<>());
         stack = requestMap.get(event);
@@ -77,11 +80,18 @@ public class SecOpenRequest extends EffectSection {
     }
 
     private static void pop(Event event) {
-        if (event == null) return;
+        if (event == null) {
+            return;
+        }
         Stack<OutgoingRequest> stack = requestMap.get(event);
-        if (stack == null) return;
-        if (stack.isEmpty()) requestMap.remove(event);
-        else stack.pop();
+        if (stack == null) {
+            return;
+        }
+        if (stack.isEmpty()) {
+            requestMap.remove(event);
+        } else {
+            stack.pop();
+        }
     }
 
     @Override
@@ -89,11 +99,15 @@ public class SecOpenRequest extends EffectSection {
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result, @Nullable SectionNode sectionNode,
                         @Nullable List<TriggerItem> list) {
-        if (!hasSection()) return false;
+        if (!hasSection()) {
+            return false;
+        }
         pathExpression = (Expression<URI>) expressions[0];
         assert sectionNode != null;
         loadOptionalCode(sectionNode);
-        if (last != null) last.setNext(null);
+        if (last != null) {
+            last.setNext(null);
+        }
         getParser().setHasDelayBefore(Kleenean.TRUE);
         return true;
     }
@@ -101,10 +115,16 @@ public class SecOpenRequest extends EffectSection {
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return walk(event, false);
-        if (!Skript.getInstance().isEnabled()) return walk(event, false);
+        if (uri == null) {
+            return walk(event, false);
+        }
+        if (!Skript.getInstance().isEnabled()) {
+            return walk(event, false);
+        }
         OutgoingRequest request = createRequest(uri);
-        if (request == null || first == null) return walk(event, false);
+        if (request == null || first == null) {
+            return walk(event, false);
+        }
         if (last != null) {
             last.setNext(new DummyCloseTrigger(request, walk(event, false)) {
                 @Override

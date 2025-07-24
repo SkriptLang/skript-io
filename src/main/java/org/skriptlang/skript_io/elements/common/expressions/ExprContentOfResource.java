@@ -4,10 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.classes.Parser;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.Literal;
@@ -36,14 +33,14 @@ import java.util.Map;
     
     This will return nothing if the resource is unreadable.
     """)
-@Examples({
-    """
-    open a website:
-        broadcast the text content of the request's body""",
-    """
-    open file ./test.txt:
-        broadcast the text contents of file"""
-})
+@Example("""
+        open a website:
+            broadcast the text content of the request's body
+        """)
+@Example("""
+        open file ./test.txt:
+            broadcast the text contents of file
+        """)
 @Since("1.0.0")
 public class ExprContentOfResource extends SimplePropertyExpression<Resource, Object> {
 
@@ -143,6 +140,7 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
         Resource[] files = getExpr().getArray(event);
+        // TODO - i dont think delta is ever null here but i am lazy to test it now
         if (mode == Changer.ChangeMode.SET && delta != null && delta.length != 0 && delta[0] != null) {
             if (isString) {
                 writeString(files, delta);
@@ -173,8 +171,11 @@ public class ExprContentOfResource extends SimplePropertyExpression<Resource, Ob
                 }
             }
         } else {
-            for (Resource file : files)
-                if (file instanceof Writable writable) writable.clear();
+            for (Resource file : files) {
+                if (file instanceof Writable writable) {
+                    writable.clear();
+                }
+            }
         }
     }
 

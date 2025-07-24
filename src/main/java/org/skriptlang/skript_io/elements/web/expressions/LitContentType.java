@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -20,11 +17,10 @@ import java.util.Arrays;
 
 @Name("Content Type")
 @Description(LitContentType.DESCRIPTION)
-@Examples({
-    """
-        loop the files in ./test/:
-            delete the file at loop-value"""
-})
+@Example("""
+    loop the files in ./test/:
+        delete the file at loop-value
+    """)
 @Since("1.0.0")
 public class LitContentType extends SimpleLiteral<String> {
 
@@ -33,6 +29,7 @@ public class LitContentType extends SimpleLiteral<String> {
         .map(ContentType::name)
         .map(string -> string.replace('_', ' ').toLowerCase().replace("type_", ""))
         .toArray(String[]::new);
+
     protected static final String DESCRIPTION = """
         A content-type is sent with a web request (or response) to tell the receiver what kind of data
         will be submitted in the body of the exchange.

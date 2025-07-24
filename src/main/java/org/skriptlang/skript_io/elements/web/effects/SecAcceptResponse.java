@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.effects.Delay;
 import ch.njol.skript.lang.EffectSection;
 import ch.njol.skript.lang.Expression;
@@ -29,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
-import java.util.concurrent.ExecutionException;
 
 @Name("Expect Response")
 @Description("""
@@ -38,18 +34,18 @@ import java.util.concurrent.ExecutionException;
     Accepting a response marks the outgoing connection as complete
     (e.g. you cannot send more data in the request) and anything waiting to be sent will be dispatched.
     """)
-@Examples({
-    """
+@Example("""
     open a request to https://skriptlang.org:
         expect the response
-        broadcast the response's content""",
-    """
+        broadcast the response's content
+    """)
+@Example("""
     open a request to http://my-api-here:
         set the request's json content to {_data::*}
         accept the response
         set {_result::*} to the response's json content
-    # {_result::*} is available here"""
-})
+    # {_result::*} is available here
+    """)
 @Since("1.0.0")
 public class SecAcceptResponse extends EffectSection {
 
@@ -62,15 +58,23 @@ public class SecAcceptResponse extends EffectSection {
     }
 
     private static Readable getCurrentRequest(Event event) {
-        if (event == null) return null;
+        if (event == null) {
+            return null;
+        }
         Stack<IncomingResponse> stack = requestMap.get(event);
-        if (stack == null) return null;
-        if (stack.isEmpty()) return null;
+        if (stack == null) {
+            return null;
+        }
+        if (stack.isEmpty()) {
+            return null;
+        }
         return stack.peek();
     }
 
     private static void push(Event event, IncomingResponse request) {
-        if (event == null || request == null) return;
+        if (event == null || request == null) {
+            return;
+        }
         Stack<IncomingResponse> stack;
         requestMap.putIfAbsent(event, new Stack<>());
         stack = requestMap.get(event);
@@ -79,11 +83,18 @@ public class SecAcceptResponse extends EffectSection {
     }
 
     private static void pop(Event event) {
-        if (event == null) return;
+        if (event == null) {
+            return;
+        }
         Stack<IncomingResponse> stack = requestMap.get(event);
-        if (stack == null) return;
-        if (stack.isEmpty()) requestMap.remove(event);
-        else stack.pop();
+        if (stack == null) {
+            return;
+        }
+        if (stack.isEmpty()) {
+            requestMap.remove(event);
+        } else {
+            stack.pop();
+        }
     }
 
     @Override
@@ -97,7 +108,9 @@ public class SecAcceptResponse extends EffectSection {
         if (hasSection()) {
             assert sectionNode != null;
             loadOptionalCode(sectionNode);
-            if (last != null) last.setNext(null);
+            if (last != null) {
+                last.setNext(null);
+            }
             getParser().setHasDelayBefore(Kleenean.TRUE);
         }
         return true;
@@ -105,14 +118,16 @@ public class SecAcceptResponse extends EffectSection {
 
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
-        if (!Skript.getInstance().isEnabled()) return walk(event, false);
+        if (!Skript.getInstance().isEnabled()) {
+            return walk(event, false);
+        }
         Delay.addDelayedEvent(event);
         OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
         Object variables = Variables.copyLocalVariables(event);
         TriggerItem next = walk(event, false);
         SkriptIO.remoteQueue().queue(new DataTask() {
             @Override
-            public void execute() throws InterruptedException {
+            public void execute() {
                 SecAcceptResponse.this.execute(event, request, variables, next);
             }
         });
@@ -121,7 +136,9 @@ public class SecAcceptResponse extends EffectSection {
 
     protected void execute(Event event, OutgoingRequest request, Object variables, TriggerItem next) {
         IncomingResponse response;
-        if (request == null) return;
+        if (request == null) {
+            return;
+        }
         try {
             request.exchange().connect();
         } catch (IOException ex) {
@@ -132,23 +149,27 @@ public class SecAcceptResponse extends EffectSection {
         push(event, response);
         if (first == null) { // we skip straight on
             Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
-                if (variables != null)
+                if (variables != null) {
                     Variables.setLocalVariables(event, variables);
+                }
                 response.close();
                 TriggerItem.walk(next, event);
             });
         } else {
             Bukkit.getScheduler().runTask(SkriptIO.getInstance(), () -> {
-                if (variables != null)
+                if (variables != null) {
                     Variables.setLocalVariables(event, variables);
-                if (last != null) last.setNext(new DummyCloseTrigger(request, next) {
-                    @Override
-                    protected boolean run(Event e) {
-                        response.close();
-                        pop(e);
-                        return super.run(e);
-                    }
-                });
+                }
+                if (last != null) {
+                    last.setNext(new DummyCloseTrigger(request, next) {
+                        @Override
+                        protected boolean run(Event e) {
+                            response.close();
+                            pop(e);
+                            return super.run(e);
+                        }
+                    });
+                }
                 TriggerItem.walk(first, event);
             });
         }

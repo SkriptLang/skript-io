@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.TriggerItem;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
@@ -22,15 +19,15 @@ import static org.skriptlang.skript_io.utility.file.FileController.READ;
     Opens a file at a path only for reading.
     The file **cannot** be written to.
     If the file does not exist or is unreadable, the section will not be run.""")
-@Examples({
-    """
-    read file ./test.txt:
-        loop the lines of the file:
-            broadcast loop-value""",
-    """
-    read file ./test.txt:
-        broadcast the text contents of the file""",
-})
+@Example("""
+        read file ./test.txt:
+            loop the lines of the file:
+                broadcast loop-value
+        """)
+@Example("""
+        read file ./test.txt:
+            broadcast the text contents of the file
+    """)
 @Since("1.0.0")
 public class SecReadFile extends SecAccessFile {
 
@@ -42,14 +39,20 @@ public class SecReadFile extends SecAccessFile {
     @Override
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return walk(event, false);
+        if (uri == null) {
+            return walk(event, false);
+        }
         File file = SkriptIO.file(uri);
-        if (file == null) return walk(event, false);
+        if (file == null) {
+            return walk(event, false);
+        }
         return read(file, event);
     }
 
     protected @Nullable TriggerItem read(File file, Event event) {
-        if (!file.exists() || !file.isFile()) return walk(event, false);
+        if (!file.exists() || !file.isFile()) {
+            return walk(event, false);
+        }
         assert first != null;
         FileController controller = FileController.getController(file, READ);
         return walk(controller, event);

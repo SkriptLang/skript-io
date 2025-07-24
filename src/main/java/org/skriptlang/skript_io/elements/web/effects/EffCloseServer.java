@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -29,12 +26,11 @@ import java.net.URI;
     After closing all websites running on a port, it may take a little time before the
     operating system frees the port for reuse.
     """)
-@Examples({
-    """
+@Example("""
     open a website for /landing/:
         transfer ./site/welcome.html to the response
-        close the current website"""
-})
+        close the current website
+    """)
 @Since("1.0.0")
 public class EffCloseServer extends Effect {
 
@@ -75,6 +71,7 @@ public class EffCloseServer extends Effect {
         boolean hasPath, hasPort;
         URI uri = null;
         int port = 0;
+
         path:
         if (pathExpression != null) {
             uri = pathExpression.getSingle(event);
@@ -83,7 +80,10 @@ public class EffCloseServer extends Effect {
                 break path;
             }
             hasPath = true;
-        } else hasPath = false;
+        } else {
+            hasPath = false;
+        }
+
         port:
         if (portExpression != null) {
             Number number = portExpression.getSingle(event);
@@ -93,18 +93,34 @@ public class EffCloseServer extends Effect {
             }
             hasPort = true;
             port = number.intValue();
-        } else hasPort = false;
+        } else {
+            hasPort = false;
+        }
+
         WebServer server;
-        if (hasPort) server = WebServer.get(port);
-        else server = WebServer.get(WebServer.DEFAULT_PORT);
-        if (server == null) return;
-        if (hasPath) server.closeHandler(uri);
-        else server.closeAll();
+        if (hasPort) {
+            server = WebServer.get(port);
+        } else {
+            server = WebServer.get(WebServer.DEFAULT_PORT);
+        }
+
+        if (server == null) {
+            return;
+        }
+
+        if (hasPath) {
+            server.closeHandler(uri);
+        } else {
+            server.closeAll();
+        }
+
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        if (current) return "close the current website";
+        if (current) {
+            return "close the current website";
+        }
         return "close the website"
             + (pathExpression != null ? "at " + pathExpression.toString(event, debug) : "")
             + (portExpression != null ? "with port " + portExpression.toString(event, debug) : "");

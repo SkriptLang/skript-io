@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -21,10 +18,7 @@ import java.net.URI;
 
 @Name("Rename File")
 @Description("Renames a file or directory. To rename a directory please use the 'move' effect.")
-@Examples({
-    """
-    rename file ./example/test.txt to "blob.txt\""""
-})
+@Example("rename file ./example/test.txt to \"blob.txt\"")
 @Since("1.0.0")
 public class EffRenameFile extends Effect {
 
@@ -51,18 +45,23 @@ public class EffRenameFile extends Effect {
     protected void execute(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
         String name = stringExpression.getSingle(event);
-        if (name == null || name.isBlank()) return;
-        if (uri == null) return;
+        if (name == null || name.isBlank()) {
+            return;
+        }
+        if (uri == null) {
+            return;
+        }
         File file = SkriptIO.file(uri);
-        if (file == null) return;
+        if (file == null) {
+            return;
+        }
         FileController.flagDirty(file);
         SkriptIO.queue().queue(new MoveTask(file, name));
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return "rename file " + pathExpression.toString(event, debug) + " to " + stringExpression.toString(event,
-                                                                                                                debug);
+        return "rename file " + pathExpression.toString(event, debug) + " to " + stringExpression.toString(event, debug);
     }
 
 }

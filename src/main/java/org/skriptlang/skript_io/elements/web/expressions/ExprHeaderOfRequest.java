@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -25,11 +22,10 @@ import org.skriptlang.skript_io.utility.web.Transaction;
     Request headers information about the client requesting the resource.
     Response headers hold information about the response.
     """)
-@Examples({
-    """
+@Example("""
     open a web request to http://localhost:3000:
-        set the request's "Content-Encoding" header to "gzip\""""
-})
+        set the request's "Content-Encoding" header to "gzip"
+    """)
 @Since("1.0.0")
 public class ExprHeaderOfRequest extends SimpleExpression<String> {
 
@@ -55,23 +51,33 @@ public class ExprHeaderOfRequest extends SimpleExpression<String> {
     @Override
     protected @Nullable String[] get(Event event) {
         Transaction request = requestExpression.getSingle(event);
-        if (request == null) return new String[0];
+        if (request == null) {
+            return new String[0];
+        }
         return new String[] {request.getHeader(headerExpression.getSingle(event))};
     }
 
     @Override
     @Nullable
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
-        return mode == Changer.ChangeMode.SET ? CollectionUtils.array(String.class) : null;
+        return mode == Changer.ChangeMode.SET
+                ? CollectionUtils.array(String.class)
+                : null;
     }
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (delta == null || delta.length < 1) return;
+        if (delta == null || delta.length < 1) {
+            return;
+        }
         String type = String.valueOf(delta[0]);
-        if (type == null) return;
+        if (type == null) {
+            return;
+        }
         Transaction request = requestExpression.getSingle(event);
-        if (request == null) return;
+        if (request == null) {
+            return;
+        }
         request.setHeader(headerExpression.getSingle(event), type);
     }
 

@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.event.Event;
@@ -21,11 +18,10 @@ import org.skriptlang.skript_io.utility.web.Transaction;
     When receiving a request, this should indicate the format of the incoming data.
     Not all web requests will have data attached.
     """)
-@Examples({
-    """
+@Example("""
     open a web request to http://localhost:3000:
-        set the request's content-type to "application/json\""""
-})
+        set the request's content-type to "application/json"
+    """)
 @Since("1.0.0")
 public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transaction, String> {
 
@@ -52,11 +48,17 @@ public class ExprContentTypeOfRequest extends SimplePropertyExpression<Transacti
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (delta == null || delta.length < 1) return;
+        if (delta == null || delta.length < 1) {
+            return;
+        }
         String type = String.valueOf(delta[0]);
-        if (type == null) return;
+        if (type == null) {
+            return;
+        }
         Transaction request = getExpr().getSingle(event);
-        if (request == null) return;
+        if (request == null) {
+            return;
+        }
         request.setContentType(type);
     }
 

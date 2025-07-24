@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -20,11 +17,10 @@ import org.skriptlang.skript_io.utility.web.WebServer;
 
 @Name("Current Website")
 @Description("The current website, in a website section.")
-@Examples({
-    """
+@Example("""
     open a website:
-        close the current website"""
-})
+        close the current website
+    """)
 @Since("1.0.0")
 public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
 
@@ -33,8 +29,7 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
             Skript.registerExpression(ExprCurrentWebsite.class, WebServer.class, ExpressionType.SIMPLE,
                                       "[the] [current] web[ ]site",
                                       "[the] [current] web[ ]server",
-                                      "[the] [current] http server"
-                                     );
+                                      "[the] [current] http server");
     }
 
     @Override
@@ -49,8 +44,10 @@ public class ExprCurrentWebsite extends SimpleExpression<WebServer> {
 
     @Override
     protected WebServer @NotNull [] get(@NotNull Event event) {
-        if (event instanceof VisitWebsiteEvent visit) return new WebServer[] {visit.getServer()};
-        else return new WebServer[0];
+        if (event instanceof VisitWebsiteEvent visit) {
+            return new WebServer[] {visit.getServer()};
+        }
+        return new WebServer[0];
     }
 
     @Override

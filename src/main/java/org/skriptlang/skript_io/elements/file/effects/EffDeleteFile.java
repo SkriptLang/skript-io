@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.file.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -21,42 +18,42 @@ import java.net.URI;
 
 @Name("Delete File/Directory")
 @Description("Deletes the folder or file at the given path.")
-@Examples({
-    """
-    recursively delete folder ./test/""",
-    """
-    delete folder ./test/""",
-    """
-    delete the file at ./config.txt"""
-})
+@Example("recursively delete folder ./test/")
+@Example("delete folder ./test/")
+@Example("delete the file at ./config.txt")
 @Since("1.0.0")
 public class EffDeleteFile extends Effect {
 
     static {
         if (!SkriptIO.isTestMode())
             Skript.registerEffect(EffDeleteFile.class, "[recursive:recursive[ly]] delete [the] folder [at] %path%",
-                                  "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file " +
-                                      "[at] %path%");
+                    "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file [at] %path%");
     }
 
     private boolean recursive, folder;
     private Expression<URI> pathExpression;
 
     public static void delete(File file, boolean folder, boolean recursive) {
-        if (file == null) return;
+        if (file == null) {
+            return;
+        }
         FileController.flagDirty(file);
         SkriptIO.queue().queue(new DataTask() {
             @Override
             public void execute() {
                 try {
-                    if (!file.exists()) return;
-                    if (folder && !file.isDirectory()) return;
-                    else if (!folder && !file.isFile()) return;
+                    if (!file.exists()) {
+                        return;
+                    }
                     if (folder) {
-                        if (!file.isDirectory()) return;
-                        if (recursive) emptyDirectory(file);
-                    } else {
-                        if (!file.isFile()) return;
+                        if (!file.isDirectory()) {
+                            return;
+                        }
+                        if (recursive) {
+                            emptyDirectory(file);
+                        }
+                    } else if (!file.isFile()) {
+                        return;
                     }
                     boolean result = file.delete();
                     assert result : "File '" + file + "' was not deleted.";
@@ -70,9 +67,13 @@ public class EffDeleteFile extends Effect {
 
     protected static void emptyDirectory(File file) {
         File[] files = file.listFiles();
-        if (files == null) return;
+        if (files == null) {
+            return;
+        }
         for (File child : files) {
-            if (child.isDirectory()) emptyDirectory(child);
+            if (child.isDirectory()) {
+                emptyDirectory(child);
+            }
             boolean result = child.delete();
             assert result : "Inner file '" + file + "' was not deleted.";
         }
@@ -91,15 +92,19 @@ public class EffDeleteFile extends Effect {
     @Override
     protected void execute(@NotNull Event event) {
         URI uri = pathExpression.getSingle(event);
-        if (uri == null) return;
+        if (uri == null) {
+            return;
+        }
         File file = SkriptIO.file(uri);
         delete(file, folder, recursive);
     }
 
     @Override
     public @NotNull String toString(@Nullable Event event, boolean debug) {
-        return (recursive ? "recursively " : "") + "delete " + (folder ? "folder " : "file ") + pathExpression.toString(
-            event, debug);
+        return (recursive ? "recursively " : "")
+                + "delete "
+                + (folder ? "folder " : "file ")
+                + pathExpression.toString(event, debug);
     }
 
 }

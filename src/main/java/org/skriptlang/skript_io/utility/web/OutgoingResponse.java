@@ -5,12 +5,10 @@ import org.skriptlang.skript_io.SkriptIO;
 import org.skriptlang.skript_io.event.VisitWebsiteEvent;
 import org.skriptlang.skript_io.utility.Writable;
 import org.skriptlang.skript_io.utility.task.CloseTask;
-import org.skriptlang.skript_io.utility.task.WriteTask;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public record OutgoingResponse(VisitWebsiteEvent event, com.sun.net.httpserver.HttpExchange exchange)

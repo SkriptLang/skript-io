@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -24,13 +21,12 @@ import org.skriptlang.skript_io.utility.web.IncomingResponse;
     A response to a request you made to a website.
     This resource can be read from (in order to receive data).
     """)
-@Examples({
-    """
-        open a web request to https://skriptlang.org:
+@Example("""
+     open a web request to https://skriptlang.org:
         set the request's method to "GET"
         await the response:
-            broadcast the response's text content"""
-})
+            broadcast the response's text content
+     """)
 @Since("1.0.0")
 public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
 
@@ -39,8 +35,6 @@ public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
             Skript.registerExpression(ExprIncomingResponse.class, IncomingResponse.class, ExpressionType.SIMPLE,
                 "[the] [incoming] response");
     }
-
-    private boolean outgoing;
 
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
@@ -52,7 +46,8 @@ public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
     protected IncomingResponse @NotNull [] get(@NotNull Event event) {
         if (EffAcceptResponse.getCurrentResponse(event) instanceof IncomingResponse readable) {
             return new IncomingResponse[] {readable};
-        } else return new IncomingResponse[0];
+        }
+        return new IncomingResponse[0];
     }
 
     @Override

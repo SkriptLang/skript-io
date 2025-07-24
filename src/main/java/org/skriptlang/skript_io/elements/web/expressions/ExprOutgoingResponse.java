@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -33,12 +30,11 @@ import java.nio.charset.StandardCharsets;
     
     This can be used to send data to a client, e.g. sending a page to a browser when requested.
     """)
-@Examples({
-    """
+@Example("""
         open a website:
             add {_greeting} to the response
-            transfer ./site/index.html to the response"""
-})
+            transfer ./site/index.html to the response
+        """)
 @Since("1.0.0")
 public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
 
@@ -56,10 +52,10 @@ public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
 
     @Override
     protected OutgoingResponse @NotNull [] get(@NotNull Event event) {
-        if (event instanceof VisitWebsiteEvent visit)
-            return new OutgoingResponse[] {new OutgoingResponse(visit, visit.getExchange())
-        };
-        else return new OutgoingResponse[0];
+        if (event instanceof VisitWebsiteEvent visit) {
+            return new OutgoingResponse[] {new OutgoingResponse(visit, visit.getExchange())};
+        }
+        return new OutgoingResponse[0];
     }
 
     @Override
@@ -69,29 +65,34 @@ public class ExprOutgoingResponse extends SimpleExpression<OutgoingResponse> {
 
     @Override
     public Class<?>[] acceptChange(Changer.@NotNull ChangeMode mode) {
-        if (mode == Changer.ChangeMode.ADD) return CollectionUtils.array(String.class, Readable.class);
+        if (mode == Changer.ChangeMode.ADD) {
+            return CollectionUtils.array(String.class, Readable.class);
+        }
         return null;
     }
 
     @Override
     public void change(@NotNull Event event, Object @Nullable [] delta, Changer.@NotNull ChangeMode mode) {
-        if (event instanceof VisitWebsiteEvent visit) {
-            Writable writable = Writable.simple(visit.getExchange().getResponseBody());
-            if (mode == Changer.ChangeMode.ADD) {
-                if (!visit.isStatusCodeSet()) {
-                    SkriptIO.error("Tried to send data before setting the status code.");
-                    return;
-                }
-                if (delta == null) return;
-                for (Object thing : delta) {
-                    switch (thing) {
-                        case String string ->
-                            SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));
-                        case InputStream stream ->
-                            SkriptIO.queue().queue(new TransferTask(writable, Readable.simple(stream)));
-                        case Readable readable -> SkriptIO.queue().queue(new TransferTask(writable, readable));
-                        case null, default -> {}
-                    }
+        if (!(event instanceof VisitWebsiteEvent visit)) {
+            return;
+        }
+        Writable writable = Writable.simple(visit.getExchange().getResponseBody());
+        if (mode == Changer.ChangeMode.ADD) {
+            if (!visit.isStatusCodeSet()) {
+                SkriptIO.error("Tried to send data before setting the status code.");
+                return;
+            }
+            if (delta == null) {
+                return;
+            }
+            for (Object thing : delta) {
+                switch (thing) {
+                    case String string ->
+                        SkriptIO.queue().queue(new WriteTask(writable, string.getBytes(StandardCharsets.UTF_8)));
+                    case InputStream stream ->
+                        SkriptIO.queue().queue(new TransferTask(writable, Readable.simple(stream)));
+                    case Readable readable -> SkriptIO.queue().queue(new TransferTask(writable, readable));
+                    case null, default -> {}
                 }
             }
         }

@@ -7,7 +7,6 @@ import org.skriptlang.skript_io.utility.Readable;
 import org.skriptlang.skript_io.utility.task.CloseTask;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 

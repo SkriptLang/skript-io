@@ -4,10 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.*;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
@@ -25,30 +22,31 @@ import java.util.List;
     The catch section can also be used to filter specific errors by type, as long
     as an 'error info' is provided for the error class.
     """)
-@Examples({
-    """
-    try:
-        add "hello" to the file
-    catch {_error}
-    # _error will be empty if no error occurred
-    if {_error} exists:
-        broadcast "An error occurred!\"""",
-    """
-    try:
-        add "hello" to the file
-    catch {_error}:
-        # run if an error occurred
-        broadcast "Error! " + {_error}'s message""",
-    """
-    try:
-        add "hello" to the file
-    catch the io error in {_io}:
-        # run if an 'io exception' occurred
-        broadcast "Unable to write to the file."
-    catch the null pointer error in {_null}:
-        # run if a 'null pointer exception' occurred
-        broadcast "Something was null.\"""",
-})
+@Example("""
+        try:
+            add "hello" to the file
+        catch {_error}
+        # _error will be empty if no error occurred
+        if {_error} exists:
+            broadcast "An error occurred!"
+        """)
+@Example("""
+        try:
+            add "hello" to the file
+        catch {_error}:
+            # run if an error occurred
+            broadcast "Error! " + {_error}'s message
+        """)
+@Example("""
+        try:
+            add "hello" to the file
+        catch the io error in {_io}:
+            # run if an 'io exception' occurred
+            broadcast "Unable to write to the file."
+        catch the null pointer error in {_null}:
+            # run if a 'null pointer exception' occurred
+            broadcast "Something was null."
+        """)
 @Since("1.0.0")
 public class EffSecCatch extends EffectSection {
 

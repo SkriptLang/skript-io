@@ -1,10 +1,7 @@
 package org.skriptlang.skript_io.elements.common.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
@@ -27,12 +24,11 @@ import java.net.URI;
     
     For moving files between folders, see the move file effect.
     """)
-@Examples({
-    "transfer {input} to {output}",
-    """
-    open a website for /site/ with port 3000:
-        transfer ./test.html to the response"""
-})
+@Example("transfer {input} to {output}")
+@Example("""
+        open a website for /site/ with port 3000:
+            transfer ./test.html to the response
+        """)
 @Since("1.0.0")
 public class EffTransfer extends Effect {
 
@@ -51,8 +47,11 @@ public class EffTransfer extends Effect {
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean kleenean,
                         SkriptParser.@NotNull ParseResult result) {
-        if (matchedPattern == 0) sourceExpression = (Expression<Readable>) expressions[0];
-        else pathExpression = (Expression<URI>) expressions[0];
+        if (matchedPattern == 0) {
+            sourceExpression = (Expression<Readable>) expressions[0];
+        } else {
+            pathExpression = (Expression<URI>) expressions[0];
+        }
         targetExpression = (Expression<Writable>) expressions[1];
         path = matchedPattern == 1;
         return true;
@@ -61,15 +60,21 @@ public class EffTransfer extends Effect {
     @Override
     protected void execute(@NotNull Event event) {
         Writable target = targetExpression.getSingle(event);
-        if (target == null) return;
+        if (target == null) {
+            return;
+        }
         if (path) {
             File file = SkriptIO.file(pathExpression.getSingle(event));
-            if (file == null || !file.isFile()) return;
+            if (file == null || !file.isFile()) {
+                return;
+            }
             SkriptIO.queue().queue(TransferTask.forFile(file, target));
             return;
         }
         Readable source = sourceExpression.getSingle(event);
-        if (source == null) return;
+        if (source == null) {
+            return;
+        }
         SkriptIO.queue().queue(new TransferTask(target, source));
     }
 

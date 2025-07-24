@@ -80,7 +80,7 @@ public class EffSecTry extends EffectSection {
     protected Effect effect;
 
     private static TriggerItem walk0(TriggerItem item, Event event)
-        throws InvocationTargetException, IllegalAccessException {
+            throws InvocationTargetException, IllegalAccessException {
         return (TriggerItem) walkMethod.invoke(item, event);
     }
 
@@ -102,6 +102,7 @@ public class EffSecTry extends EffectSection {
             }
         } else {
             // Set up try section
+            // TODO - this is called even if you use it as a section, figure out why
             if (!hasSection()) {
                 Skript.error("'try' can be used only as a section.");
                 return false;
@@ -135,9 +136,12 @@ public class EffSecTry extends EffectSection {
             return getNext();
         } else {
             // Attempt try-section
-            if (first == null) return walk(event, false);
-            if (last != null)
+            if (first == null) {
+                return walk(event, false);
+            }
+            if (last != null) {
                 last.setNext(null);
+            }
             try {
                 walkUnsafe(first, event);
             } catch (Exception | IOError ex) {
@@ -164,7 +168,9 @@ public class EffSecTry extends EffectSection {
 
     @Override
     public @NotNull String toString(Event event, boolean debug) {
-        if (effect != null) return "try to " + effect.toString(event, debug);
+        if (effect != null) {
+            return "try to " + effect.toString(event, debug);
+        }
         return "try";
     }
 

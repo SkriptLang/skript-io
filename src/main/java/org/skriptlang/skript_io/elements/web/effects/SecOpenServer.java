@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.*;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
@@ -38,24 +35,23 @@ import java.util.List;
     Multiple websites can be opened on *different* ports with the same path,
     such as `localhost:321/foo/` and `localhost:123/foo/`.
     """)
-@Examples({
-    """
+@Example("""
     open a website for /homepage/ on port 12345:
         # http://localhost:12345/homepage
         set the status code to 200
         add "<body>" to the response
         add "<h1>Hello!</h1>" to the response
         add "<p>There are %size of all players% players online.</p>" to the response
-        add "</body>" to the response""",
-    """
+        add "</body>" to the response
+    """)
+@Example("""
     open a website on port 8123:
         # http://localhost:8123
         if the source of request is not "127.0.0.1":
             set the status code to 403 # forbidden
         else:
             set the status code to 200 # ok
-    """
-})
+    """)
 @Since("1.0.0")
 public class SecOpenServer extends EffectSection {
 
@@ -63,8 +59,7 @@ public class SecOpenServer extends EffectSection {
         if (!SkriptIO.isTestMode())
             Skript.registerSection(SecOpenServer.class,
                                    "open ([a] web[ ]|[an] http )server [for %-path%] [(on|with) port %-number%]",
-                                   "open [a] web[ ]site [for %-path%] [(on|with) port %-number%]"
-                                  );
+                                   "open [a] web[ ]site [for %-path%] [(on|with) port %-number%]");
     }
 
     protected @Nullable Expression<URI> pathExpression;
@@ -103,19 +98,31 @@ public class SecOpenServer extends EffectSection {
     protected @Nullable TriggerItem walk(@NotNull Event event) {
         URI path;
         int port;
-        if (pathExpression != null) path = pathExpression.getSingle(event);
-        else path = SkriptIO.ROOT;
-        if (path == null) return walk(event, false);
+        if (pathExpression != null) {
+            path = pathExpression.getSingle(event);
+        } else {
+            path = SkriptIO.ROOT;
+        }
+        if (path == null) {
+            return walk(event, false);
+        }
         if (portExpression != null) {
             Number number = portExpression.getSingle(event);
-            if (number == null) port = WebServer.DEFAULT_PORT;
-            else port = number.intValue();
-        } else port = WebServer.DEFAULT_PORT;
+            if (number == null) {
+                port = WebServer.DEFAULT_PORT;
+            } else {
+                port = number.intValue();
+            }
+        } else {
+            port = WebServer.DEFAULT_PORT;
+        }
         if (!validatePort(port)) {
             SkriptIO.error("Invalid webserver port provided, port must be between 1 and 65535.");
             return walk(event, false);
         }
-        if (!validatePath(path)) return walk(event, false);
+        if (!validatePath(path)) {
+            return walk(event, false);
+        }
         WebServer server = WebServer.getOrCreate(port);
         server.registerHandler(path, createHandler(server, path));
         server.prepareIfNecessary();
@@ -135,9 +142,13 @@ public class SecOpenServer extends EffectSection {
     }
 
     private boolean validatePath(URI path) {
-        if (path == null) return false;
+        if (path == null) {
+            return false;
+        }
         String string = path.toString();
-        if (string.equals("/")) return true;
+        if (string.equals("/")) {
+            return true;
+        }
         if (string.isEmpty() || string.isBlank()) {
             SkriptIO.error("Webserver path must not be blank.");
             return false;
@@ -158,7 +169,7 @@ public class SecOpenServer extends EffectSection {
     }
 
     private boolean validatePort(int port) {
-        return port > 0 && port < 65535;
+        return port > 0 && port < 65536;
     }
 
 }

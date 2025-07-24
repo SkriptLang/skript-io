@@ -18,7 +18,6 @@ import org.skriptlang.skript_io.utility.DummyCloseTrigger;
 import org.skriptlang.skript_io.utility.file.FileController;
 import org.skriptlang.skript_io.utility.task.CloseTask;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 

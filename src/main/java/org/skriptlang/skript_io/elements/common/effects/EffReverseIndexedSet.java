@@ -79,10 +79,11 @@ public class EffReverseIndexedSet extends EffEncode {
             return;
         }
         convertLists(map);
-        for (Resource file : targetExpression.getArray(event))
+        for (Resource file : targetExpression.getArray(event)) {
             if (file instanceof Writable writable) {
                 SkriptIO.queue().queue(new FormatTask(format, writable, map)).await();
             }
+        }
     }
 
     @Override

@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -21,11 +18,10 @@ import org.skriptlang.skript_io.utility.web.OutgoingRequest;
 @Name("Outgoing Request")
 @Description("""
     The current request being made to a website.""")
-@Examples({
-    """
-        open a request to http://my-api-here:
-            set the request's json content to {_data::*}""",
-})
+@Example("""
+    open a request to http://my-api-here:
+        set the request's json content to {_data::*}
+    """)
 @Since("1.0.0")
 public class ExprOutgoingRequest extends SimpleExpression<OutgoingRequest> {
 
@@ -44,7 +40,9 @@ public class ExprOutgoingRequest extends SimpleExpression<OutgoingRequest> {
     @Override
     protected OutgoingRequest @NotNull [] get(@NotNull Event event) {
         OutgoingRequest request = SecOpenRequest.getCurrentRequest(event);
-        if (request != null) return new OutgoingRequest[] {request};
+        if (request != null) {
+            return new OutgoingRequest[] {request};
+        }
         return new OutgoingRequest[0];
     }
 
