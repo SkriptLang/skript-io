@@ -5,7 +5,7 @@ import ch.njol.skript.classes.Changer;
 import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
@@ -48,9 +48,8 @@ public class ExprStatusCode extends SimpleExpression<Number> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
-                        SkriptParser.@NotNull ParseResult result) {
-        if (getParser().isCurrentEvent(VisitWebsiteEvent.class)
-            || getParser().isCurrentSection(SecAcceptResponse.class)) {
+                        @NotNull ParseResult result) {
+        if (getParser().isCurrentEvent(VisitWebsiteEvent.class) || getParser().isCurrentSection(SecAcceptResponse.class)) {
             return true;
         }
         if (matchedPattern == 0) {

@@ -1,11 +1,11 @@
 package org.skriptlang.skript_io.elements.web.expressions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.classes.Changer;
+import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
@@ -38,8 +38,12 @@ public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
 
     @Override
     public boolean init(Expression<?> @NotNull [] expressions, int matchedPattern, @NotNull Kleenean isDelayed,
-                        SkriptParser.@NotNull ParseResult result) {
-        return getParser().isCurrentSection(SecOpenRequest.class);
+                        @NotNull ParseResult result) {
+        if (!getParser().isCurrentSection(SecOpenRequest.class)) {
+            Skript.error("This expression can only be used inside a request section");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -51,7 +55,7 @@ public class ExprIncomingResponse extends SimpleExpression<IncomingResponse> {
     }
 
     @Override
-    public Class<?> [] acceptChange(Changer.@NotNull ChangeMode mode) {
+    public Class<?> [] acceptChange(@NotNull ChangeMode mode) {
         return null;
     }
 

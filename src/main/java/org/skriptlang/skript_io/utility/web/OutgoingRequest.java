@@ -16,8 +16,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public record OutgoingRequest(HttpURLConnection exchange,
-                              AtomicBoolean complete) implements Writable, Closeable, Request {
+public record OutgoingRequest(HttpURLConnection exchange, AtomicBoolean complete)
+        implements Writable, Closeable, Request {
 
     @Override
     public URI getPath() {

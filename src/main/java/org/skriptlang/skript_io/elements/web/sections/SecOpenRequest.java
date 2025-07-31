@@ -60,12 +60,10 @@ public class SecOpenRequest extends EffectSection {
             return null;
         }
         Stack<OutgoingRequest> stack = requestMap.get(event);
-        if (stack == null) {
+        if (stack == null || stack.isEmpty()) {
             return null;
         }
-        if (stack.isEmpty()) {
-            return null;
-        }
+
         return stack.peek();
     }
 

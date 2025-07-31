@@ -33,8 +33,7 @@ public class CondFileExists extends Condition {
                                      "path[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
                                      "file[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
                                      "folder[s] %paths% (exist[s]|negated:do[es](n't| not) exist)",
-                                     "director(y|ies) %paths% (exist[s]|negated:do[es](n't| not) exist)"
-                                    );
+                                     "director(y|ies) %paths% (exist[s]|negated:do[es](n't| not) exist)");
     }
 
     private Expression<URI> uriExpression;
@@ -70,12 +69,13 @@ public class CondFileExists extends Condition {
     @Override
     @NotNull
     public String toString(@Nullable Event e, boolean debug) {
-        String ending = isNegated() ? " do not exist" : " exist";
-        return switch (mode) {
+        String what = switch (mode) {
             case FILE -> "files ";
             case FOLDER -> "folders ";
             default -> "paths ";
-        } + uriExpression.toString(e, debug) + ending;
+        };
+        String exists = isNegated() ? " do not exist" : " exist";
+        return what + uriExpression.toString(e, debug) + exists;
     }
 
 }
