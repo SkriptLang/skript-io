@@ -3,10 +3,8 @@ package org.skriptlang.skript_io.elements.common.effects;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.doc.*;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.Literal;
-import ch.njol.skript.lang.SkriptParser;
-import ch.njol.skript.lang.Variable;
+import ch.njol.skript.lang.*;
+import ch.njol.skript.util.AsyncEffect;
 import ch.njol.skript.variables.Variables;
 import ch.njol.util.Kleenean;
 import ch.njol.util.StringUtils;
@@ -36,7 +34,7 @@ Used for converting resources from list variables to encoded formats (e.g. json,
         set the json content of request to {_json::*}
     """)
 @Since("1.0.0")
-public class EffReverseIndexedSet extends EffEncode {
+public class EffReverseIndexedSet extends AsyncEffect {
 
     static {
         if (!SkriptIO.isTestMode())
@@ -48,6 +46,7 @@ public class EffReverseIndexedSet extends EffEncode {
 
     private Expression<Resource> targetExpression;
     private Variable<?> source;
+    private FormatInfo<?> classInfo;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -78,7 +77,7 @@ public class EffReverseIndexedSet extends EffEncode {
         if (!(variable instanceof Map<?, ?> map)) {
             return;
         }
-        convertLists(map);
+        EffEncode.convertLists(map);
         for (Resource file : targetExpression.getArray(event)) {
             if (file instanceof Writable writable) {
                 SkriptIO.queue().queue(new FormatTask(format, writable, map)).await();
