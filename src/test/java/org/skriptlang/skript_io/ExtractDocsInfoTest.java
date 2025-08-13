@@ -1,9 +1,6 @@
 package org.skriptlang.skript_io;
 
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -125,13 +123,48 @@ public class ExtractDocsInfoTest {
     record Doc(String name, String[] description, String[] examples, String since) {
         
         public static Doc of(Class<?> type) {
-            if (!type.isAnnotationPresent(Name.class)) throw new RuntimeException(type + " is missing doc annotations");
+            validateAnnotations(type);
+
+            String[] examples = new String[0];
+            if (type.isAnnotationPresent(Example.class)) {
+                Example annotation = type.getAnnotation(Example.class);
+                examples = new String[]{ annotation.value() };
+            } else if (type.isAnnotationPresent(Examples.class)) {
+                Examples annotation = type.getAnnotation(Examples.class);
+                examples = annotation.value();
+            } else if (type.isAnnotationPresent(Example.Examples.class)) {
+                Example.Examples annotation = type.getAnnotation(Example.Examples.class);
+                examples = Arrays.stream(annotation.value())
+                        .map(Example::value)
+                        .toArray(String[]::new);
+            }
+
             return new Doc(
                 type.getAnnotation(Name.class).value(),
                 type.getAnnotation(Description.class).value(),
-                type.getAnnotation(Examples.class).value(),
+                examples,
                 type.getAnnotation(Since.class).value()[0]
             );
+        }
+
+        private static void validateAnnotations(Class<?> type) {
+            if (!type.isAnnotationPresent(Name.class)) {
+                throw new RuntimeException(type + " is missing name doc annotations");
+            }
+
+            if (!type.isAnnotationPresent(Description.class)) {
+                throw new RuntimeException(type + " is missing description doc annotations");
+            }
+
+            if (!type.isAnnotationPresent(Examples.class)
+                    && !type.isAnnotationPresent(Example.class)
+                    && !type.isAnnotationPresent(Example.Examples.class)) { // fuck annotations honestly
+                throw new RuntimeException(type + " is missing example doc annotations");
+            }
+
+            if (!type.isAnnotationPresent(Since.class)) {
+                throw new RuntimeException(type + " is missing since doc annotations");
+            }
         }
         
     }

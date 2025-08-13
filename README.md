@@ -34,105 +34,258 @@ up safely.
 
 [//]: # (Auto-generated documentation starts here.)
 
+## Common
+
+### Effects
+
+#### Encode
+Since `1.0.0`
+
+Used for converting data from one format to another.
+The `encode %source% as %format% (in|[in]to) %target%` pattern converts string text into
+the format, and stores the result in the target variable.
+The `decode %source% from %format% (in|[in]to) %target%` pattern converts an encoded variable into
+text, and stores the result in the target.
+
+Some data formats encode from one text to another (e.g. text -> url-encoded text, text -> gzip).
+These formats require a regular variable as their encoding target/decoding source.
+
+Other data formats support special text <-> list variable mapping, (e.g. json objects, yaml trees).
+These formats require a **list** variable as their encoding target/decoding source.
+
+
+```sk
+set {_raw text} to "{""key"": ""value""}"
+encode {_raw text} as json to {_json::*}
+# _json::key = "value"
+
+set {_json::key} to "value"
+set {_json::number} to 5.5
+decode {_json::*} from json to {_raw text}
+# {"key": "value", "number": 5.5}
+
+encode "hello there" as gzip to {_compressed}
+decode {_compressed} from gzip to {_raw text}
+decode {_config::*} from yaml to {_raw text}
+```
+
+
+#### Change: Indexed Set
+Since `1.0.0`
+
+A special edition of the set changer that can maintain the indices of source data.
+Used for converting resources from encoded formats (e.g. json, yaml) to indexed list variables.
+
+
+```sk
+set {_options::*} to yaml contents of file
+set {_json::*} to json contents of the response
+open a web request to https://localhost:3000/mysite:
+    await the response:
+        set {_result::*} to the response's json content
+
+```
+
+
+#### Change: Reverse Indexed Set
+Since `1.0.0`
+
+A special edition of the set changer that can maintain the indices of target data.
+Used for converting resources from list variables to encoded formats (e.g. json, yaml).
+
+
+```sk
+set yaml contents of file to {_options::*}
+set {_json::key} to "something"
+set {_json::array::*} to "a", "b" and "c"
+open a web request to https://localhost:3000/mysite:
+    set the request's method to "POST"
+    set the json content of request to {_json::*}
+
+```
+
+
+#### Throw Error
+Since `1.0.0`
+
+Produces an error that terminates the current trigger, unless it is 'caught' by a try/catch section.
+
+This error will terminate each section in turn, propagating up the program,
+until it reaches a 'breakpoint' (a delay, a function call, an event trigger) or a try/catch section.
+No code after this error will be run, unless it was previously scheduled in the trigger.
+
+
+```sk
+throw an error with message "oops!"
+throw an io error with message "file broke :("
+throw a null pointer error
+```
+
+
+#### Transfer
+Since `1.0.0`
+
+Safely copies data from one (readable) resource to another (writable) resource.
+Useful for responding to a web request with a file (or copying one file into another).
+
+For moving files between folders, see the move file effect.
+
+
+```sk
+transfer {input} to {output}
+open a website for /site/ with port 3000:
+    transfer ./test.html to the response
+
+```
+
+
+### Expressions
+
+#### Contents of Resource
+Since `1.0.0`
+
+The contents of (the stuff inside) a resource, such as an open file.
+This uses a type parser (e.g. the number context of X will parse X as a number).
+
+This will return nothing if the resource is unreadable.
+
+
+```sk
+open a website:
+    broadcast the text content of the request's body
+
+open file ./test.txt:
+    broadcast the text contents of file
+
+```
+
+
+#### Message of Error
+Since `1.0.0`
+
+The text-message attached to an error (if one is present).
+Not all errors specify a message.
+
+
+```sk
+try:
+    broadcast the text content of the request's body
+catch {_error}:
+    broadcast {_error}'s message
+
+```
+
+
+### Sections
+
+#### Catch Error
+Since `1.0.0`
+
+Obtains the error from the previous `try` section and stores it in a variable.
+This can also be used as a section that will run only if an error occurred.
+
+The catch section can also be used to filter specific errors by type, as long
+as an 'error info' is provided for the error class.
+
+
+```sk
+try:
+    add "hello" to the file
+catch {_error}
+# _error will be empty if no error occurred
+if {_error} exists:
+    broadcast "An error occurred!"
+
+try:
+    add "hello" to the file
+catch {_error}:
+    # run if an error occurred
+    broadcast "Error! " + {_error}'s message
+
+try:
+    add "hello" to the file
+catch the io error in {_io}:
+    # run if an 'io exception' occurred
+    broadcast "Unable to write to the file."
+catch the null pointer error in {_null}:
+    # run if a 'null pointer exception' occurred
+    broadcast "Something was null."
+
+```
+
+
+#### Try
+Since `1.0.0`
+
+Attempts to run the code in the section. If any part of the code encounters a (recoverable) error,
+the section will exit immediately and any remaining code will not be run.
+
+This means that the script may continue in an unexpected state (i.e. some variables may be different from expected)
+and so the `try` section should be used with caution.
+> To properly recover the program, specify the error you expect using a catch section.
+
+Any kind of delay is prohibited within the try section.
+```
+try:
+    do something
+    wait 1 second # NO!
+    do something
+```
+If a delay is needed, the try-section should be split into multiple blocks around the delay.
+```
+try:
+    do something
+wait 1 second # ok
+try:
+    do something
+```
+
+Note that some errors are considered unrecoverable and the trigger *must* terminate.
+These will not be suppressed by a `try` section.
+
+```sk
+try:
+    add "hello" to the file
+
+try:
+    set {_text} to the text content of the response
+catch {_error}
+
+try to kill player
+catch the null pointer error in {_error}
+
+```
+
+
 ## File
 
 ### Conditions
 
 #### File/Directory Exists
-
 Since `1.0.0`
 
 Checks whether the given path is a file that exists.
 
 ```sk
 if file ./test.txt exists:
-	delete file ./test.txt
+    delete file ./test.txt
+
 ```
 
-### Expressions
-
-#### Line of File
-
-Since `1.0.0`
-
-Reads an individual line of a file. Line indexing begins at 1. The value will be empty if the file ended or could not be
-read.
-
-```sk
-broadcast line 1 of the current file
-```
-
-#### Lines of File
-
-Since `1.0.0`
-
-The lines of a currently-open file as a list of text.
-
-```sk
-open file ./test.txt:
-	loop the lines of file:
-		broadcast loop-value
-	set the lines of file to "hello" and "there"
-```
-
-#### Current File
-
-Since `1.0.0`
-
-The currently-open file inside a file reading/editing section.
-
-```sk
-create a new file ./test.txt:
-	add "hello" to the file
-```
-
-#### Size of File
-
-Since `1.0.0`
-
-The size (in bytes) of the currently-open file.
-
-```sk
-open file ./test.txt:
-	broadcast "the file-size is %size of file%"
-```
-
-#### Files in Directory
-
-Since `1.0.0`
-
-Returns a list of (file/folder) paths in the given directory.
-
-```sk
-loop the files in ./test/:
-	delete the file at loop-value
-```
-
-#### Size of Path
-
-Since `1.0.0`
-
-The size (in bytes) of a file by path. Non-files have a size of zero.
-
-```sk
-set {_size} to the size of ./test.txt
-```
 
 ### Effects
 
-#### Create File
-
+#### Create Directory
 Since `1.0.0`
 
-Creates a new file at a path. If the file already exists or was successfully created, opens an editing section.
+Creates a new folder at the given path, if one does not exist.
 
 ```sk
-create file ./test.txt:
-	add "hello" to the file
+create a new folder ./test/
 ```
 
-#### Delete File/Directory
 
+#### Delete File/Directory
 Since `1.0.0`
 
 Deletes the folder or file at the given path.
@@ -143,60 +296,14 @@ delete folder ./test/
 delete the file at ./config.txt
 ```
 
-#### Edit File
-
-Since `1.0.0`
-
-Opens a file at a path for reading and writing. If the file does not exist or is inaccessible, the section will not be
-run.
-
-```sk
-edit file ./test.txt:
-	set the text contents of the file to "line 1"
-	add "line 2" to the lines of the file
-```
-
-#### Create Directory
-
-Since `1.0.0`
-
-Creates a new folder at the given path, if one does not exist.
-
-```sk
-create a new folder ./test/
-```
-
-#### Read File
-
-Since `1.0.0`
-
-Opens a file at a path only for reading.
-The file cannot be written to.
-If the file does not exist or is unreadable, the section will not be run.
-
-```sk
-read file ./test.txt:
-	loop the lines of the file:
-		broadcast loop-value
-```
-
-#### Rename File
-
-Since `1.0.0`
-
-Renames a file or directory. To rename a directory please use the 'move' effect.
-
-```sk
-rename file ./example/test.txt to "blob.txt"
-```
 
 #### Move File/Directory
-
 Since `1.0.0`
 
 Moves a file or folder to a target position, overwriting the previous file.
 The source file or folder will replace whatever is at the destination path.
 If the 'into' version is used, the source will be moved inside the target directory, rather than replacing it.
+
 
 ```sk
 move file ./example/test.txt to ./config/test.txt
@@ -206,143 +313,203 @@ move folder ./example/ to ./config/
 move folder ./example/ into ./config/
 ```
 
-## Web
+
+#### Rename File
+Since `1.0.0`
+
+Renames a file or directory. To rename a directory please use the 'move' effect.
+
+```sk
+rename file ./example/test.txt to "blob.txt"
+```
+
 
 ### Expressions
 
-#### Source of Request
-
+#### Current File
 Since `1.0.0`
 
-The address a request was made from, in IP format.
+The currently-open file inside a file reading/editing section.
 
 ```sk
-open a website:
-	broadcast the request's source
+create a new file ./test.txt:
+    add "hello" to the file
+
 ```
 
-#### Content Type of Request
 
+#### File in Directory
 Since `1.0.0`
 
-The data format a web request will use, such as "application/json" or "text/html".
-
-When making a request you may have to use a specific content type (and format your data accordingly!)
-When receiving a request, this should indicate the format of the incoming data.
-Not all web requests will have data attached.
+Returns a file relative to a directory.
 
 ```sk
-open a web request to http://localhost:3000:
-	set the request's content-type to "application/json"
+set {_folder} to ./test/
+set {_file} to ./MyFile.txt in directory {_folder}
+
 ```
 
-#### Incoming Request
 
+#### Files in Directory
 Since `1.0.0`
 
-The current request being made of your website.
-This is typically a browser asking for a page.
+Returns a list of (file/folder) paths in the given directory.
 
 ```sk
-open a website:
-	set {_file} to path of request
-	if file {_file} exists:
-		set the status code to 200
-		transfer {_file} to the response
-	else:
-		set the status code to 404
-		add "Page not found." to the response
+loop the files in ./test/:
+    delete the file at loop-value
 ```
 
-#### Current Website
 
+#### Line of File
 Since `1.0.0`
 
-The current website, in a website section.
+Reads an individual line of a file. Line indexing begins at 1. The value will be empty if the file ended or could not be read.
 
 ```sk
-open a website:
-	close the current website
+broadcast line 1 of the current file
 ```
 
-#### Header of Request
 
+#### Lines of Resource
 Since `1.0.0`
 
-A key/value-based header in a request, such as "Content-Type" -> "text/html".
-
-Request headers information about the client requesting the resource.
-Response headers hold information about the response.
+The lines of a currently-open resource as a list of texts.
 
 ```sk
-open a web request to http://localhost:3000:
-	set the request's "Content-Encoding" header to "gzip"
+open file ./test.txt:
+    loop the lines of file:
+        broadcast loop-value
+
+edit file ./something.txt:
+    set the lines of file to {lines::*}
+
 ```
 
-#### Status Code
 
+#### Size of File
 Since `1.0.0`
 
-The status code of a web request.
-A `200` status is OK.
-
-When receiving a response, this is the status of your previous request.
-
-When responding to a request, this must be set before data can be transferred.
+The size (in bytes) of the currently-open file.
 
 ```sk
-open a website:
-	set the status code to 200 # OK
-	transfer ./site/index.html to the response
+open file ./test.txt:
+    broadcast "the file-size is %size of file%"
+
 ```
 
-#### Web Response
 
+#### Size of Path
 Since `1.0.0`
 
-Your website's response to a request made to your site.
-This resource can be written to (in order to send data back to the requester).
-
-This can be used to send data to a client, e.g. sending a page to a browser when requested.
+The size (in bytes) of a file by path. Non-files have a size of zero.
 
 ```sk
-open a website:
-	add {_greeting} to the response
-	transfer ./site/index.html to the response
+set {_size} to the size of ./test.txt
 ```
 
-#### Path of Request
 
+### Sections
+
+#### Create File
 Since `1.0.0`
 
-The (file) path a web request is asking for.
-This is typically a browser asking for a page, e.g. `/something/page.html`.
+Creates a new file at a path.
+If the file already exists or was successfully created, opens an editing section.
+If creation fails and the file does not exist, the editing section will be skipped.
 
-Properly-formatted requests typically start with an absolute `/...` - be careful when serving content.
 
 ```sk
-open a website:
-	broadcast the request's path
+create file ./test.txt:
+    add "hello" to the file
+
 ```
 
-#### Method of Request
 
+#### Edit File
 Since `1.0.0`
 
-The type of a web request, such as "GET" or "POST" or "PATCH".
+Opens a file at a path for reading and writing.
+If the file does not exist or is inaccessible, the section will not be run.
 
-Requests for data (e.g. asking for a webpage) typically use "GET".
-Sending data (e.g. submitting a form, searching) typically uses "POST".
 
 ```sk
-open a website:
-	if method of request is "GET":
+edit file ./test.txt:
+    set the text contents of the file to "line 1"
+    add "line 2" to the lines of the file
+
 ```
+
+
+#### Read File
+Since `1.0.0`
+
+Opens a file at a path only for reading.
+The file **cannot** be written to.
+If the file does not exist or is unreadable, the section will not be run.
+
+```sk
+read file ./test.txt:
+    loop the lines of the file:
+        broadcast loop-value
+
+    read file ./test.txt:
+        broadcast the text contents of the file
+
+```
+
+
+## Web
+
+### Effects
+
+#### Expect Response
+Since `1.0.0`
+
+Notifies a connection that you expect a response (and waits for it).
+
+Accepting a response marks the outgoing connection as complete
+(e.g. you cannot send more data in the request) and anything waiting to be sent will be dispatched.
+
+
+```sk
+open a request to https://skriptlang.org:
+    expect the response
+    broadcast the response's content
+
+open a request to http://my-api-here:
+    set the request's json content to {_data::*}
+    accept the response
+    set {_result::*} to the response's json content
+# {_result::*} is available here
+
+```
+
+
+#### Close Website
+Since `1.0.0`
+
+Closes the website at a given path and/or port, or the current website.
+The website will stop accepting connections.
+
+Any currently-open tasks may continue to run in the background.
+
+After closing a website, its path will become available for reuse.
+After closing all websites running on a port, it may take a little time before the
+operating system frees the port for reuse.
+
+
+```sk
+open a website for /landing/:
+    transfer ./site/welcome.html to the response
+    close the current website
+
+```
+
 
 ### Events
 
 #### Visit Website
-
 Since `1.0.0`
 
 Called when a website running from this server is visited.
@@ -353,178 +520,299 @@ it is much safer to use the dedicated website section.
 
 ```sk
 on website visit:
-	set the status code to 200
+    set the status code to 200
+
 ```
 
-### Effects
 
-#### Close Website
+### Expressions
 
+#### Content Type of Request/Response
 Since `1.0.0`
 
-Closes the website at a given path and/or port, or the current website.
-The website will stop accepting connections.
+The data format a web request will use, such as "application/json" or "text/html".
 
-Any currently-open tasks may continue to run in the background.
+When making a request you may have to use a specific content type (and format your data accordingly!)
+When receiving a request, this should indicate the format of the incoming data.
+Not all web requests will have data attached.
+
 
 ```sk
-open a website for /landing/:
-	transfer ./site/welcome.html to the response
-	close the current website
+open a web request to http://localhost:3000:
+    set the request's content-type to "application/json"
+
 ```
 
-#### Expect Response
 
+#### Current Website
+Since `1.0.0`
+
+The current website, in a website section.
+
+```sk
+open a website:
+    close the current website
+
+```
+
+
+#### Header of Request
+Since `1.0.0`
+
+A key/value-based header in a request, such as "Content-Type" -> "text/html".
+
+Request headers information about the client requesting the resource.
+Response headers hold information about the response.
+
+
+```sk
+open a web request to http://localhost:3000:
+    set the request's "Content-Encoding" header to "gzip"
+
+```
+
+
+#### Incoming Request
+Since `1.0.0`
+
+The current request being made of your website.
+This is typically a browser asking for a page.
+
+
+```sk
+open a website:
+    set {_file} to path of request
+    if file {_file} exists:
+        set the status code to 200
+        transfer {_file} to the response
+        # Be careful!
+        # This example doesn't restrict access to any files
+    else:
+        set the status code to 404
+        add "Page not found." to the response
+
+```
+
+
+#### Incoming Response
+Since `1.0.0`
+
+A response to a request you made to a website.
+This resource can be read from (in order to receive data).
+
+
+```sk
+open a web request to https://skriptlang.org:
+   set the request's method to "GET"
+   await the response:
+       broadcast the response's text content
+
+```
+
+
+#### Method of Request
+Since `1.0.0`
+
+The type of a web request, such as "GET" or "POST" or "PATCH".
+
+Requests for data (e.g. asking for a webpage) typically use "GET".
+Sending data (e.g. submitting a form, searching) typically uses "POST".
+
+
+```sk
+open a website:
+    if method of request is "GET":
+        # ...
+
+```
+
+
+#### Outgoing Request
+Since `1.0.0`
+
+The current request being made to a website.
+
+```sk
+open a request to http://my-api-here:
+    set the request's json content to {_data::*}
+
+```
+
+
+#### Outgoing Response
+Since `1.0.0`
+
+Your website's response to a request made to your site.
+This resource can be written to (in order to send data back to the requester).
+
+This can be used to send data to a client, e.g. sending a page to a browser when requested.
+
+
+```sk
+open a website:
+    add {_greeting} to the response
+    transfer ./site/index.html to the response
+
+```
+
+
+#### Path of Request
+Since `1.0.0`
+
+The (file) path a web request is asking for.
+This is typically a browser asking for a page, e.g. `/something/page.html`.
+
+Properly-formatted requests typically start with an absolute `/...`.
+
+> Be careful when serving content based on a request!
+> If you do not filter requests (e.g. prohibiting `../`) then the requester may be able to
+access system files outside the server directory.
+
+
+```sk
+open a website:
+    broadcast the request's path
+
+```
+
+
+#### Source of Request
+Since `1.0.0`
+
+The address a request was made from, in IP format.
+If present, this will be a text, e.g. `"127.0.0.1"`.
+
+
+```sk
+open a website:
+    broadcast the request's source
+
+```
+
+
+#### Status Code
+Since `1.0.0`
+
+The status code of a web request.
+A `200` status is OK.
+
+When receiving a response, this is the status of your previous request.
+
+When responding to a request, this must be set before data can be transferred.
+
+
+```sk
+open a website:
+    set the status code to 200 # OK
+    transfer ./site/index.html to the response
+
+```
+
+
+#### Content Type
+Since `1.0.0`
+
+A content-type is sent with a web request (or response) to tell the receiver what kind of data
+will be submitted in the body of the exchange.
+
+Content types can be specified in a simple text (e.g. `"text/plain"` or `"image/gif"`) or by using
+one of the following supported content-type literals:
+
+```applescript
+aac, abw, apng, arc, avif, avi, azw, bin, bmp, bz, bz2, cda, csh, css, csv, doc,
+docx, eot, epub, gz, gif, htm, html, ico, ics, jar, jpeg, jpg, js, json, jsonld,
+mid, midi, mjs, mp3, mp4, mpeg, mpkg, odp, ods, odt, oga, ogv, ogx, opus, otf,
+png, pdf, php, ppt, pptx, rar, rtf, sh, svg, tar, tif, tiff, ts, ttf, txt, sk,
+vsd, wav, weba, webm, webp, woff, woff2, xhtml, xls, xlsx, xml, xul, zip, 3gp,
+3g2, 7z
+```
+
+
+```sk
+loop the files in ./test/:
+    delete the file at loop-value
+
+```
+
+
+### Sections
+
+#### Expect Response
 Since `1.0.0`
 
 Notifies a connection that you expect a response (and waits for it).
 
+Accepting a response marks the outgoing connection as complete
+(e.g. you cannot send more data in the request) and anything waiting to be sent will be dispatched.
+
+
 ```sk
 open a request to https://skriptlang.org:
-	accept the response:
-		broadcast the response's content
+    expect the response
+    broadcast the response's content
+
+open a request to http://my-api-here:
+    set the request's json content to {_data::*}
+    accept the response
+    set {_result::*} to the response's json content
+# {_result::*} is available here
+
 ```
 
-#### Send Web Request
 
+#### Send Web Request
 Since `1.0.0`
 
 Prepares an HTTP request to be sent to a website URL. This may have content written to it.
 
-Once the request has been dispatched, the response can be read.
+Once the request has been dispatched, the response can be read using the `accept the response` section.
 
 ```sk
 open a web request to https://skriptlang.org:
-	set the request's method to "GET"
-	await the response:
-		broadcast the response's text content
+    set the request's method to "GET"
+    await the response
+    broadcast the response's text content
+
+open an http request to http://my-api-here:
+    set the request's json content to {_data::*}
+
 ```
 
-#### Open Website
 
+#### Open Website
 Since `1.0.0`
 
-Opens a website at the provided path and port, defaulting to the root path `/` on port 80.
+Opens a website at the provided path and port, defaulting to the root path `/` on port `80`.
 Whenever a request is received, the code inside the section will be run.
 
-Responses to a request should start by sending a status code (e.g. 200 = OK) and then any data.
+Responses to a request should start by sending a status code (e.g. `200` = OK) and then any data.
 
 Website paths should end in a separator `/`, and will handle any requests to their directory.
 A website on the root path `/` will accept any unhandled requests.
+This means that a website for `/foo/` will see requests to `/foo/page.html`,
+`/foo/q?key=value&key=value`, etc.
 
-Multiple websites cannot be opened on the same port and path.
-Multiple websites can be opened on *different* paths with the same port, such as `/foo/` and `/bar/`
+Multiple websites cannot be opened on the same port *and* path.
+Multiple websites can be opened on *different* paths with the same port,
+such as `/foo/` and `/bar/`.
+Multiple websites can be opened on *different* ports with the same path,
+such as `localhost:321/foo/` and `localhost:123/foo/`.
 
-```sk
-open a website on port 12345:
-	set the status code to 200
-	add "<body>" to the response
-	add "<h1>hello!!!</h1>" to the response
-	add "<p>there are %size of all players% players online</p>" to the response
-	add "</body>" to the response
-```
-
-## Common
-
-### Expressions
-
-#### Contents of Resource
-
-Since `1.0.0`
-
-The contents of (the stuff inside) a resource, such as an open file.
-This uses a type parser (e.g. the number context of X will parse X as a number).
-
-This will return nothing if the resource is unreadable.
 
 ```sk
-open a website:
-	broadcast the text content of the request's body
-open file ./test.txt:
-	broadcast the text contents of file
-```
+open a website for /homepage/ on port 12345:
+    # http://localhost:12345/homepage
+    set the status code to 200
+    add "<body>" to the response
+    add "<h1>Hello!</h1>" to the response
+    add "<p>There are %size of all players% players online.</p>" to the response
+    add "</body>" to the response
 
-### Effects
+open a website on port 8123:
+    # http://localhost:8123
+    if the source of request is not "127.0.0.1":
+        set the status code to 403 # forbidden
+    else:
+        set the status code to 200 # ok
 
-#### Transfer
-
-Since `1.0.0`
-
-Safely copies data from one (readable) resource to another (writable) resource.
-Useful for responding to a web request with a file (or copying one file into another).
-
-```sk
-transfer {input} to {output}
-transfer ./test.html to the response
-```
-
-#### Change: Reverse Indexed Set
-
-Since `1.0.0`
-
-A special edition of the set changer that can maintain the indices of target data.
-
-```sk
-set yaml contents of file to {_options::*}
-```
-
-#### Encode
-
-Since `1.0.0`
-
-Used for converting data from one format to another.
-This includes special list variable data structures.
-
-```sk
-encode {_raw text} as json to {_json::*}
-decode {_config::*} from yaml to {_raw text}
-```
-
-#### Throw Error
-
-Since `1.0.0`
-
-Produces an error that terminates the current trigger, unless it is 'caught' by a try/catch section.
-
-```sk
-throw an error with message "oops!"
-```
-
-#### Catch Error
-
-Since `1.0.0`
-
-Obtains the error from the previous `try` section and stores it in a variable.
-This can also be used as a section that will run only if an error occurred.
-
-```sk
-try:
-	add "hello" to the file
-catch {error}
-```
-
-#### Try (Section)
-
-Since `1.0.0`
-
-Attempts to run the code in the section. If any part of the code encounters an error,the section will exit immediately
-and any remaining code will not be run.
-This means that the script may continue in an unexpected state (i.e. some variables may be different from expected)and
-so the `try` section should be used with caution.
-Any kind of delay is prohibited within the try section.
-
-```sk
-try:
-	add "hello" to the file
-catch {error}
-```
-
-#### Change: Indexed Set
-
-Since `1.0.0`
-
-A special edition of the set changer that can maintain the indices of source data.
-
-```sk
-set {_options::*} to yaml contents of file
 ```
