@@ -48,6 +48,7 @@ public class Functions {
                     set {_file} to file("images/%{_image}%.png")
                     transfer {_file} to the response"""
             ).since("1.0.0"));
+
         ch.njol.skript.lang.function.Functions.registerFunction(new SimpleJavaFunction<>("joinPaths", new Parameter[] {
             new Parameter<>("paths", DefaultClasses.OBJECT, false, null)
         }, PATH, true) {

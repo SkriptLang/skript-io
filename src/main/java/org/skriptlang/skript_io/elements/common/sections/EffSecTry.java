@@ -2,10 +2,7 @@ package org.skriptlang.skript_io.elements.common.sections;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.config.SectionNode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.*;
 import ch.njol.skript.lang.parser.ParserInstance;
 import ch.njol.util.Kleenean;
@@ -47,18 +44,19 @@ import java.util.List;
     
     Note that some errors are considered unrecoverable and the trigger *must* terminate.
     These will not be suppressed by a `try` section.""")
-@Examples({
-    """
+@Example("""
     try:
-        add "hello" to the file""",
-    """
+        add "hello" to the file
+    """)
+@Example("""
     try:
         set {_text} to the text content of the response
-    catch {_error}""",
-    """
+    catch {_error}
+    """)
+@Example("""
     try to kill player
-    catch the null pointer error in {_error}"""
-})
+    catch the null pointer error in {_error}
+    """)
 @Since("1.0.0")
 public class EffSecTry extends EffectSection {
 

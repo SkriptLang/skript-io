@@ -26,8 +26,10 @@ public class EffDeleteFile extends Effect {
 
     static {
         if (!SkriptIO.isTestMode())
-            Skript.registerEffect(EffDeleteFile.class, "[recursive:recursive[ly]] delete [the] folder [at] %path%",
-                    "[recursive:recursive[ly]] delete [the] directory [at] %path%", "delete [the] file [at] %path%");
+            Skript.registerEffect(EffDeleteFile.class,
+                    "[recursive:recursive[ly]] delete [the] folder [at] %path%",
+                    "[recursive:recursive[ly]] delete [the] directory [at] %path%",
+                    "delete [the] file [at] %path%");
     }
 
     private boolean recursive, folder;

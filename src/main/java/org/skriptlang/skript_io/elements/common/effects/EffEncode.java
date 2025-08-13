@@ -247,7 +247,7 @@ public class EffEncode extends Effect {
     }
 
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    protected void convertLists(Map<?, ?> map) {
+    public static void convertLists(Map<?, ?> map) {
         // Checks whether entries in a map could be a list
         for (Map.Entry entry : map.entrySet()) {
             Object value = entry.getValue();
@@ -262,7 +262,7 @@ public class EffEncode extends Effect {
         }
     }
 
-    private List<?> convertToList(Map<?, ?> map) {
+    private static List<?> convertToList(Map<?, ?> map) {
         // Converts a map to an ordered list
         HashMap<Integer, Object> sorter = new HashMap<>(map.size());
         for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -273,7 +273,7 @@ public class EffEncode extends Effect {
         return new ArrayList<>(sorter.values());
     }
 
-    private boolean couldBeList(Map<?, ?> map) {
+    private static boolean couldBeList(Map<?, ?> map) {
         // Checks whether a map could be a list
         for (Object object : map.keySet()) {
             if (object == null) {
